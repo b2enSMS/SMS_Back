@@ -1,0 +1,16 @@
+package com.b2en.springboot.dto;
+
+import lombok.Data;
+
+@Data
+public class B2enDtoToClient {
+	
+	private String empNm;
+	
+	private String empNo;
+	
+	private String email;
+	
+	private String telNo;
+	
+}
