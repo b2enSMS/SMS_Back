@@ -4,16 +4,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.b2en.springboot.repo.CustomerRepository;
+import com.b2en.springboot.repo.CustRepository;
 
 @Controller
 public class HomeController {
 	
-	CustomerRepository repository;
+	CustRepository repository;
 	
 	@GetMapping(value="/")
 	public String home(Model model) {
-		model.addAttribute("message", "SMS Back-End Test");
+		model.addAttribute("message", "Ad infinitum");
 		return "index";
 	}
 }

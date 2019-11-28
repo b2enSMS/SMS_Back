@@ -3,44 +3,9 @@
   xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
 <head>
 <meta charset="UTF-8">
-<title>Back-End Test</title>
+<title>SMS Server is working</title>
 </head>
 <body>
-	<h2 th:text="${message}"></h2>
-	<a th:href="@{/customer/allList}">고객 전체보기</a>
-	
-	<h2>고객 등록</h2>
-	<form action="#" th:action="@{/customer/create}" th:object="${customer}" method="post">
-		회사명 : <input type="text" name="compNm"/> <br/>
-		담당자명 : <input type="text" name="mgrNm"/> <br/>
-		<input type="submit" value="등록" />
-	</form>
-	
-	<h2>회사명으로 찾기</h2>
-	<form action="#" th:action="@{/customer/findByCompany}" th:object="${compNm}" method="get">
-		회사명 : <input type="text" name="compNm"/> <br/>
-		<input type="submit" value="찾기" />
-	</form>
-	
-	<h2>회사명으로 삭제하기</h2>
-	<form action="#" th:action="@{/customer/delete}" th:object="${compNm}" method="get">
-		회사명 : <input type="text" name="compNm"/> <br/>
-		<input type="submit" value="삭제" />
-	</form>
-	
-	<h2>고객 정보 수정하기(해당 회사의 정보가 없으면 등록이됨)</h2>
-	<form action="#" th:action="@{/customer/update}" th:object="${customer}" method="get">
-		회사명 : <input type="text" name="compNm"/> <br/>
-		담당자명 : <input type="text" name="mgrNm"/> <br/>
-		<input type="submit" value="수정" />
-	</form>
-	
-	<a th:href="@{/license/allList}">라이센스 전체보기</a>
-	<h2>라이센스 정보 등록</h2>
-	<form action="#" th:action="@{/license/create}" th:object="${license}" method="post">
-		라이센스 키 : <input type="text" name="lcnsKey"/> <br/>
-		솔루션 : <input type="text" name="solution"/> <br/>
-		<input type="submit" value="등록" />
-	</form>
+	<h2 style="font-style:italic" th:text="${message}"></h2>
 </body>
 </html>
