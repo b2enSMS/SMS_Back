@@ -8,6 +8,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 
 import com.b2en.springboot.entity.pk.ContDetailPK;
 
@@ -29,6 +30,11 @@ public class ContDetail extends TimeEntity implements Serializable {
 	// 계약상세 PK
 	@EmbeddedId
 	private ContDetailPK contDetailPK;
+	
+	@MapsId("contId")
+	@ManyToOne
+	@JoinColumn(name="cont_id")
+	private Cont cont;
 	
 	// 제품ID (FK)
 	@ManyToOne(cascade=CascadeType.ALL)
