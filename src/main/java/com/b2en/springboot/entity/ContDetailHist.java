@@ -7,7 +7,9 @@ import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 
 import com.b2en.springboot.entity.pk.ContDetailHistPK;
 
@@ -16,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-//@Entity
+@Entity
 @Getter
 @Setter
 @ToString
@@ -29,6 +31,14 @@ public class ContDetailHist extends TimeEntity implements Serializable {
 	// 계약상세이력 PK
 	@EmbeddedId
 	private ContDetailHistPK contDetailHistPK;
+	
+	@MapsId("contDetailPK")
+	@ManyToOne
+	@JoinColumns({
+		@JoinColumn(name = "cont_id", referencedColumnName="cont_id"),
+		@JoinColumn(name = "cont_seq", referencedColumnName="cont_seq")
+	})
+	private ContDetail contDetail;
 	
 	// 계약금액
 	@Column(name = "cont_amt")

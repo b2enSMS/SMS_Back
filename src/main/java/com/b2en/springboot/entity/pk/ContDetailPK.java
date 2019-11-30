@@ -2,13 +2,8 @@ package com.b2en.springboot.entity.pk;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
-import com.b2en.springboot.entity.Cont;
 
 import lombok.Data;
 
@@ -22,9 +17,8 @@ public class ContDetailPK implements Serializable {
 	// 계약순번
 	@Column(name="cont_seq")
 	private int contSeq;
+
+	// 계약ID
+	private String contId;
 	
-	// 계약ID (FK)
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "cont_id")
-	private Cont cont;
 }

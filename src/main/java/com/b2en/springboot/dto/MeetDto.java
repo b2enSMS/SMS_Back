@@ -23,6 +23,6 @@ public class MeetDto {
 	
 	private String meetTotTime;
 	
-	private String meetTpCd;
+	//private String meetTpCd;
 	
 }

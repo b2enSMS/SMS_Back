@@ -2,6 +2,7 @@ package com.b2en.springboot.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.springboot.dto.B2enDtoToClient;
 import com.b2en.springboot.dto.ContDetailDto;
+import com.b2en.springboot.dto.ContDetailHistDto;
 import com.b2en.springboot.dto.ContDto;
 import com.b2en.springboot.dto.ContDtoToClient;
 import com.b2en.springboot.dto.OrgDtoToClient;
@@ -28,10 +30,13 @@ import com.b2en.springboot.dto.ResponseInfo;
 import com.b2en.springboot.entity.B2en;
 import com.b2en.springboot.entity.Cont;
 import com.b2en.springboot.entity.ContDetail;
+import com.b2en.springboot.entity.ContDetailHist;
 import com.b2en.springboot.entity.Org;
 import com.b2en.springboot.entity.Prdt;
+import com.b2en.springboot.entity.pk.ContDetailHistPK;
 import com.b2en.springboot.entity.pk.ContDetailPK;
 import com.b2en.springboot.repo.B2enRepository;
+import com.b2en.springboot.repo.ContDetailHistRepository;
 import com.b2en.springboot.repo.ContDetailRepository;
 import com.b2en.springboot.repo.ContRepository;
 import com.b2en.springboot.repo.OrgRepository;
@@ -43,19 +48,16 @@ public class ContController {
 	
 	@Autowired
 	private ContRepository repositoryC;
-	
 	@Autowired
 	private ContDetailRepository repositoryCD;
-	
+	@Autowired
+	private ContDetailHistRepository repositoryCDH;
 	@Autowired
 	private OrgRepository repositoryO;
-	
 	@Autowired
 	private B2enRepository repositoryB;
-	
 	@Autowired
 	private PrdtRepository repositoryP;
-
 	@Autowired
 	private ModelMapper modelMapper;
 	
@@ -126,24 +128,70 @@ public class ContController {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
-		ContDetail contDetailEntity = modelMapper.map(contDetail, ContDetail.class);
+		ContDetail contDetailEntity = modelMapper.map(contDetail, ContDetail.class);;
+		
 		
 		int contSeq = contDetail.getContSeq();
-		
+
 		String contId = contDetail.getContId();
 		Cont cont = repositoryC.findByContId(contId);
-		
+
 		String prdtId = contDetail.getPrdtId();
 		Prdt prdt = repositoryP.findByPrdtId(prdtId);
-		
+
 		ContDetailPK contDetailPK = new ContDetailPK();
 		contDetailPK.setContSeq(contSeq);
-		contDetailPK.setCont(cont);
-		
+		contDetailPK.setContId(contId);
+
 		contDetailEntity.setContDetailPK(contDetailPK);
+		contDetailEntity.setCont(cont);
 		contDetailEntity.setPrdt(prdt);
 		
 		repositoryCD.save(contDetailEntity);
+
+		res.add(new ResponseInfo("등록에 성공했습니다."));
+		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/detail/hist/showall", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ContDetailHist>> getAllDetailHist() {
+
+		List<ContDetailHist> entityList = repositoryCDH.findAll();
+
+		return new ResponseEntity<List<ContDetailHist>>(entityList, HttpStatus.OK);
+
+	}
+	
+	@PostMapping(value = "/detail/hist/create")
+	public ResponseEntity<List<ResponseInfo>> createDetailHist(@RequestBody ContDetailHistDto contDetailHist) {
+		
+		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
+		
+		ContDetailHist contDetailHistEntity = modelMapper.map(contDetailHist, ContDetailHist.class);;
+		
+		int contSeq = contDetailHist.getContSeq();
+		
+		int detailSeq = contDetailHist.getDetailSeq();
+
+		String contId = contDetailHist.getContId();
+
+		String prdtId = contDetailHist.getPrdtId();
+		Prdt prdt = repositoryP.findByPrdtId(prdtId);
+
+		ContDetailPK contDetailPK = new ContDetailPK();
+		contDetailPK.setContId(contId);
+		contDetailPK.setContSeq(contSeq);
+		
+		ContDetailHistPK contDetailHistPK = new ContDetailHistPK();
+		contDetailHistPK.setDetailSeq(detailSeq);
+		contDetailHistPK.setContDetailPK(contDetailPK);
+
+		ContDetail contDetail = repositoryCD.findByContDetailPKContSeq(contSeq);
+		contDetailHistEntity.setContDetailHistPK(contDetailHistPK);
+		contDetailHistEntity.setContDetail(contDetail);
+		contDetailHistEntity.setPrdt(prdt);
+		
+		repositoryCDH.save(contDetailHistEntity);
 
 		res.add(new ResponseInfo("등록에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
