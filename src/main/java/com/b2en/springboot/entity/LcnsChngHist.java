@@ -6,6 +6,9 @@ import java.sql.Date;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 
 import com.b2en.springboot.entity.pk.LcnsChngHistPK;
 
@@ -27,6 +30,11 @@ public class LcnsChngHist extends TimeEntity implements Serializable {
 	// 라이센스이력 PK
 	@EmbeddedId
 	private LcnsChngHistPK lcnsChngHistPK;
+	
+	@MapsId("lcnsId")
+	@ManyToOne
+	@JoinColumn(name="lcns_id")
+	private Lcns lcns;
 
 	// 라이센스번호
 	@Column(name = "lcns_no")
