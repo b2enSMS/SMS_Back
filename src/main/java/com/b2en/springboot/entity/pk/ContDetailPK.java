@@ -11,7 +11,7 @@ import lombok.Data;
 @Embeddable
 public class ContDetailPK implements Serializable {
 
-	// 계약상세 복합키
+	// 계약상세 PK
 	private static final long serialVersionUID = 2947695454855718656L;
 
 	// 계약순번

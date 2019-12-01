@@ -7,6 +7,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 
 import com.b2en.springboot.entity.pk.MeetAttendEmpPK;
 
@@ -28,6 +29,11 @@ public class MeetAttendEmp extends TimeEntity implements Serializable {
 	// 미팅참석자-비투엔 PK
 	@EmbeddedId
 	private MeetAttendEmpPK meetAttendEmpPK;
+	
+	@MapsId("meetId")
+	@ManyToOne
+	@JoinColumn(name="meet_id")
+	private Meet meet;
 
 	// 담당자ID
 	@ManyToOne(cascade = CascadeType.ALL)

@@ -2,13 +2,8 @@ package com.b2en.springboot.entity.pk;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
-import com.b2en.springboot.entity.Meet;
 
 import lombok.Data;
 
@@ -23,8 +18,6 @@ public class MeetAttendCustPK implements Serializable {
 	@Column(name = "cust_seq")
 	private int custSeq;
 
-	// 미팅ID (FK)
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "meet_id")
-	private Meet meet;
+	// 미팅ID
+	private String meetId;
 }
