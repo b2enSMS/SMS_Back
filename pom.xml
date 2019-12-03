@@ -10,9 +10,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.b2en.springboot</groupId>
-	<artifactId>SMS</artifactId>
+	<artifactId>sms</artifactId>
 	<version>0.0.1</version>
-	<name>SMS</name>
+	<name>sms</name>
 	<description>Solution Site Management System for B2en</description>
 	<packaging>war</packaging>
 
@@ -92,6 +92,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<finalName>${project.artifactId}</finalName>
 	</build>
 
 </project>
