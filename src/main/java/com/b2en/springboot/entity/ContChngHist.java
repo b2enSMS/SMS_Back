@@ -9,6 +9,10 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import com.b2en.springboot.entity.pk.ContChngHistPK;
 
@@ -30,6 +34,12 @@ public class ContChngHist extends TimeEntity implements Serializable {
 	// 계약이력 복합키
 	@EmbeddedId
 	private ContChngHistPK contChngHistPK;
+	
+	@MapsId("contId")
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name="cont_id")
+	@OnDelete(action=OnDeleteAction.CASCADE)
+	private Cont cont;
 	
 	// 고객사ID (FK)
 	@ManyToOne(cascade=CascadeType.ALL)

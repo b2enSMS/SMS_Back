@@ -7,9 +7,9 @@ public class ContDto {
 	
 	private String contId;
 	
-	private String orgId;
+	private String orgNm;
 	
-	private String empId;
+	private String empNm;
 	
 	private String contDt;
 	

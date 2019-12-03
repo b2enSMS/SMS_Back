@@ -14,11 +14,11 @@ public class ContDetailHistPK implements Serializable {
 	// 계약상세이력 PK
 	private static final long serialVersionUID = 1019006356562898173L;
 	
-	// 계약상세 PK
-	private ContDetailPK contDetailPK;
-	
 	// 계약상세순번
 	@Column(name = "detail_seq")
 	private int detailSeq;
+	
+	// 계약상세 PK
+	private ContDetailPK contDetailPK;
 
 }
