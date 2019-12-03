@@ -13,7 +13,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,24 +67,32 @@ public class ContController {
 
 		List<Cont> entityList = repositoryC.findAll();
 		List<ContDtoToClient> list;
-		OrgDtoToClient org;
-		B2enDtoToClient b2en;
+		//OrgDtoToClient org;
+		//B2enDtoToClient b2en;
+		String orgId;
+		String orgNm;
+		String empId;
+		String empNm;
 
 		list = modelMapper.map(entityList, new TypeToken<List<ContDtoToClient>>() {
 		}.getType());
 		
 		for(int i = 0; i < entityList.size(); i++) {
-			org = modelMapper.map(entityList.get(i).getOrg(), OrgDtoToClient.class);
-			b2en = modelMapper.map(entityList.get(i).getB2en(), B2enDtoToClient.class);
-			list.get(i).setOrg(org);
-			list.get(i).setB2en(b2en);
+			orgId = entityList.get(i).getOrg().getOrgId();
+			orgNm = entityList.get(i).getOrg().getOrgNm();
+			empId = entityList.get(i).getB2en().getEmpId();
+			empNm = entityList.get(i).getB2en().getEmpNm();
+			list.get(i).setOrgId(orgId);
+			list.get(i).setOrgNm(orgNm);
+			list.get(i).setEmpId(empId);
+			list.get(i).setEmpNm(empNm);
 		}
 
 		return new ResponseEntity<List<ContDtoToClient>>(list, HttpStatus.OK);
 
 	}
 
-	@PostMapping(value = "/create")
+	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody ContDto cont, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
@@ -98,11 +108,11 @@ public class ContController {
 		
 		Cont contEntity = modelMapper.map(cont, Cont.class);
 		
-		String orgId = cont.getOrgId();
-		Org org = repositoryO.findByOrgId(orgId);
+		String orgNm = cont.getOrgNm();
+		Org org = repositoryO.findByOrgNm(orgNm);
 		
-		String empId = cont.getEmpId();
-		B2en b2en = repositoryB.findByEmpId(empId);
+		String empNm = cont.getEmpNm();
+		B2en b2en = repositoryB.findByEmpId(empNm);
 		
 		contEntity.setOrg(org);
 		contEntity.setB2en(b2en);
@@ -122,7 +132,7 @@ public class ContController {
 
 	}
 	
-	@PostMapping(value = "/detail/create")
+	@PostMapping(value = "/detail/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> createDetail(@RequestBody ContDetailDto contDetail) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
@@ -152,6 +162,13 @@ public class ContController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
+	@DeleteMapping(value = "/detail/{id}")
+	public ResponseEntity<Void> deleteDetail(@PathVariable("id") int id) {
+
+		repositoryCD.deleteByContDetailPKContSeq(id);
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	}
+	
 	@GetMapping(value = "/detail/hist/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContDetailHist>> getAllDetailHist() {
 
@@ -161,7 +178,7 @@ public class ContController {
 
 	}
 	
-	@PostMapping(value = "/detail/hist/create")
+	@PostMapping(value = "/detail/hist/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> createDetailHist(@RequestBody ContDetailHistDto contDetailHist) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
@@ -194,5 +211,12 @@ public class ContController {
 
 		res.add(new ResponseInfo("등록에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
+	}
+	
+	@DeleteMapping(value = "/detail/hist/{id}")
+	public ResponseEntity<Void> deleteDetailHist(@PathVariable("id") int id) {
+
+		repositoryCDH.deleteByContDetailHistPKDetailSeq(id);
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 }

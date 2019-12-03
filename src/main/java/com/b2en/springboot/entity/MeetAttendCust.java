@@ -9,6 +9,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.b2en.springboot.entity.pk.MeetAttendCustPK;
 
 import lombok.Getter;
@@ -31,8 +34,9 @@ public class MeetAttendCust extends TimeEntity implements Serializable {
 	private MeetAttendCustPK meetAttendCustPK;
 	
 	@MapsId("meetId")
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="meet_id")
+	@OnDelete(action=OnDeleteAction.CASCADE)
 	private Meet meet;
 
 	// 고객ID

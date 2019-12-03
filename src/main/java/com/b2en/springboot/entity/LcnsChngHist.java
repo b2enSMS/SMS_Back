@@ -3,12 +3,16 @@ package com.b2en.springboot.entity;
 import java.io.Serializable;
 import java.sql.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import com.b2en.springboot.entity.pk.LcnsChngHistPK;
 
@@ -32,8 +36,9 @@ public class LcnsChngHist extends TimeEntity implements Serializable {
 	private LcnsChngHistPK lcnsChngHistPK;
 	
 	@MapsId("lcnsId")
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="lcns_id")
+	@OnDelete(action=OnDeleteAction.CASCADE)
 	private Lcns lcns;
 
 	// 라이센스번호

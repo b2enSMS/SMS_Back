@@ -11,6 +11,9 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.b2en.springboot.entity.pk.ContDetailHistPK;
 
 import lombok.Getter;
@@ -38,6 +41,7 @@ public class ContDetailHist extends TimeEntity implements Serializable {
 		@JoinColumn(name = "cont_id", referencedColumnName="cont_id"),
 		@JoinColumn(name = "cont_seq", referencedColumnName="cont_seq")
 	})
+	@OnDelete(action=OnDeleteAction.CASCADE)
 	private ContDetail contDetail;
 	
 	// 계약금액

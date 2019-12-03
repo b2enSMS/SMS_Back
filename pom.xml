@@ -10,10 +10,10 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.b2en.springboot</groupId>
-	<artifactId>helloSpringBoot</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>helloSpringBoot</name>
-	<description>Demo project for Spring Boot</description>
+	<artifactId>SMS</artifactId>
+	<!-- <version>0.0.1-SNAPSHOT</version> -->
+	<name>SMS</name>
+	<description>Solution Site Management System for B2en</description>
 	<packaging>war</packaging>
 
 	<properties>

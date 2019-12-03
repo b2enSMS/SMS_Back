@@ -7,9 +7,15 @@ public class ContDtoToClient {
 
 	private String contId;
 	
-	private OrgDtoToClient org;
+	//private OrgDtoToClient org;
+	private String orgId;
 	
-	private B2enDtoToClient b2en;
+	private String orgNm;
+	
+	//private B2enDtoToClient b2en;
+	private String empId;
+	
+	private String empNm;
 	
 	private String contDt;
 	
