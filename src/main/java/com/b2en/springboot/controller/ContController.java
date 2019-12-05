@@ -21,12 +21,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.b2en.springboot.dto.B2enDtoToClient;
 import com.b2en.springboot.dto.ContDetailDto;
 import com.b2en.springboot.dto.ContDetailHistDto;
 import com.b2en.springboot.dto.ContDto;
 import com.b2en.springboot.dto.ContDtoToClient;
-import com.b2en.springboot.dto.OrgDtoToClient;
 import com.b2en.springboot.dto.ResponseInfo;
 import com.b2en.springboot.entity.B2en;
 import com.b2en.springboot.entity.Cont;
@@ -43,8 +41,11 @@ import com.b2en.springboot.repo.ContRepository;
 import com.b2en.springboot.repo.OrgRepository;
 import com.b2en.springboot.repo.PrdtRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/cont")
+@Slf4j
 public class ContController {
 	
 	@Autowired
@@ -67,8 +68,6 @@ public class ContController {
 
 		List<Cont> entityList = repositoryC.findAll();
 		List<ContDtoToClient> list;
-		//OrgDtoToClient org;
-		//B2enDtoToClient b2en;
 		String orgId;
 		String orgNm;
 		String empId;
@@ -94,6 +93,8 @@ public class ContController {
 
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody ContDto cont, BindingResult result) {
+		
+		log.debug("cont:{}", cont);
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
