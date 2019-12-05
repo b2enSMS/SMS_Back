@@ -9,7 +9,7 @@
 		<version>2.2.1.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.b2en.springboot</groupId>
+	<groupId>com.b2en.sms</groupId>
 	<artifactId>sms</artifactId>
 	<version>0.0.1</version>
 	<name>sms</name>
