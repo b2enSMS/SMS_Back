@@ -95,7 +95,7 @@ public class ContController {
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody ContDto cont, BindingResult result) {
 		
-		log.info("cont:{}", cont);
+		log.debug("cont:{}", cont);
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
