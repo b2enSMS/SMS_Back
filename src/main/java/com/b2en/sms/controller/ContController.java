@@ -22,20 +22,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.b2en.sms.dto.ContDetailDto;
-import com.b2en.sms.dto.ContDetailHistDto;
 import com.b2en.sms.dto.ContDto;
 import com.b2en.sms.dto.ContDtoToClient;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.entity.Cont;
+import com.b2en.sms.entity.ContChngHist;
 import com.b2en.sms.entity.ContDetail;
 import com.b2en.sms.entity.ContDetailHist;
 import com.b2en.sms.entity.Org;
 import com.b2en.sms.entity.Prdt;
+import com.b2en.sms.entity.pk.ContChngHistPK;
 import com.b2en.sms.entity.pk.ContDetailHistPK;
 import com.b2en.sms.entity.pk.ContDetailPK;
 import com.b2en.sms.repo.B2enRepository;
+import com.b2en.sms.repo.ContChngHistRepository;
 import com.b2en.sms.repo.ContDetailHistRepository;
 import com.b2en.sms.repo.ContDetailRepository;
 import com.b2en.sms.repo.ContRepository;
@@ -51,6 +52,8 @@ public class ContController {
 	
 	@Autowired
 	private ContRepository repositoryC;
+	@Autowired
+	private ContChngHistRepository repositoryCCH;
 	@Autowired
 	private ContDetailRepository repositoryCD;
 	@Autowired
@@ -69,9 +72,9 @@ public class ContController {
 
 		List<Cont> entityList = repositoryC.findAll();
 		List<ContDtoToClient> list;
-		String orgId;
+		int orgId;
 		String orgNm;
-		String empId;
+		int empId;
 		String empNm;
 
 		list = modelMapper.map(entityList, new TypeToken<List<ContDtoToClient>>() {
@@ -110,30 +113,52 @@ public class ContController {
 		
 		Cont contEntity = modelMapper.map(cont, Cont.class);
 		
-		String orgNm = cont.getOrgNm();
-		Org org = repositoryO.findByOrgNm(orgNm);
+		// id가 ai로 되어있지 않아 임시로 설정한 부분
+		int contId = 1;
+		int histSeq = 1;
 		
-		String empNm = cont.getEmpNm();
-		B2en b2en = repositoryB.findByEmpId(empNm);
+		int orgId = cont.getOrgId();
+		Org org = repositoryO.findByOrgId(orgId);
+		
+		int empId = cont.getEmpId();
+		B2en b2en = repositoryB.findByEmpId(empId);
 		
 		contEntity.setOrg(org);
 		contEntity.setB2en(b2en);
 		
+		// ContChngHist가 자동 생성되는 부분
+		ContChngHist contChngHist = modelMapper.map(contEntity, ContChngHist.class);
+		ContChngHistPK contChngHistPK = new ContChngHistPK();
+		contChngHistPK.setContId(contId);
+		contChngHistPK.setHistSeq(histSeq);
+		contChngHist.setContChngHistPK(contChngHistPK);
+		contChngHist.setCont(contEntity);
+		
 		repositoryC.save(contEntity);
+		repositoryCCH.save(contChngHist);
 
 		res.add(new ResponseInfo("등록에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
+	@GetMapping(value = "/chng/showall", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ContChngHist>> getAllChng() {
+
+		List<ContChngHist> entityList = repositoryCCH.findAll();
+
+		return new ResponseEntity<List<ContChngHist>>(entityList, HttpStatus.OK);
+
+	}
+	
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+	public ResponseEntity<Void> delete(@PathVariable("id") int id) {
 
 		repositoryC.deleteByContId(id);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 	
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") String id, @Valid @RequestBody ContDto cont, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody ContDto cont, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -169,71 +194,6 @@ public class ContController {
 
 	}
 	
-	@PostMapping(value = "/detail/create", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> createDetail(@RequestBody ContDetailDto contDetail) {
-		
-		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
-		
-		ContDetail contDetailEntity = modelMapper.map(contDetail, ContDetail.class);;
-		
-		
-		int contSeq = contDetail.getContSeq();
-
-		String contId = contDetail.getContId();
-		Cont cont = repositoryC.findByContId(contId);
-
-		String prdtId = contDetail.getPrdtId();
-		Prdt prdt = repositoryP.findByPrdtId(prdtId);
-
-		ContDetailPK contDetailPK = new ContDetailPK();
-		contDetailPK.setContSeq(contSeq);
-		contDetailPK.setContId(contId);
-
-		contDetailEntity.setContDetailPK(contDetailPK);
-		contDetailEntity.setCont(cont);
-		contDetailEntity.setPrdt(prdt);
-		
-		repositoryCD.save(contDetailEntity);
-
-		res.add(new ResponseInfo("등록에 성공했습니다."));
-		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
-	}
-	
-	@DeleteMapping(value = "/detail/{id}")
-	public ResponseEntity<Void> deleteDetail(@PathVariable("id") int id) {
-
-		repositoryCD.deleteByContDetailPKContSeq(id);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-	}
-	
-	@PutMapping(value = "/detail/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> updateDetail(@PathVariable("id") int id, @Valid @RequestBody ContDetailDto contDetail, BindingResult result) {
-		
-		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
-		
-		if(result.hasErrors()) {
-			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
-			List<FieldError> errors = result.getFieldErrors();
-			for(int i = 0; i < errors.size(); i++) {
-				res.add(new ResponseInfo(errors.get(i).getDefaultMessage()));
-			}
-			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
-		}
-		
-		ContDetail toUpdate = repositoryCD.findByContDetailPKContSeq(id);
-
-		if (toUpdate == null) {
-			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
-			res.add(new ResponseInfo("해당 id를 가진 row가 없습니다."));
-			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
-		}
-
-		repositoryCD.save(toUpdate);
-		
-		res.add(new ResponseInfo("수정에 성공했습니다."));
-		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
-	}
-	
 	@GetMapping(value = "/detail/hist/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContDetailHist>> getAllDetailHist() {
 
@@ -241,76 +201,6 @@ public class ContController {
 
 		return new ResponseEntity<List<ContDetailHist>>(entityList, HttpStatus.OK);
 
-	}
-	
-	@PostMapping(value = "/detail/hist/create", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> createDetailHist(@RequestBody ContDetailHistDto contDetailHist) {
-		
-		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
-		
-		ContDetailHist contDetailHistEntity = modelMapper.map(contDetailHist, ContDetailHist.class);;
-		
-		int contSeq = contDetailHist.getContSeq();
-		
-		int detailSeq = contDetailHist.getDetailSeq();
-
-		String contId = contDetailHist.getContId();
-
-		String prdtId = contDetailHist.getPrdtId();
-		Prdt prdt = repositoryP.findByPrdtId(prdtId);
-
-		ContDetailPK contDetailPK = new ContDetailPK();
-		contDetailPK.setContId(contId);
-		contDetailPK.setContSeq(contSeq);
-		
-		ContDetailHistPK contDetailHistPK = new ContDetailHistPK();
-		contDetailHistPK.setDetailSeq(detailSeq);
-		contDetailHistPK.setContDetailPK(contDetailPK);
-
-		ContDetail contDetail = repositoryCD.findByContDetailPKContSeq(contSeq);
-		contDetailHistEntity.setContDetailHistPK(contDetailHistPK);
-		contDetailHistEntity.setContDetail(contDetail);
-		contDetailHistEntity.setPrdt(prdt);
-		
-		repositoryCDH.save(contDetailHistEntity);
-
-		res.add(new ResponseInfo("등록에 성공했습니다."));
-		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
-	}
-	
-	@DeleteMapping(value = "/detail/hist/{id}")
-	public ResponseEntity<Void> deleteDetailHist(@PathVariable("id") int id) {
-
-		repositoryCDH.deleteByContDetailHistPKDetailSeq(id);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-	}
-	
-	@PutMapping(value = "/detail/hist/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> updateDetailHist(@PathVariable("id") int id, @Valid @RequestBody ContDetailHistDto contDetailHist, BindingResult result) {
-		
-		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
-		
-		if(result.hasErrors()) {
-			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
-			List<FieldError> errors = result.getFieldErrors();
-			for(int i = 0; i < errors.size(); i++) {
-				res.add(new ResponseInfo(errors.get(i).getDefaultMessage()));
-			}
-			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
-		}
-		
-		ContDetailHist toUpdate = repositoryCDH.findByContDetailHistPKDetailSeq(id);
-
-		if (toUpdate == null) {
-			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
-			res.add(new ResponseInfo("해당 id를 가진 row가 없습니다."));
-			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
-		}
-
-		repositoryCDH.save(toUpdate);
-		
-		res.add(new ResponseInfo("수정에 성공했습니다."));
-		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
 }

@@ -6,6 +6,8 @@ import java.sql.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -27,8 +29,9 @@ public class Cont extends TimeEntity implements Serializable {
 
 	// 계약ID
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="cont_id")
-	private String contId;
+	private int contId;
 	
 	// 고객사ID (FK)
 	@ManyToOne(cascade=CascadeType.ALL)
@@ -75,4 +78,8 @@ public class Cont extends TimeEntity implements Serializable {
 	// 유지보수종료일
 	@Column(name="mtnc_end_dt")
 	private Date mtncEndDt;
+	
+	// 라이센스 번호
+	@Column(name="lcns_no")
+	private String lcnsNo;
 }

@@ -9,9 +9,9 @@ import com.b2en.sms.entity.Org;
 public interface OrgRepository extends JpaRepository<Org, Long> {
 	
 	@Transactional
-	void deleteByOrgId(String id);
+	void deleteByOrgId(int id);
 	
-	Org findByOrgId(String id);
+	Org findByOrgId(int id);
 	
 	Org findByOrgNm(String name);
 }

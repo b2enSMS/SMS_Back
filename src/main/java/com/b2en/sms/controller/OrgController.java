@@ -74,14 +74,14 @@ public class OrgController {
 	}
 	
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+	public ResponseEntity<Void> delete(@PathVariable("id") int id) {
 
 		repository.deleteByOrgId(id);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 	
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") String id, @Valid @RequestBody OrgDto org, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody OrgDto org, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -104,11 +104,9 @@ public class OrgController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		String orgId = org.getOrgId();
 		String orgNm = org.getOrgNm();
 		String orgAddr = org.getOrgAddr();
 
-		toUpdate.setOrgId(orgId);
 		toUpdate.setOrgNm(orgNm);
 		toUpdate.setOrgAddr(orgAddr);
 

@@ -19,6 +19,6 @@ public class ContDetailPK implements Serializable {
 	private int contSeq;
 
 	// 계약ID
-	private String contId;
+	private int contId;
 	
 }

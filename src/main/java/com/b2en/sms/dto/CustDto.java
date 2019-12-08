@@ -5,9 +5,7 @@ import lombok.Data;
 @Data
 public class CustDto {
 	
-	private String custId;
-	
-	private String orgId;
+	private int orgId;
 	
 	private String custNm;
 	
@@ -16,6 +14,4 @@ public class CustDto {
 	private String email;
 	
 	private String telNo;
-	
-	private String custTpCd;
 }

@@ -9,7 +9,7 @@ import com.b2en.sms.entity.Meet;
 public interface MeetRepository extends JpaRepository<Meet, Long>{
 
 	@Transactional
-	void deleteByMeetId(String id);
+	void deleteByMeetId(int id);
 	
-	Meet findByMeetId(String id);
+	Meet findByMeetId(int id);
 }

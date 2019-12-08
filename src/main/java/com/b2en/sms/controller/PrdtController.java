@@ -74,14 +74,14 @@ public class PrdtController {
 	}
 	
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+	public ResponseEntity<Void> delete(@PathVariable("id") int id) {
 
 		repository.deleteByPrdtId(id);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 	
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") String id, @Valid @RequestBody PrdtDto prdt, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody PrdtDto prdt, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		

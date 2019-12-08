@@ -5,6 +5,8 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -26,8 +28,9 @@ public class Cust extends TimeEntity implements Serializable {
 	
 	// 고객ID
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="cust_id")
-	private String custId;
+	private int custId;
 	
 	// 고객사ID (FK)
 	@ManyToOne(cascade=CascadeType.ALL)

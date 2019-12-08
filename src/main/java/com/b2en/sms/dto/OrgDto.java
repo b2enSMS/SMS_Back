@@ -5,8 +5,6 @@ import lombok.Data;
 @Data
 public class OrgDto {
 	
-	private String orgId;
-	
 	private String orgNm;
 	
 	private String orgAddr;

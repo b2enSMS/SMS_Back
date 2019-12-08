@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class OrgDtoToClient {
 	
-	private String orgId;
+	private int orgId;
 	
 	private String orgNm;
 	

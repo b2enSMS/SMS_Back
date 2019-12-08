@@ -5,8 +5,6 @@ import lombok.Data;
 @Data
 public class PrdtDto {
 	
-	private String prdtId;
-	
 	private String prdtNm;
 	
 	private String prdtVer;
@@ -14,6 +12,4 @@ public class PrdtDto {
 	private String prdtDesc;
 	
 	private String prdtAmt;
-	
-	private String prdtTpCd;
 }

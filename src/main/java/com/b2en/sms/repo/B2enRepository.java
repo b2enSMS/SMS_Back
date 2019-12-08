@@ -8,10 +8,10 @@ import com.b2en.sms.entity.B2en;
 
 public interface B2enRepository extends JpaRepository<B2en, Long>{
 	
-	B2en findByEmpId(String id);
+	B2en findByEmpId(int id);
 	
 	B2en findByEmpNm(String empNm);
 	
 	@Transactional
-	void deleteByEmpId(String id);
+	void deleteByEmpId(int id);
 }

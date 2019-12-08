@@ -9,7 +9,7 @@ import com.b2en.sms.entity.Prdt;
 public interface PrdtRepository extends JpaRepository<Prdt, Long>{
 	
 	@Transactional
-	void deleteByPrdtId(String id);
+	void deleteByPrdtId(int id);
 	
-	Prdt findByPrdtId(String id);
+	Prdt findByPrdtId(int id);
 }

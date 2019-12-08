@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import lombok.Getter;
@@ -23,8 +25,9 @@ public class B2en extends TimeEntity implements Serializable {
 	
 	// 담당자ID
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="emp_id")
-	private String empId;
+	private int empId;
 	
 	// 담당자명
 	@Column(name="emp_nm")

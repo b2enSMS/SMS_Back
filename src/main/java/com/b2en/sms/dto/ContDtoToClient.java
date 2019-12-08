@@ -5,15 +5,13 @@ import lombok.Data;
 @Data
 public class ContDtoToClient {
 
-	private String contId;
+	private int contId;
 	
-	//private OrgDtoToClient org;
-	private String orgId;
+	private int orgId;
 	
 	private String orgNm;
 	
-	//private B2enDtoToClient b2en;
-	private String empId;
+	private int empId;
 	
 	private String empNm;
 	
@@ -30,4 +28,6 @@ public class ContDtoToClient {
 	private String mtncStartDt;
 	
 	private String mtncEndDt;
+	
+	private String lcnsNo;
 }
