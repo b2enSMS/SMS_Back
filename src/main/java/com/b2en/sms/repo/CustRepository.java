@@ -9,8 +9,8 @@ import com.b2en.sms.entity.Cust;
 
 public interface CustRepository extends JpaRepository<Cust, Long>{
 		
-	Cust findByCustId(String id);
+	Cust findByCustId(int id);
 	
 	@Transactional
-	void deleteByCustId(String id);
+	void deleteByCustId(int id);
 }

@@ -19,5 +19,5 @@ public class MeetAttendCustPK implements Serializable {
 	private int custSeq;
 
 	// 미팅ID
-	private String meetId;
+	private int meetId;
 }

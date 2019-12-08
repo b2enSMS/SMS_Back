@@ -5,9 +5,11 @@ import lombok.Data;
 @Data
 public class CustDtoToClient {
 	
-	private String custId;
+	private int custId;
 	
-	private OrgDtoToClient org;
+	private int orgId;
+	
+	private String orgNm;
 	
 	private String custNm;
 	

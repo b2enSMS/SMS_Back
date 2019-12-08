@@ -19,5 +19,5 @@ public class ContChngHistPK implements Serializable {
 	private int histSeq;
 	
 	// 계약ID (FK)
-	private String contId;
+	private int contId;
 }

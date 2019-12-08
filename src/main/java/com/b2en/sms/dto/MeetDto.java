@@ -5,9 +5,7 @@ import lombok.Data;
 @Data
 public class MeetDto {
 
-	private String meetId;
-
-	private String orgId;
+	private int orgId;
 
 	private String meetDt;
 	
@@ -16,7 +14,5 @@ public class MeetDto {
 	private String meetStartTime;
 	
 	private String meetTotTime;
-	
-	//private String meetTpCd;
 	
 }

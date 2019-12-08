@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class B2enDtoToClient {
 	
-	private String empId;
+	private int empId;
 	
 	private String empNm;
 	

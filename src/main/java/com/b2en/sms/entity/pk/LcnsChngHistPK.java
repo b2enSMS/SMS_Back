@@ -19,5 +19,5 @@ public class LcnsChngHistPK implements Serializable {
 	private int histSeq;
 		
 	// 라이센스ID
-	private String lcnsId;
+	private int lcnsId;
 }

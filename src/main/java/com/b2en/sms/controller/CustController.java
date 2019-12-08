@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.CustDto;
 import com.b2en.sms.dto.CustDtoToClient;
-import com.b2en.sms.dto.OrgDtoToClient;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Org;
@@ -49,14 +48,17 @@ public class CustController {
 
 		List<Cust> entityList = repositoryC.findAll();
 		List<CustDtoToClient> list;
-		OrgDtoToClient org;
+		int orgId;
+		String orgNm;
 
 		list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
 		}.getType());
 		
 		for(int i = 0; i < entityList.size(); i++) {
-			org = modelMapper.map(entityList.get(i).getOrg(), OrgDtoToClient.class);
-			list.get(i).setOrg(org);
+			orgId = entityList.get(i).getOrg().getOrgId();
+			orgNm = entityList.get(i).getOrg().getOrgNm();
+			list.get(i).setOrgId(orgId);
+			list.get(i).setOrgNm(orgNm);
 		}
 
 		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
@@ -80,7 +82,7 @@ public class CustController {
 		
 		Cust custEntity = modelMapper.map(cust, Cust.class);
 		
-		String orgId = cust.getOrgId();
+		int orgId = cust.getOrgId();
 		
 		Org org = repositoryO.findByOrgId(orgId);
 		
@@ -93,14 +95,14 @@ public class CustController {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+	public ResponseEntity<Void> delete(@PathVariable("id") int id) {
 
 		repositoryC.deleteByCustId(id);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") String id, @Valid @RequestBody CustDto cust, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody CustDto cust, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		

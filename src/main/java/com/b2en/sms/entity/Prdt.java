@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import lombok.Getter;
@@ -23,8 +25,9 @@ public class Prdt extends TimeEntity implements Serializable {
 
 	// 제품ID
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="prdt_id")
-	private String prdtId;
+	private int prdtId;
 	
 	// 제품명
 	@Column(name="prdt_nm")

@@ -5,21 +5,15 @@ import lombok.Data;
 @Data
 public class ContDto {
 	
-	private String contId;
+	private int orgId;
 	
-	private String orgNm;
-	
-	private String empNm;
+	private int empId;
 	
 	private String contDt;
 	
 	private String contTotAmt;
 	
-	private String delYn;
-	
 	private String contReportNo;
-	
-	private String contTpCd;
 	
 	private String installDt;
 	
@@ -28,4 +22,6 @@ public class ContDto {
 	private String mtncStartDt;
 	
 	private String mtncEndDt;
+	
+	private String lcnsNo;
 }

@@ -4,8 +4,6 @@ import lombok.Data;
 
 @Data
 public class B2enDto {
-
-	private String empId;
 	
 	private String empNm;
 	
@@ -14,7 +12,5 @@ public class B2enDto {
 	private String email;
 	
 	private String telNo;
-	
-	private String empTpCd;
 	
 }

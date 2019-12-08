@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import lombok.Getter;
@@ -23,8 +25,9 @@ public class Org extends TimeEntity implements Serializable {
 	
 	// 고객사ID
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="org_id")
-	private String orgId;
+	private int orgId;
 	
 	// 고객사명
 	@Column(name="org_nm")

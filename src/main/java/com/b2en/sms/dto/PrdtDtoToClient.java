@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class PrdtDtoToClient {
 	
-	private String prdtId;
+	private int prdtId;
 
 	private String prdtNm;
 	
