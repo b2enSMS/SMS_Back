@@ -113,10 +113,6 @@ public class ContController {
 		
 		Cont contEntity = modelMapper.map(cont, Cont.class);
 		
-		// id가 ai로 되어있지 않아 임시로 설정한 부분
-		int contId = 1;
-		int histSeq = 1;
-		
 		int orgId = cont.getOrgId();
 		Org org = repositoryO.findByOrgId(orgId);
 		
@@ -126,16 +122,7 @@ public class ContController {
 		contEntity.setOrg(org);
 		contEntity.setB2en(b2en);
 		
-		// ContChngHist가 자동 생성되는 부분
-		ContChngHist contChngHist = modelMapper.map(contEntity, ContChngHist.class);
-		ContChngHistPK contChngHistPK = new ContChngHistPK();
-		contChngHistPK.setContId(contId);
-		contChngHistPK.setHistSeq(histSeq);
-		contChngHist.setContChngHistPK(contChngHistPK);
-		contChngHist.setCont(contEntity);
-		
 		repositoryC.save(contEntity);
-		repositoryCCH.save(contChngHist);
 
 		res.add(new ResponseInfo("등록에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
@@ -178,8 +165,16 @@ public class ContController {
 			res.add(new ResponseInfo("해당 id를 가진 row가 없습니다."));
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
+		
+		// ContChngHist가 자동 생성되는 부분
+		ContChngHist contChngHist = modelMapper.map(toUpdate, ContChngHist.class);
+		ContChngHistPK contChngHistPK = new ContChngHistPK();
+		contChngHistPK.setContId(id);
+		contChngHist.setContChngHistPK(contChngHistPK);
+		contChngHist.setCont(toUpdate);
 
 		repositoryC.save(toUpdate);
+		repositoryCCH.save(contChngHist);
 		
 		res.add(new ResponseInfo("수정에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
