@@ -82,4 +82,5 @@ public class Cont extends TimeEntity implements Serializable {
 	// 라이센스 번호
 	@Column(name="lcns_no")
 	private String lcnsNo;
+
 }

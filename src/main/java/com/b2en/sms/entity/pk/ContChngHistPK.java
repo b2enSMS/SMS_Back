@@ -17,6 +17,7 @@ public class ContChngHistPK implements Serializable {
 	private static final long serialVersionUID = -2866498436429053191L;
 
 	// 이력순번
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="hist_seq")
 	private int histSeq;
 	

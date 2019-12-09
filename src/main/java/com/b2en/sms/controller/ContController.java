@@ -128,15 +128,6 @@ public class ContController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	@GetMapping(value = "/chng/showall", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ContChngHist>> getAllChng() {
-
-		List<ContChngHist> entityList = repositoryCCH.findAll();
-
-		return new ResponseEntity<List<ContChngHist>>(entityList, HttpStatus.OK);
-
-	}
-	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable("id") int id) {
 
@@ -172,6 +163,8 @@ public class ContController {
 		contChngHistPK.setContId(id);
 		contChngHist.setContChngHistPK(contChngHistPK);
 		contChngHist.setCont(toUpdate);
+		
+		toUpdate.setContReportNo(cont.getContReportNo());
 
 		repositoryC.save(toUpdate);
 		repositoryCCH.save(contChngHist);

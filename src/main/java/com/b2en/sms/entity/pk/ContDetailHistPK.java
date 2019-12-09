@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 
 import lombok.Data;
 
@@ -15,6 +17,7 @@ public class ContDetailHistPK implements Serializable {
 	private static final long serialVersionUID = 1019006356562898173L;
 	
 	// 계약상세순번
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "detail_seq")
 	private int detailSeq;
 	

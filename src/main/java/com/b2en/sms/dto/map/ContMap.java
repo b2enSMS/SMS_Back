@@ -7,6 +7,7 @@ import com.b2en.sms.entity.Cont;
 
 public class ContMap extends PropertyMap<ContDto, Cont>{
 	
+	// 매핑오류를 막기 위해 명시적 매핑
 	@Override
 	protected void configure() {
 		
@@ -21,11 +22,5 @@ public class ContMap extends PropertyMap<ContDto, Cont>{
 		
 		// Cont.delYn을 "N"으로 매핑
 		map().setDelYn("N");
-		
-		map().setContReportNo("None");
-		
-		map().setContTpCd("None");
-		
-		map().setLcnsNo("None");
 	}
 }

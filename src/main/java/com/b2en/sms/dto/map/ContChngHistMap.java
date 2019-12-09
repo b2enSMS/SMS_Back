@@ -7,6 +7,7 @@ import com.b2en.sms.entity.ContChngHist;
 
 public class ContChngHistMap extends PropertyMap<Cont, ContChngHist> {
 
+	// 매핑오류를 막기 위해 명시적 매핑
 	@Override
 	protected void configure() {
 		// ContChngHist.contChngHistPK는 매핑하지 않음
