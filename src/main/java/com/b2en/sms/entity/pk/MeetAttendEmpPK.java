@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 
 import lombok.Data;
 
@@ -15,6 +17,7 @@ public class MeetAttendEmpPK implements Serializable {
 	private static final long serialVersionUID = -3811932563260573661L;
 
 	// 순번
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "emp_seq")
 	private int empSeq;
 
