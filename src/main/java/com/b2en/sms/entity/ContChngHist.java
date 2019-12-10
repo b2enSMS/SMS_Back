@@ -63,10 +63,6 @@ public class ContChngHist extends TimeEntity implements Serializable {
 	@Column(name="cont_report_no")
 	private String contReportNo;
 	
-	// 계약유형코드
-	@Column(name="cont_tp_cd")
-	private String contTpCd;
-	
 	// 설치일자
 	@Column(name="install_dt")
 	private Date installDt;

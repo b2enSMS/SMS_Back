@@ -67,10 +67,38 @@ public class ContController {
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/showincludedel", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContDtoToClient>> getAll() {
-
+		// delYn의 값에 상관없이 모두 불러옴
 		List<Cont> entityList = repositoryC.findAll();
+		List<ContDtoToClient> list;
+		int orgId;
+		String orgNm;
+		int empId;
+		String empNm;
+
+		list = modelMapper.map(entityList, new TypeToken<List<ContDtoToClient>>() {
+		}.getType());
+		
+		for(int i = 0; i < entityList.size(); i++) {
+			orgId = entityList.get(i).getOrg().getOrgId();
+			orgNm = entityList.get(i).getOrg().getOrgNm();
+			empId = entityList.get(i).getB2en().getEmpId();
+			empNm = entityList.get(i).getB2en().getEmpNm();
+			list.get(i).setOrgId(orgId);
+			list.get(i).setOrgNm(orgNm);
+			list.get(i).setEmpId(empId);
+			list.get(i).setEmpNm(empNm);
+		}
+
+		return new ResponseEntity<List<ContDtoToClient>>(list, HttpStatus.OK);
+
+	}
+	
+	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ContDtoToClient>> getAllNotDeleted() {
+		// delYn의 값이 "N"인 경우(삭제된걸로 처리되지 않은 경우)만 불러옴
+		List<Cont> entityList = repositoryC.findByDelYn("N");
 		List<ContDtoToClient> list;
 		int orgId;
 		String orgNm;
@@ -121,6 +149,7 @@ public class ContController {
 		
 		contEntity.setOrg(org);
 		contEntity.setB2en(b2en);
+		contEntity.setDelYn("N");
 		
 		repositoryC.save(contEntity);
 
@@ -130,8 +159,10 @@ public class ContController {
 	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable("id") int id) {
-
-		repositoryC.deleteByContId(id);
+		// Cont는 delete시 실제로 DB에서 삭제하지 않고 delYn이 "N"에서 "Y"로 변경되게 함
+		Cont cont = repositoryC.findByContId(id);
+		cont.setDelYn("Y");
+		repositoryC.save(cont);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 	
