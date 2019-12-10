@@ -2,6 +2,7 @@ package com.b2en.sms.entity;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -78,9 +79,5 @@ public class Cont extends TimeEntity implements Serializable {
 	// 유지보수종료일
 	@Column(name="mtnc_end_dt")
 	private Date mtncEndDt;
-	
-	// 라이센스 번호
-	@Column(name="lcns_no")
-	private String lcnsNo;
 
 }
