@@ -3,6 +3,7 @@ package com.b2en.sms.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
@@ -33,7 +34,6 @@ import com.b2en.sms.entity.ContDetailHist;
 import com.b2en.sms.entity.Org;
 import com.b2en.sms.entity.Prdt;
 import com.b2en.sms.entity.pk.ContChngHistPK;
-import com.b2en.sms.entity.pk.ContDetailHistPK;
 import com.b2en.sms.entity.pk.ContDetailPK;
 import com.b2en.sms.repo.B2enRepository;
 import com.b2en.sms.repo.ContChngHistRepository;
@@ -124,9 +124,9 @@ public class ContController {
 	}
 
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody ContDto cont, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody ContDto contDto, BindingResult result) {
 		
-		log.debug("cont:{}", cont);
+		log.debug("cont:{}", contDto);
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -139,12 +139,11 @@ public class ContController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		Cont contEntity = modelMapper.map(cont, Cont.class);
+		Cont contEntity = modelMapper.map(contDto, Cont.class);
 		
-		int orgId = cont.getOrgId();
+		int orgId = contDto.getOrgId();
 		Org org = repositoryO.findByOrgId(orgId);
-		
-		int empId = cont.getEmpId();
+		int empId = contDto.getEmpId();
 		B2en b2en = repositoryB.findByEmpId(empId);
 		
 		contEntity.setOrg(org);
@@ -152,6 +151,25 @@ public class ContController {
 		contEntity.setDelYn("N");
 		
 		repositoryC.save(contEntity);
+		
+		// ContDetail 생성하는 부분
+		/*
+		 * int contId = repositoryC.findMaxContId(); // 가장 마지막에 생성된 Cont의 cont_id가 가장 크다
+		 * Cont contInContDetail = repositoryC.findByContId(contId); int[] prdtId =
+		 * contDto.getPrdtId(); String[] contAmt = contDto.getContAmt(); String[] scan =
+		 * contDto.getScan();
+		 * 
+		 * for(int i = 0; i < prdtId.length; i++) { ContDetailPK contDetailPK = new
+		 * ContDetailPK(); contDetailPK.setContId(contId); ContDetail contDetail = new
+		 * ContDetail(); Prdt prdt = repositoryP.findByPrdtId(prdtId[i]);
+		 * 
+		 * contDetail.setContDetailPK(contDetailPK);
+		 * contDetail.setCont(contInContDetail); contDetail.setPrdt(prdt);
+		 * contDetail.setContAmt(contAmt[i]); contDetail.setDelYn("N");
+		 * contDetail.setScan(scan[i]);
+		 * 
+		 * log.info("contDetail:{}",contDetail); repositoryCD.save(contDetail); }
+		 */
 
 		res.add(new ResponseInfo("등록에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);

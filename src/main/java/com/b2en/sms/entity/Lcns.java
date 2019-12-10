@@ -61,4 +61,8 @@ public class Lcns extends TimeEntity implements Serializable{
 	// 라이센스종료일자
 	@Column(name="lcns_end_dt")
 	private Date lcnsEndDt;
+	
+	// 스캔본
+	@Column(name="scan")
+	private String scan;
 }

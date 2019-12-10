@@ -16,4 +16,6 @@ public class LcnsDto {
 	private String lcnsStartDt;
 	
 	private String lcnsEndDt;
+	
+	private String scan;
 }

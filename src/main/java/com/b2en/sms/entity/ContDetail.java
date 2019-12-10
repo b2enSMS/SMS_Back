@@ -40,10 +40,13 @@ public class ContDetail extends TimeEntity implements Serializable {
 	@OnDelete(action=OnDeleteAction.CASCADE)
 	private Cont cont;
 	
-	// 제품ID (FK)
+	// 라이센스ID (FK)
 	@ManyToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="prdt_id")
-	private Prdt prdt;
+	@JoinColumn(name="lcns_id")
+	private Lcns lcns;
+	
+	// 라이센스 번호
+	private String lcnsNo;
 	
 	// 계약금액
 	@Column(name="cont_amt")

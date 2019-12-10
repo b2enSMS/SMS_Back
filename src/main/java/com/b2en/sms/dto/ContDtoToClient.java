@@ -28,6 +28,4 @@ public class ContDtoToClient {
 	private String mtncStartDt;
 	
 	private String mtncEndDt;
-	
-	private String lcnsNo;
 }
