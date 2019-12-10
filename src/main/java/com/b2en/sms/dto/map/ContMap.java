@@ -20,7 +20,7 @@ public class ContMap extends PropertyMap<ContDto, Cont>{
 		// Cont.b2en은 매핑하지 않음
 		skip().setB2en(null);
 		
-		// Cont.delYn을 "N"으로 매핑
-		map().setDelYn("N");
+		// Cont.delYn은 매핑하지 않음
+		skip().setDelYn(null);
 	}
 }

@@ -1,5 +1,7 @@
 package com.b2en.sms.repo;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +13,6 @@ public interface ContRepository extends JpaRepository<Cont, Long>{
 	
 	@Transactional
 	void deleteByContId(int id);
+	
+	List<Cont> findByDelYn(String yn);
 }
