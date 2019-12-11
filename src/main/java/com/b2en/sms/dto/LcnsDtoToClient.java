@@ -15,6 +15,8 @@ public class LcnsDtoToClient {
 	private String lcnsNo;
 
 	private Date lcnsIssuDt;
+	
+	private String lcnsTpCd;
 
 	private String certNo;
 	
