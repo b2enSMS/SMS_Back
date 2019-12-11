@@ -48,9 +48,9 @@ public class ContDetailHist extends TimeEntity implements Serializable {
 	@Column(name = "cont_amt")
 	private String contAmt;
 
-	// 제품ID (FK)
+	// 라이센스ID (FK)
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "prdt_id")
-	private Prdt prdt;
+	@JoinColumn(name = "lcns_id")
+	private Lcns lcns;
 	
 }

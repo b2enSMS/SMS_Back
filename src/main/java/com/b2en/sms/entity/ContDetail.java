@@ -45,9 +45,6 @@ public class ContDetail extends TimeEntity implements Serializable {
 	@JoinColumn(name="lcns_id")
 	private Lcns lcns;
 	
-	// 라이센스 번호
-	private String lcnsNo;
-	
 	// 계약금액
 	@Column(name="cont_amt")
 	private String contAmt;
