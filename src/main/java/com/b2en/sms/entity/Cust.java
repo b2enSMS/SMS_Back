@@ -53,7 +53,7 @@ public class Cust extends TimeEntity implements Serializable {
 	@Column(name="tel_no")
 	private String telNo;
 	
-	// 고객구분코드
+	// 고객구분코드(담당자인가, 사용자인가)
 	@Column(name="cust_tp_cd")
 	private String custTpCd;
 	

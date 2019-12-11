@@ -14,4 +14,6 @@ public class CustDto {
 	private String email;
 	
 	private String telNo;
+	
+	private String custTpCd;
 }
