@@ -36,18 +36,18 @@ public class ContChngHist extends TimeEntity implements Serializable {
 	private ContChngHistPK contChngHistPK;
 	
 	@MapsId("contId")
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name="cont_id")
 	@OnDelete(action=OnDeleteAction.CASCADE)
 	private Cont cont;
 	
 	// 고객사ID (FK)
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne(cascade=CascadeType.DETACH)
 	@JoinColumn(name="org_id")
 	private Org org;
 	
 	// 담당자ID (FK)
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne(cascade=CascadeType.DETACH)
 	@JoinColumn(name="emp_id")
 	private B2en b2en;
 	

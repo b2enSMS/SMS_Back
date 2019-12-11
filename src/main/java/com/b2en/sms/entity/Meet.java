@@ -35,7 +35,7 @@ public class Meet extends TimeEntity implements Serializable {
 	private int meetId;
 	
 	// 고객사ID (FK)
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne(cascade=CascadeType.DETACH)
 	@JoinColumn(name="org_id")
 	private Org org;
 	

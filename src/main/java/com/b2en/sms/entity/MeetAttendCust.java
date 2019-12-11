@@ -34,13 +34,13 @@ public class MeetAttendCust extends TimeEntity implements Serializable {
 	private MeetAttendCustPK meetAttendCustPK;
 	
 	@MapsId("meetId")
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name="meet_id")
 	@OnDelete(action=OnDeleteAction.CASCADE)
 	private Meet meet;
 
 	// 고객ID
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "cust_id")
 	private Cust cust;
 }
