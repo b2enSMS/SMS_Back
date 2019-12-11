@@ -11,6 +11,8 @@ public class LcnsDto {
 	
 	private String lcnsIssuDt;
 	
+	private String lcnsTpCd;
+	
 	private String certNo;
 	
 	private String lcnsStartDt;
