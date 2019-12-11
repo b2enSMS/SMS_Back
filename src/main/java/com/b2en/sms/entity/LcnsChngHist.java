@@ -36,7 +36,7 @@ public class LcnsChngHist extends TimeEntity implements Serializable {
 	private LcnsChngHistPK lcnsChngHistPK;
 	
 	@MapsId("lcnsId")
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name="lcns_id")
 	@OnDelete(action=OnDeleteAction.CASCADE)
 	private Lcns lcns;

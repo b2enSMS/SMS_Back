@@ -11,8 +11,6 @@ public class ContDto {
 	
 	private String contDt;
 	
-	private String contTotAmt;
-	
 	private String contReportNo;
 	
 	private String installDt;

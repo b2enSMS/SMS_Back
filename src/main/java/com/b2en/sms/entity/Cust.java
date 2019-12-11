@@ -33,7 +33,7 @@ public class Cust extends TimeEntity implements Serializable {
 	private int custId;
 	
 	// 고객사ID (FK)
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne(cascade=CascadeType.DETACH)
 	@JoinColumn(name="org_id")
 	private Org org;
 	

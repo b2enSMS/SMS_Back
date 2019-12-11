@@ -33,17 +33,17 @@ public class TempVer extends TimeEntity implements Serializable {
 	private int tempVerId;
 	
 	// 고객ID (FK)
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "cust_id")
 	private Cust cust;
 
 	// 라이센스ID (FK)
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "lcns_id")
 	private Lcns lcns;
 
 	// 담당자ID (FK)
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "emp_id")
 	private B2en b2en;
 	

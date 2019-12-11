@@ -34,7 +34,7 @@ public class Lcns extends TimeEntity implements Serializable{
 	private int lcnsId;
 	
 	// 제품ID (FK)
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne(cascade=CascadeType.DETACH)
 	@JoinColumn(name="prdt_id")
 	private Prdt prdt;
 	

@@ -41,7 +41,7 @@ public class ContDetail extends TimeEntity implements Serializable {
 	private Cont cont;
 	
 	// 라이센스ID (FK)
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne(cascade=CascadeType.DETACH)
 	@JoinColumn(name="lcns_id")
 	private Lcns lcns;
 	

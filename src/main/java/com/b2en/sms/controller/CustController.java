@@ -83,7 +83,6 @@ public class CustController {
 		Cust custEntity = modelMapper.map(cust, Cust.class);
 		
 		int orgId = cust.getOrgId();
-		
 		Org org = repositoryO.findByOrgId(orgId);
 		
 		custEntity.setOrg(org);
