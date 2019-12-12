@@ -64,6 +64,18 @@ public class CustController {
 		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
 
 	}
+	
+	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<CustDtoToClient> findById(@PathVariable("id") int id) {
+		
+		Cust cust = repositoryC.findByCustId(id);
+		
+		CustDtoToClient custDtoToClient = modelMapper.map(cust, CustDtoToClient.class);
+		custDtoToClient.setOrgId(cust.getOrg().getOrgId());
+		custDtoToClient.setOrgNm(cust.getOrg().getOrgNm());
+		
+		return new ResponseEntity<CustDtoToClient>(custDtoToClient, HttpStatus.OK);
+	}
 
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)

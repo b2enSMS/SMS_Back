@@ -9,4 +9,6 @@ public class OrgDtoToClient {
 	
 	private String orgNm;
 	
+	private String orgAddr;
+	
 }

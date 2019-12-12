@@ -12,4 +12,6 @@ public class PrdtDto {
 	private String prdtDesc;
 	
 	private String prdtAmt;
+	
+	private String prdtTpCd;
 }

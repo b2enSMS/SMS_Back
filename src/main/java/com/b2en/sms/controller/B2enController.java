@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.B2enDto;
 import com.b2en.sms.dto.B2enDtoToClient;
 import com.b2en.sms.dto.ResponseInfo;
+import com.b2en.sms.dto.autoincrementinfo.B2enAC;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.repo.B2enRepository;
 
@@ -50,7 +51,22 @@ public class B2enController {
 		return new ResponseEntity<List<B2enDtoToClient>>(list, HttpStatus.OK);
 
 	}
+	
+	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<B2enAC>> acList() {
 
+		List<B2en> entityList = repository.findAll();
+		List<B2enAC> list = new ArrayList<B2enAC>();
+		
+		for(int i = 0; i < entityList.size(); i++) {
+			B2enAC b2enAC = new B2enAC();
+			b2enAC.setEmpId(entityList.get(i).getEmpId());
+			b2enAC.setEmpNm(entityList.get(i).getEmpNm());
+			list.add(b2enAC);
+		}
+
+		return new ResponseEntity<List<B2enAC>>(list, HttpStatus.OK);
+	}
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody B2enDto b2en, BindingResult result) {
