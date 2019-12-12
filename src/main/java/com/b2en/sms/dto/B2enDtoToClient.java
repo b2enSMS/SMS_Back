@@ -15,4 +15,6 @@ public class B2enDtoToClient {
 	
 	private String telNo;
 	
+	private String empTpCd;
+	
 }

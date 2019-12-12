@@ -13,4 +13,6 @@ public class B2enDto {
 	
 	private String telNo;
 	
+	private String empTpCd;
+	
 }
