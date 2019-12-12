@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.b2en.sms.dto.ContAndLcnsDto;
 import com.b2en.sms.dto.ContDetailDto;
 import com.b2en.sms.dto.ContDto;
 import com.b2en.sms.dto.ContDtoToClient;
+import com.b2en.sms.dto.LcnsDto;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.entity.Cont;
@@ -33,6 +35,7 @@ import com.b2en.sms.entity.ContDetail;
 import com.b2en.sms.entity.ContDetailHist;
 import com.b2en.sms.entity.Lcns;
 import com.b2en.sms.entity.Org;
+import com.b2en.sms.entity.Prdt;
 import com.b2en.sms.entity.pk.ContChngHistPK;
 import com.b2en.sms.entity.pk.ContDetailHistPK;
 import com.b2en.sms.entity.pk.ContDetailPK;
@@ -43,6 +46,7 @@ import com.b2en.sms.repo.ContDetailRepository;
 import com.b2en.sms.repo.ContRepository;
 import com.b2en.sms.repo.LcnsRepository;
 import com.b2en.sms.repo.OrgRepository;
+import com.b2en.sms.repo.PrdtRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,6 +69,8 @@ public class ContController {
 	private B2enRepository repositoryB;
 	@Autowired
 	private LcnsRepository repositoryL;
+	@Autowired
+	private PrdtRepository repositoryP;
 	@Autowired
 	private ModelMapper modelMapper;
 	
@@ -139,9 +145,9 @@ public class ContController {
 	}
 
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody ContDto contDto, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody ContAndLcnsDto contAndLcnsDto, BindingResult result) {
 		
-		log.debug("cont:{}", contDto);
+		log.debug("cont:{}", contAndLcnsDto);
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -154,34 +160,47 @@ public class ContController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		Cont contEntity = modelMapper.map(contDto, Cont.class);
+		// ======================= Lcns 생성 ==========================
+		LcnsDto[] lcnsDto = contAndLcnsDto.getLcns();
+		int lcnsNum = lcnsDto.length;
+		Lcns[] lcnsEntity = new Lcns[lcnsNum];
 		
-		int orgId = contDto.getOrgId();
+		for(int i = 0; i < lcnsNum; i++) {
+			lcnsEntity[i] = modelMapper.map(lcnsDto[i], Lcns.class);
+			int prdtId = lcnsDto[i].getPrdtId();
+			Prdt prdt = repositoryP.findByPrdtId(prdtId);
+			lcnsEntity[i].setPrdt(prdt);
+			
+			log.info("Lcns:{}", lcnsEntity[i]);
+			repositoryL.save(lcnsEntity[i]);
+		}
+		
+		// ======================= Cont 생성 ==========================
+		Cont contEntity = modelMapper.map(contAndLcnsDto, Cont.class);
+		
+		int orgId = contAndLcnsDto.getOrgId();
 		Org org = repositoryO.findByOrgId(orgId);
-		int empId = contDto.getEmpId();
+		int empId = contAndLcnsDto.getEmpId();
 		B2en b2en = repositoryB.findByEmpId(empId);
 		
 		contEntity.setOrg(org);
 		contEntity.setB2en(b2en);
 		contEntity.setDelYn("N");
 		
-		String[] contAmt = contDto.getContAmt();
-		//String[] rmComma = new String[contAmt.length];
+		String[] contAmt = contAndLcnsDto.getContAmt();
 		int tot = 0;
 		for (int i = 0; i < contAmt.length; i++) {
-			//rmComma[i] = contAmt[i].replaceAll(",", "");
-			//tot += Integer.parseInt(rmComma[i]);
 			tot += Integer.parseInt(contAmt[i]);
 		}
 		
 		contEntity.setContTotAmt(Integer.toString(tot));
 		
+		log.info("Cont:{}", contEntity);
 		repositoryC.save(contEntity);
 		
-		// ContDetail 생성하는 부분
+		// ======================= ContDetail 생성 ==========================
 		int contId = repositoryC.findMaxContId(); // 가장 마지막에 생성된 Cont의 cont_id가 가장 크다
 		Cont contInContDetail = repositoryC.findByContId(contId);
-		int[] lcnsId = contDto.getLcnsId();
 		
 		int maxSeq; // contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
 		if(repositoryCD.findMaxContSeq()==null) {
@@ -190,12 +209,12 @@ public class ContController {
 			maxSeq = repositoryCD.findMaxContSeq();
 		}
 		
-		for (int i = 0; i < lcnsId.length; i++) {
+		for (int i = 0; i < lcnsEntity.length; i++) {
 			ContDetailPK contDetailPK = new ContDetailPK();
 			contDetailPK.setContSeq(maxSeq+i+1); // contSeq 직접 할당
 			contDetailPK.setContId(contId);
 			ContDetail contDetail = new ContDetail();
-			Lcns lcns = repositoryL.findByLcnsId(lcnsId[i]);
+			Lcns lcns = repositoryL.findByLcnsId(lcnsEntity[i].getLcnsId());
 
 			contDetail.setContDetailPK(contDetailPK);
 			contDetail.setCont(contInContDetail);
@@ -203,9 +222,10 @@ public class ContController {
 			contDetail.setContAmt(contAmt[i]);
 			contDetail.setDelYn("N");
 
+			log.info("ContDetail:{}", contDetail);
 			repositoryCD.save(contDetail);
 		}
-
+		
 		res.add(new ResponseInfo("등록에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
