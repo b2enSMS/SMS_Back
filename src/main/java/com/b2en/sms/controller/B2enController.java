@@ -68,6 +68,16 @@ public class B2enController {
 		return new ResponseEntity<List<B2enAC>>(list, HttpStatus.OK);
 	}
 	
+	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<B2enDtoToClient> findById(@PathVariable("id") int id) {
+		
+		B2en b2en = repository.findByEmpId(id);
+		
+		B2enDtoToClient b2enDtoToClient = modelMapper.map(b2en, B2enDtoToClient.class);
+		
+		return new ResponseEntity<B2enDtoToClient>(b2enDtoToClient, HttpStatus.OK);
+	}
+	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody B2enDto b2en, BindingResult result) {
 		

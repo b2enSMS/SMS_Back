@@ -68,6 +68,16 @@ public class PrdtController {
 		return new ResponseEntity<List<PrdtAC>>(list, HttpStatus.OK);
 	}
 	
+	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<PrdtDtoToClient> findById(@PathVariable("id") int id) {
+		
+		Prdt prdt = repository.findByPrdtId(id);
+		
+		PrdtDtoToClient prdtDtoToClient = modelMapper.map(prdt, PrdtDtoToClient.class);
+		
+		return new ResponseEntity<PrdtDtoToClient>(prdtDtoToClient, HttpStatus.OK);
+	}
+	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody PrdtDto prdt, BindingResult result) {
 		

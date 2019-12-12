@@ -123,6 +123,20 @@ public class ContController {
 		return new ResponseEntity<List<ContDtoToClient>>(list, HttpStatus.OK);
 
 	}
+	
+	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ContDtoToClient> findById(@PathVariable("id") int id) {
+		
+		Cont cont = repositoryC.findByContId(id);
+		
+		ContDtoToClient contDtoToClient = modelMapper.map(cont, ContDtoToClient.class);
+		contDtoToClient.setOrgId(cont.getOrg().getOrgId());
+		contDtoToClient.setOrgNm(cont.getOrg().getOrgNm());
+		contDtoToClient.setEmpId(cont.getB2en().getEmpId());
+		contDtoToClient.setEmpNm(cont.getB2en().getEmpNm());
+		
+		return new ResponseEntity<ContDtoToClient>(contDtoToClient, HttpStatus.OK);
+	}
 
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody ContDto contDto, BindingResult result) {

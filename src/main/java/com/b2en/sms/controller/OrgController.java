@@ -68,6 +68,16 @@ public class OrgController {
 		return new ResponseEntity<List<OrgAC>>(list, HttpStatus.OK);
 	}
 	
+	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<OrgDtoToClient> findById(@PathVariable("id") int id) {
+		
+		Org org = repository.findByOrgId(id);
+		
+		OrgDtoToClient orgDtoToClient = modelMapper.map(org, OrgDtoToClient.class);
+		
+		return new ResponseEntity<OrgDtoToClient>(orgDtoToClient, HttpStatus.OK);
+	}
+	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody OrgDto org, BindingResult result) {
 		

@@ -24,18 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.MeetDto;
 import com.b2en.sms.dto.MeetDtoToClient;
-import com.b2en.sms.dto.OrgDtoToClient;
 import com.b2en.sms.dto.ResponseInfo;
-import com.b2en.sms.entity.B2en;
-import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Meet;
 import com.b2en.sms.entity.MeetAttendCust;
 import com.b2en.sms.entity.MeetAttendEmp;
 import com.b2en.sms.entity.Org;
-import com.b2en.sms.entity.pk.MeetAttendCustPK;
-import com.b2en.sms.entity.pk.MeetAttendEmpPK;
-import com.b2en.sms.repo.B2enRepository;
-import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.MeetAttendCustRepository;
 import com.b2en.sms.repo.MeetAttendEmpRepository;
 import com.b2en.sms.repo.MeetRepository;
@@ -56,12 +49,6 @@ public class MeetController {
 	
 	@Autowired
 	private OrgRepository repositoryO;
-	
-	@Autowired
-	private CustRepository repositoryC;
-	
-	@Autowired
-	private B2enRepository repositoryB;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -86,6 +73,18 @@ public class MeetController {
 		
 		return new ResponseEntity<List<MeetDtoToClient>>(list, HttpStatus.OK);
 
+	}
+	
+	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<MeetDtoToClient> findById(@PathVariable("id") int id) {
+		
+		Meet meet = repositoryM.findByMeetId(id);
+		
+		MeetDtoToClient meetDtoToClient = modelMapper.map(meet, MeetDtoToClient.class);
+		meetDtoToClient.setOrgId(meet.getOrg().getOrgId());
+		meetDtoToClient.setOrgNm(meet.getOrg().getOrgNm());
+		
+		return new ResponseEntity<MeetDtoToClient>(meetDtoToClient, HttpStatus.OK);
 	}
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
