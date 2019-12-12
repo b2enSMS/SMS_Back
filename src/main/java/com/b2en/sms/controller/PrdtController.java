@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.PrdtDto;
 import com.b2en.sms.dto.PrdtDtoToClient;
 import com.b2en.sms.dto.ResponseInfo;
-import com.b2en.sms.dto.autoincrementinfo.PrdtAC;
+import com.b2en.sms.dto.autocompleteinfo.PrdtAC;
 import com.b2en.sms.entity.Prdt;
 import com.b2en.sms.repo.PrdtRepository;
 
