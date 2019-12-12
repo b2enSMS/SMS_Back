@@ -13,6 +13,8 @@ public class ContDto {
 	
 	private String contReportNo;
 	
+	private String contTpCd;
+	
 	private String installDt;
 	
 	private String checkDt;

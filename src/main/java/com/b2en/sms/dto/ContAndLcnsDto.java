@@ -3,21 +3,14 @@ package com.b2en.sms.dto;
 import lombok.Data;
 
 @Data
-public class ContDtoToClient {
-
-	private int contId;
+public class ContAndLcnsDto {
 	
+	// =============== Cont =================
 	private int orgId;
-	
-	private String orgNm;
 	
 	private int empId;
 	
-	private String empNm;
-	
 	private String contDt;
-	
-	private String contTotAmt;
 	
 	private String contReportNo;
 	
@@ -30,4 +23,10 @@ public class ContDtoToClient {
 	private String mtncStartDt;
 	
 	private String mtncEndDt;
+	
+	// =============== ContDetail =================
+	private String[] contAmt;
+	
+	// =============== Lcns =================
+	private LcnsDto[] lcns;
 }

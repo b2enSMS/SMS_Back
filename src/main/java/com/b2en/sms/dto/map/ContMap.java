@@ -2,10 +2,10 @@ package com.b2en.sms.dto.map;
 
 import org.modelmapper.PropertyMap;
 
-import com.b2en.sms.dto.ContDto;
+import com.b2en.sms.dto.ContAndLcnsDto;
 import com.b2en.sms.entity.Cont;
 
-public class ContMap extends PropertyMap<ContDto, Cont>{
+public class ContMap extends PropertyMap<ContAndLcnsDto, Cont>{
 	
 	// 매핑오류를 막기 위해 명시적 매핑
 	@Override
@@ -20,7 +20,11 @@ public class ContMap extends PropertyMap<ContDto, Cont>{
 		// Cont.b2en은 매핑하지 않음
 		skip().setB2en(null);
 		
+		// Cont.contTotAmt는 매핑하지 않음
+		skip().setContTotAmt(null);
+		
 		// Cont.delYn은 매핑하지 않음
 		skip().setDelYn(null);
+
 	}
 }
