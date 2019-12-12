@@ -36,7 +36,7 @@ public class CmmnDetailCd extends TimeEntity implements Serializable {
 	
 	@MapsId("cmmnCd")
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name="cmmd_cd")
+	@JoinColumn(name="cmmn_cd")
 	@OnDelete(action=OnDeleteAction.CASCADE)
 	private CmmnCd cmmnCd;
 	

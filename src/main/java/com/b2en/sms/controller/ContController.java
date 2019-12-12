@@ -151,13 +151,23 @@ public class ContController {
 		contEntity.setB2en(b2en);
 		contEntity.setDelYn("N");
 		
+		String[] contAmt = contDto.getContAmt();
+		//String[] rmComma = new String[contAmt.length];
+		int tot = 0;
+		for (int i = 0; i < contAmt.length; i++) {
+			//rmComma[i] = contAmt[i].replaceAll(",", "");
+			//tot += Integer.parseInt(rmComma[i]);
+			tot += Integer.parseInt(contAmt[i]);
+		}
+		
+		contEntity.setContTotAmt(Integer.toString(tot));
+		
 		repositoryC.save(contEntity);
 		
 		// ContDetail 생성하는 부분
 		int contId = repositoryC.findMaxContId(); // 가장 마지막에 생성된 Cont의 cont_id가 가장 크다
 		Cont contInContDetail = repositoryC.findByContId(contId);
 		int[] lcnsId = contDto.getLcnsId();
-		String[] contAmt = contDto.getContAmt();
 		
 		int maxSeq; // contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
 		if(repositoryCD.findMaxContSeq()==null) {
