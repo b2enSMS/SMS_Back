@@ -15,4 +15,5 @@ public class MeetDto {
 	
 	private String meetTotTime;
 	
+	private String meetTpCd;
 }

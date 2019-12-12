@@ -1,4 +1,4 @@
-package com.b2en.sms.dto.autoincrementinfo;
+package com.b2en.sms.dto.autocompleteinfo;
 
 import lombok.Data;
 

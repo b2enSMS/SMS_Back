@@ -19,4 +19,6 @@ public class MeetDtoToClient {
 	
 	private String meetTotTime;
 	
+	private String meetTpCd;
+	
 }

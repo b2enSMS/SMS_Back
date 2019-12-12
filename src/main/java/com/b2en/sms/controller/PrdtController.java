@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.PrdtDto;
 import com.b2en.sms.dto.PrdtDtoToClient;
 import com.b2en.sms.dto.ResponseInfo;
-import com.b2en.sms.dto.autoincrementinfo.PrdtAC;
+import com.b2en.sms.dto.autocompleteinfo.PrdtAC;
 import com.b2en.sms.entity.Prdt;
 import com.b2en.sms.repo.PrdtRepository;
 
@@ -66,6 +66,16 @@ public class PrdtController {
 		}
 
 		return new ResponseEntity<List<PrdtAC>>(list, HttpStatus.OK);
+	}
+	
+	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<PrdtDtoToClient> findById(@PathVariable("id") int id) {
+		
+		Prdt prdt = repository.findByPrdtId(id);
+		
+		PrdtDtoToClient prdtDtoToClient = modelMapper.map(prdt, PrdtDtoToClient.class);
+		
+		return new ResponseEntity<PrdtDtoToClient>(prdtDtoToClient, HttpStatus.OK);
 	}
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)

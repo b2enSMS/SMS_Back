@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.LcnsDto;
 import com.b2en.sms.dto.LcnsDtoToClient;
 import com.b2en.sms.dto.ResponseInfo;
-import com.b2en.sms.dto.autoincrementinfo.LcnsAC;
+import com.b2en.sms.dto.autocompleteinfo.LcnsAC;
 import com.b2en.sms.entity.Lcns;
 import com.b2en.sms.entity.LcnsChngHist;
 import com.b2en.sms.entity.Prdt;
@@ -81,6 +81,18 @@ public class LcnsController {
 		lcnsAC.setPrdtNm(lcns.getPrdt().getPrdtNm());
 		
 		return new ResponseEntity<LcnsAC>(lcnsAC, HttpStatus.OK);
+	}
+	
+	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LcnsDtoToClient> findById(@PathVariable("id") int id) {
+		
+		Lcns lcns = repositoryL.findByLcnsId(id);
+		
+		LcnsDtoToClient lcnsDtoToClient = modelMapper.map(lcns, LcnsDtoToClient.class);
+		lcnsDtoToClient.setPrdtId(lcns.getPrdt().getPrdtId());
+		lcnsDtoToClient.setPrdtNm(lcns.getPrdt().getPrdtNm());
+		
+		return new ResponseEntity<LcnsDtoToClient>(lcnsDtoToClient, HttpStatus.OK);
 	}
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)

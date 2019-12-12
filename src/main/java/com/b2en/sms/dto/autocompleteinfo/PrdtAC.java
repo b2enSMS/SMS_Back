@@ -1,13 +1,12 @@
-package com.b2en.sms.dto.autoincrementinfo;
+package com.b2en.sms.dto.autocompleteinfo;
 
 import lombok.Data;
 
 @Data
-public class LcnsAC {
+public class PrdtAC {
 	// Auto-Complete를 위한 DTO
 	
-	private int lcnsId;
+	private int prdtId;
 	
 	private String prdtNm;
-
 }

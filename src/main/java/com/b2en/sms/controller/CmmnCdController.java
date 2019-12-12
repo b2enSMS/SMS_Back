@@ -1,5 +1,6 @@
 package com.b2en.sms.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,22 +12,35 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.b2en.sms.entity.CmmnCd;
-import com.b2en.sms.repo.CmmnCdRepository;
+import com.b2en.sms.dto.CmmnDetailCdDtoToClient;
+import com.b2en.sms.entity.CmmnDetailCd;
+import com.b2en.sms.repo.CmmnDetailCdRepository;
 
 @RestController
 @RequestMapping("/api/cmmncd")
 public class CmmnCdController {
-
-	@Autowired
-	private CmmnCdRepository repository;
 	
-	@GetMapping(value = "/cont/{key}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<CmmnCd>> showAll(@PathVariable("key") int key) {
+	@Autowired
+	private CmmnDetailCdRepository repositoryCDC;
+	
+	@GetMapping(value = "/{entity}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<CmmnDetailCdDtoToClient>> findByCmmdCd(@PathVariable String entity) {
 
-		List<CmmnCd> list = repository.findAll();
+		String cmmnCd = entity + "_tp_cd";
+		
+		List<CmmnDetailCd> list = repositoryCDC.findByCmmnDetailCdPKCmmnCd(cmmnCd);
+		List<CmmnDetailCdDtoToClient> dtoList = new ArrayList<CmmnDetailCdDtoToClient>();
+		for(int i = 0; i < list.size(); i++) {
+			CmmnDetailCdDtoToClient dto = new CmmnDetailCdDtoToClient();
+			dto.setCmmnCd(list.get(i).getCmmnDetailCdPK().getCmmnCd());
+			dto.setCmmnDetailCd(list.get(i).getCmmnDetailCdPK().getCmmnDetailCd());
+			dto.setCmmnDetailCdNm(list.get(i).getCmmnDetailCdNm());
+			dto.setCmmnDetailCdDesc(list.get(i).getCmmnDetailCdDesc());
+			dtoList.add(dto);
+		}
 
-		return new ResponseEntity<List<CmmnCd>>(list, HttpStatus.OK);
+		return new ResponseEntity<List<CmmnDetailCdDtoToClient>>(dtoList, HttpStatus.OK);
 
 	}
+	
 }
