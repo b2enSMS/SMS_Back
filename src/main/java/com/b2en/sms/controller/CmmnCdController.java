@@ -24,7 +24,7 @@ public class CmmnCdController {
 	private CmmnDetailCdRepository repositoryCDC;
 	
 	@GetMapping(value = "/{cmmncd}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<CmmnDetailCdDtoToClient>> findByCmmdCd(@PathVariable String cmmnCd) {
+	public ResponseEntity<List<CmmnDetailCdDtoToClient>> findByCmmdCd(@PathVariable("cmmncd") String cmmnCd) {
 		
 		List<CmmnDetailCd> list = repositoryCDC.findByCmmnDetailCdPKCmmnCd(cmmnCd);
 		List<CmmnDetailCdDtoToClient> dtoList = new ArrayList<CmmnDetailCdDtoToClient>();
