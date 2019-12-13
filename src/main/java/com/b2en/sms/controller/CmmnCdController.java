@@ -23,10 +23,8 @@ public class CmmnCdController {
 	@Autowired
 	private CmmnDetailCdRepository repositoryCDC;
 	
-	@GetMapping(value = "/{entity}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<CmmnDetailCdDtoToClient>> findByCmmdCd(@PathVariable String entity) {
-
-		String cmmnCd = entity + "_tp_cd";
+	@GetMapping(value = "/{cmmncd}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<CmmnDetailCdDtoToClient>> findByCmmdCd(@PathVariable String cmmnCd) {
 		
 		List<CmmnDetailCd> list = repositoryCDC.findByCmmnDetailCdPKCmmnCd(cmmnCd);
 		List<CmmnDetailCdDtoToClient> dtoList = new ArrayList<CmmnDetailCdDtoToClient>();
