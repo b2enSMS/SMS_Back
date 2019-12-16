@@ -187,7 +187,12 @@ public class ContController {
 		contEntity.setB2en(b2en);
 		contEntity.setDelYn("N");
 		
-		String[] contAmt = contAndLcnsDto.getContAmt();
+		String[] contAmt = new String[lcnsDto.length];
+		
+		for(int i = 0; i < lcnsDto.length; i++) {
+			contAmt[i] = lcnsDto[i].getContAmt();
+		}
+		
 		int tot = 0;
 		for (int i = 0; i < contAmt.length; i++) {
 			tot += Integer.parseInt(contAmt[i]);
