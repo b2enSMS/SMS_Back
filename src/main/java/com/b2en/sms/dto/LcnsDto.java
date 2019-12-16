@@ -31,4 +31,7 @@ public class LcnsDto {
 	
 	//@NotBlank(message="scan이 빈칸입니다.")
 	private String scan;
+	
+	// 납품단가, contDetail 생성에 필요
+	private String contAmt;
 }

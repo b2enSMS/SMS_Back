@@ -39,7 +39,7 @@ public class ContAndLcnsDto {
 	private String mtncEndDt;
 	
 	// =============== ContDetail =================
-	private String[] contAmt;
+	//private String[] contAmt;
 	
 	// =============== Lcns =================
 	private LcnsDto[] lcns;
