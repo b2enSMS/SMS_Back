@@ -1,6 +1,10 @@
 package com.b2en.sms.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -124,10 +128,30 @@ public class ContController {
 			list.get(i).setOrgNm(orgNm);
 			list.get(i).setEmpId(empId);
 			list.get(i).setEmpNm(empNm);
+			list.get(i).setTight(calculateIsTight(list.get(i).getMtncEndDt()));
 		}
 
 		return new ResponseEntity<List<ContDtoToClient>>(list, HttpStatus.OK);
 
+	}
+	
+	private boolean calculateIsTight(String strEnd) {
+		long alertRange = 90;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c1 = Calendar.getInstance();
+        String strToday = sdf.format(c1.getTime());
+        
+        try {
+			Date endDate = sdf.parse(strEnd);
+			Date todayDate = sdf.parse(strToday);
+			
+			long calDate = endDate.getTime() - todayDate.getTime();
+			long calDateDay = calDate / (24*60*60*1000);
+			
+			return (calDateDay<=alertRange);
+		} catch (ParseException e) {
+			return false;
+		}
 	}
 	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -140,6 +164,7 @@ public class ContController {
 		contDtoToClient.setOrgNm(cont.getOrg().getOrgNm());
 		contDtoToClient.setEmpId(cont.getB2en().getEmpId());
 		contDtoToClient.setEmpNm(cont.getB2en().getEmpNm());
+		contDtoToClient.setTight(calculateIsTight(contDtoToClient.getMtncEndDt()));
 		
 		return new ResponseEntity<ContDtoToClient>(contDtoToClient, HttpStatus.OK);
 	}
