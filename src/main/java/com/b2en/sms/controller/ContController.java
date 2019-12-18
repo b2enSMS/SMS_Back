@@ -261,11 +261,13 @@ public class ContController {
 	}
 	
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> delete(@PathVariable("id") int id) {
-		// Cont는 delete시 실제로 DB에서 삭제하지 않고 delYn이 "N"에서 "Y"로 변경되게 함
-		Cont cont = repositoryC.findByContId(id);
-		cont.setDelYn("Y");
-		repositoryC.save(cont);
+	public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+		String[] idx = id.split(",");
+		for(int i = 0; i < idx.length; i++) {
+			Cont cont = repositoryC.findByContId(Integer.parseInt(idx[i]));
+			cont.setDelYn("Y");
+			repositoryC.save(cont);
+		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 	
