@@ -30,6 +30,7 @@ import com.b2en.sms.dto.ContAndLcnsDto;
 import com.b2en.sms.dto.ContDetailDto;
 import com.b2en.sms.dto.ContDto;
 import com.b2en.sms.dto.ContDtoToClient;
+import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.LcnsDto;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.entity.B2en;
@@ -265,6 +266,17 @@ public class ContController {
 		String[] idx = id.split(",");
 		for(int i = 0; i < idx.length; i++) {
 			Cont cont = repositoryC.findByContId(Integer.parseInt(idx[i]));
+			cont.setDelYn("Y");
+			repositoryC.save(cont);
+		}
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	}
+	
+	@DeleteMapping(value = "/")
+	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
+		int[] idx = id.getIdx();
+		for(int i = 0; i < idx.length; i++) {
+			Cont cont = repositoryC.findByContId(idx[i]);
 			cont.setDelYn("Y");
 			repositoryC.save(cont);
 		}
