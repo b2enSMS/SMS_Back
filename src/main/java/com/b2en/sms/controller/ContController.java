@@ -261,18 +261,16 @@ public class ContController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> delete(@PathVariable("id") String id) {
-		String[] idx = id.split(",");
-		for(int i = 0; i < idx.length; i++) {
-			Cont cont = repositoryC.findByContId(Integer.parseInt(idx[i]));
-			cont.setDelYn("Y");
-			repositoryC.save(cont);
-		}
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-	}
+	/*
+	 * @DeleteMapping(value = "/{id}") public ResponseEntity<Void>
+	 * delete(@PathVariable("id") String id) { String[] idx = id.split(","); for(int
+	 * i = 0; i < idx.length; i++) { Cont cont =
+	 * repositoryC.findByContId(Integer.parseInt(idx[i])); cont.setDelYn("Y");
+	 * repositoryC.save(cont); } return new
+	 * ResponseEntity<Void>(HttpStatus.NO_CONTENT); }
+	 */
 	
-	@DeleteMapping(value = "/")
+	@DeleteMapping(value = "")
 	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
