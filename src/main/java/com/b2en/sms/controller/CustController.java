@@ -24,11 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.CustDto;
 import com.b2en.sms.dto.CustDtoToClient;
+import com.b2en.sms.dto.CustDtoToClientExpanded;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.ResponseInfo;
-import com.b2en.sms.entity.Cont;
 import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Org;
+import com.b2en.sms.repo.CmmnDetailCdRepository;
 import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.OrgRepository;
 
@@ -42,6 +43,9 @@ public class CustController {
 	@Autowired
 	private OrgRepository repositoryO;
 
+	@Autowired
+	private CmmnDetailCdRepository repositoryCDC;
+	
 	@Autowired
 	private ModelMapper modelMapper;
 
@@ -67,18 +71,32 @@ public class CustController {
 
 	}
 	
+	/*
+	 * @GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	 * public ResponseEntity<CustDtoToClient> findById(@PathVariable("id") int id) {
+	 * 
+	 * Cust cust = repositoryC.findByCustId(id);
+	 * 
+	 * CustDtoToClient custDtoToClient = modelMapper.map(cust,
+	 * CustDtoToClient.class); custDtoToClient.setOrgId(cust.getOrg().getOrgId());
+	 * custDtoToClient.setOrgNm(cust.getOrg().getOrgNm());
+	 * 
+	 * return new ResponseEntity<CustDtoToClient>(custDtoToClient, HttpStatus.OK); }
+	 */
+	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CustDtoToClient> findById(@PathVariable("id") int id) {
+	public ResponseEntity<CustDtoToClientExpanded> findById(@PathVariable("id") int id) {
 		
 		Cust cust = repositoryC.findByCustId(id);
 		
-		CustDtoToClient custDtoToClient = modelMapper.map(cust, CustDtoToClient.class);
+		CustDtoToClientExpanded custDtoToClient = modelMapper.map(cust, CustDtoToClientExpanded.class);
 		custDtoToClient.setOrgId(cust.getOrg().getOrgId());
 		custDtoToClient.setOrgNm(cust.getOrg().getOrgNm());
+		String custTpCdNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(cust.getCustTpCd()).getCmmnDetailCdNm();
+		custDtoToClient.setCustTpCdNm(custTpCdNm);
 		
-		return new ResponseEntity<CustDtoToClient>(custDtoToClient, HttpStatus.OK);
+		return new ResponseEntity<CustDtoToClientExpanded>(custDtoToClient, HttpStatus.OK);
 	}
-
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody CustDto cust, BindingResult result) {
