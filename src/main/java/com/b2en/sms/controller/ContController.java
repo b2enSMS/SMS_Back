@@ -184,8 +184,8 @@ public class ContController {
 		contAndLcnsDtoToClient.setOrgNm(cont.getOrg().getOrgNm());
 		contAndLcnsDtoToClient.setEmpId(cont.getB2en().getEmpId());
 		contAndLcnsDtoToClient.setEmpNm(cont.getB2en().getEmpNm());
-		String contTpCdNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(cont.getContTpCd()).getCmmnDetailCdNm();
-		contAndLcnsDtoToClient.setContTpCdNm(contTpCdNm);
+		String contTpNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(cont.getContTpCd()).getCmmnDetailCdNm();
+		contAndLcnsDtoToClient.setContTpNm(contTpNm);
 		List<ContDetail> contDetail = repositoryCD.findByContDetailPKContId(id);
 		LcnsDtoToClient[] lcnsDtoToClient = new LcnsDtoToClient[contDetail.size()];
 		for(int i = 0; i < lcnsDtoToClient.length; i++) {
