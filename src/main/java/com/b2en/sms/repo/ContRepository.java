@@ -17,6 +17,8 @@ public interface ContRepository extends JpaRepository<Cont, Long>{
 	
 	List<Cont> findByDelYn(String yn);
 	
+	List<Cont> findByDelYnOrderByContIdDesc(String yn);
+	
 	@Query(value="SELECT max(cont_id) FROM cont", nativeQuery = true)
 	int findMaxContId();
 }
