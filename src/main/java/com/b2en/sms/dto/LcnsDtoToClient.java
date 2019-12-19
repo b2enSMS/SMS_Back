@@ -25,4 +25,6 @@ public class LcnsDtoToClient {
 	private Date lcnsEndDt;
 	
 	private String scan;
+	
+	private String contAmt;
 }

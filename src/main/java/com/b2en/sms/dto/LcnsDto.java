@@ -36,5 +36,7 @@ public class LcnsDto {
 	private String scan;
 	
 	// 납품단가, contDetail 생성에 필요
+	//@NotBlank(message="conttAmt가 빈칸입니다.")
+	//@Pattern(regexp="[0-9]+$", message="contAmt는 숫자만 입력되어야 합니다.")
 	private String contAmt;
 }
