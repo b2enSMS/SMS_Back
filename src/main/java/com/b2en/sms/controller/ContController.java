@@ -178,7 +178,9 @@ public class ContController {
 		
 		ContAndLcnsDtoToClient contAndLcnsDtoToClient = modelMapper.map(cont, ContAndLcnsDtoToClient.class);
 		contAndLcnsDtoToClient.setOrgId(cont.getOrg().getOrgId());
+		contAndLcnsDtoToClient.setOrgNm(cont.getOrg().getOrgNm());
 		contAndLcnsDtoToClient.setEmpId(cont.getB2en().getEmpId());
+		contAndLcnsDtoToClient.setEmpNm(cont.getB2en().getEmpNm());
 		List<ContDetail> contDetail = repositoryCD.findByContDetailPKContId(id);
 		LcnsDtoToClient[] lcnsDtoToClient = new LcnsDtoToClient[contDetail.size()];
 		for(int i = 0; i < lcnsDtoToClient.length; i++) {
