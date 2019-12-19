@@ -3,6 +3,9 @@ package com.b2en.sms.dto;
 import lombok.Data;
 
 @Data
+//@StartEndValid.List(value = {
+//  @StartEndValid(start="lcnsStartDt", end="lcnsEndDt", message="라이센스 시작일과 라이센스 종료일의 선후관계가 맞지 않습니다.") }
+//)
 public class LcnsDto {
 	
 	//@Min(value = 1, message="prdtId는 {value}보다 크거나 같아야 합니다.")

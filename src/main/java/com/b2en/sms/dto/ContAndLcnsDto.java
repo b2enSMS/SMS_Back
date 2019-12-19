@@ -3,6 +3,9 @@ package com.b2en.sms.dto;
 import lombok.Data;
 
 @Data
+//@StartEndValid.List(value = {
+//	@StartEndValid(start = "mtncStartDt", end = "mtncEndDt", message = "유지보수 시작일과 유지보수 종료일의 선후관계가 맞지 않습니다.") }
+//)
 public class ContAndLcnsDto {
 	
 	// =============== Cont =================
@@ -38,9 +41,7 @@ public class ContAndLcnsDto {
 	//@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message="날짜는 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
 	private String mtncEndDt;
 	
-	// =============== ContDetail =================
-	//private String[] contAmt;
-	
 	// =============== Lcns =================
+	//@Valid
 	private LcnsDto[] lcns;
 }
