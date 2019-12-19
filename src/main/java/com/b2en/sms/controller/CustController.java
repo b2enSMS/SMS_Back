@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.CustDto;
 import com.b2en.sms.dto.CustDtoToClient;
+import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.ResponseInfo;
+import com.b2en.sms.entity.Cont;
 import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Org;
 import com.b2en.sms.repo.CustRepository;
@@ -105,10 +107,12 @@ public class CustController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 
-	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> delete(@PathVariable("id") int id) {
-
-		repositoryC.deleteByCustId(id);
+	@DeleteMapping(value = "")
+	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
+		int[] idx = id.getIdx();
+		for(int i = 0; i < idx.length; i++) {
+			repositoryC.deleteByCustId(idx[i]);
+		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 

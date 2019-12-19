@@ -45,6 +45,7 @@ import com.b2en.sms.entity.Prdt;
 import com.b2en.sms.entity.pk.ContDetailHistPK;
 import com.b2en.sms.entity.pk.ContDetailPK;
 import com.b2en.sms.repo.B2enRepository;
+import com.b2en.sms.repo.CmmnDetailCdRepository;
 import com.b2en.sms.repo.ContChngHistRepository;
 import com.b2en.sms.repo.ContDetailHistRepository;
 import com.b2en.sms.repo.ContDetailRepository;
@@ -76,6 +77,8 @@ public class ContController {
 	private LcnsRepository repositoryL;
 	@Autowired
 	private PrdtRepository repositoryP;
+	@Autowired
+	private CmmnDetailCdRepository repositoryCDC;
 	@Autowired
 	private ModelMapper modelMapper;
 	
@@ -181,6 +184,8 @@ public class ContController {
 		contAndLcnsDtoToClient.setOrgNm(cont.getOrg().getOrgNm());
 		contAndLcnsDtoToClient.setEmpId(cont.getB2en().getEmpId());
 		contAndLcnsDtoToClient.setEmpNm(cont.getB2en().getEmpNm());
+		String contTpCdNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(cont.getContTpCd()).getCmmnDetailCdNm();
+		contAndLcnsDtoToClient.setContTpCdNm(contTpCdNm);
 		List<ContDetail> contDetail = repositoryCD.findByContDetailPKContId(id);
 		LcnsDtoToClient[] lcnsDtoToClient = new LcnsDtoToClient[contDetail.size()];
 		for(int i = 0; i < lcnsDtoToClient.length; i++) {

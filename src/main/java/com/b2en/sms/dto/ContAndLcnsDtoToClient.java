@@ -21,6 +21,8 @@ public class ContAndLcnsDtoToClient {
 	
 	private String contTpCd;
 	
+	private String contTpCdNm;
+	
 	private String installDt;
 	
 	private String checkDt;
