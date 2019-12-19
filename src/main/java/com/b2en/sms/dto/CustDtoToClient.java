@@ -20,5 +20,4 @@ public class CustDtoToClient {
 	private String telNo;
 	
 	private String custTpCd;
-	
 }
