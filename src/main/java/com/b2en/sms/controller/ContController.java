@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.ContAndLcnsDto;
+import com.b2en.sms.dto.ContAndLcnsDtoForUpdate;
 import com.b2en.sms.dto.ContAndLcnsDtoToClient;
 import com.b2en.sms.dto.ContDetailDto;
 import com.b2en.sms.dto.ContDtoToClient;
@@ -302,7 +303,7 @@ public class ContController {
 	}
 	
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody ContAndLcnsDto contAndLcnsDto, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody ContAndLcnsDtoForUpdate contAndLcnsDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -332,8 +333,18 @@ public class ContController {
 
 		repositoryCCH.save(contChngHist);
 		
-		// ======================= contDetail 삭제, lcns 삭제 ==========================
+		// ======================= contDetail, lcns 판별 ==========================
 		List<ContDetail> cdList = repositoryCD.findByContDetailPKContId(id);
+		int[] contSeqList = contAndLcnsDto.getContSeq();
+		int[] lcnsIdList = new int[contSeqList.length];
+		
+		for(int i = 0; i < cdList.size(); i++) {
+			lcnsIdList[i] = cdList.get(i).getLcns().getLcnsId();
+			for(int j = 0; j < contSeqList.length; j++) {
+				
+			}
+		}
+		
 		for(int i = 0; i < cdList.size(); i++) {
 			repositoryCD.deleteByContDetailPKContSeq(cdList.get(i).getContDetailPK().getContSeq());
 			repositoryL.deleteByLcnsId(cdList.get(i).getLcns().getLcnsId());
