@@ -37,11 +37,13 @@ import com.b2en.sms.dto.LcnsDtoToClient;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.entity.Cont;
+import com.b2en.sms.entity.ContChngHist;
 import com.b2en.sms.entity.ContDetail;
 import com.b2en.sms.entity.ContDetailHist;
 import com.b2en.sms.entity.Lcns;
 import com.b2en.sms.entity.Org;
 import com.b2en.sms.entity.Prdt;
+import com.b2en.sms.entity.pk.ContChngHistPK;
 import com.b2en.sms.entity.pk.ContDetailHistPK;
 import com.b2en.sms.entity.pk.ContDetailPK;
 import com.b2en.sms.repo.B2enRepository;
@@ -299,7 +301,7 @@ public class ContController {
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 	
-	/*@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody ContAndLcnsDto contAndLcnsDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
@@ -321,21 +323,20 @@ public class ContController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
+		// ======================= ContChngHist 생성 =======================
+		ContChngHist contChngHist = modelMapper.map(toUpdate, ContChngHist.class);
+		ContChngHistPK contChngHistPK = new ContChngHistPK();
+		contChngHistPK.setContId(id);
+		contChngHist.setContChngHistPK(contChngHistPK);
+		contChngHist.setCont(toUpdate);
+
+		repositoryCCH.save(contChngHist);
 		
-		// ======================= lcns 삭제, contDetailHist 생성 ==========================
+		// ======================= contDetail 삭제, lcns 삭제 ==========================
 		List<ContDetail> cdList = repositoryCD.findByContDetailPKContId(id);
 		for(int i = 0; i < cdList.size(); i++) {
+			repositoryCD.deleteByContDetailPKContSeq(cdList.get(i).getContDetailPK().getContSeq());
 			repositoryL.deleteByLcnsId(cdList.get(i).getLcns().getLcnsId());
-			
-			ContDetailHist contDetailHist = new ContDetailHist();
-			ContDetailHistPK contDetailHistPK = new ContDetailHistPK();
-			contDetailHistPK.setContDetailPK(cdList.get(i).getContDetailPK());
-			contDetailHist.setContDetailHistPK(contDetailHistPK);
-			contDetailHist.setContDetail(cdList.get(i));
-			contDetailHist.setContAmt(cdList.get(i).getContAmt());
-			contDetailHist.setLcns(cdList.get(i).getLcns());
-			
-			repositoryCDH.save(contDetailHist);
 		}
 	
 		// ======================= Lcns 생성 ==========================
@@ -353,17 +354,22 @@ public class ContController {
 			repositoryL.save(lcnsEntity[i]);
 		}
 		
-		// ======================= Cont 생성 ==========================
-		Cont contEntity = modelMapper.map(contAndLcnsDto, Cont.class);
-		
+		// ======================= Cont 수정 ==========================
 		int orgId = contAndLcnsDto.getOrgId();
 		Org org = repositoryO.findByOrgId(orgId);
 		int empId = contAndLcnsDto.getEmpId();
 		B2en b2en = repositoryB.findByEmpId(empId);
 		
-		contEntity.setOrg(org);
-		contEntity.setB2en(b2en);
-		contEntity.setDelYn("N");
+		toUpdate.setOrg(org);
+		toUpdate.setB2en(b2en);
+		toUpdate.setContDt(java.sql.Date.valueOf(contAndLcnsDto.getContDt()));
+		toUpdate.setDelYn("N");
+		toUpdate.setContReportNo(contAndLcnsDto.getContReportNo());
+		toUpdate.setContTpCd(contAndLcnsDto.getContTpCd());
+		toUpdate.setInstallDt(java.sql.Date.valueOf(contAndLcnsDto.getInstallDt()));
+		toUpdate.setCheckDt(java.sql.Date.valueOf(contAndLcnsDto.getCheckDt()));
+		toUpdate.setMtncStartDt(java.sql.Date.valueOf(contAndLcnsDto.getMtncStartDt()));
+		toUpdate.setMtncEndDt(java.sql.Date.valueOf(contAndLcnsDto.getMtncEndDt()));
 		
 		String[] contAmt = new String[lcnsDto.length];
 		
@@ -376,15 +382,12 @@ public class ContController {
 			tot += Integer.parseInt(contAmt[i]);
 		}
 		
-		contEntity.setContTotAmt(Integer.toString(tot));
+		toUpdate.setContTotAmt(Integer.toString(tot));
 		
-		log.info("Cont:{}", contEntity);
-		repositoryC.save(contEntity);
+		log.info("Cont:{}", toUpdate);
+		repositoryC.save(toUpdate);
 		
 		// ======================= ContDetail 생성 ==========================
-		int contId = repositoryC.findMaxContId(); // 가장 마지막에 생성된 Cont의 cont_id가 가장 크다
-		Cont contInContDetail = repositoryC.findByContId(contId);
-		
 		int maxSeq; // contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
 		if(repositoryCD.findMaxContSeq()==null) {
 			maxSeq = 0;
@@ -395,12 +398,12 @@ public class ContController {
 		for (int i = 0; i < lcnsEntity.length; i++) {
 			ContDetailPK contDetailPK = new ContDetailPK();
 			contDetailPK.setContSeq(maxSeq+i+1); // contSeq 직접 할당
-			contDetailPK.setContId(contId);
+			contDetailPK.setContId(id);
 			ContDetail contDetail = new ContDetail();
 			Lcns lcns = repositoryL.findByLcnsId(lcnsEntity[i].getLcnsId());
 
 			contDetail.setContDetailPK(contDetailPK);
-			contDetail.setCont(contInContDetail);
+			contDetail.setCont(toUpdate);
 			contDetail.setLcns(lcns);
 			contDetail.setContAmt(contAmt[i]);
 			contDetail.setDelYn("N");
@@ -409,23 +412,9 @@ public class ContController {
 			repositoryCD.save(contDetail);
 		}
 		
-		
-		
-		// ContChngHist가 자동 생성되는 부분
-		ContChngHist contChngHist = modelMapper.map(toUpdate, ContChngHist.class);
-		ContChngHistPK contChngHistPK = new ContChngHistPK();
-		contChngHistPK.setContId(id);
-		contChngHist.setContChngHistPK(contChngHistPK);
-		contChngHist.setCont(toUpdate);
-		
-		//toUpdate.setContReportNo(cont.getContReportNo());
-
-		repositoryC.save(toUpdate);
-		repositoryCCH.save(contChngHist);
-		
 		res.add(new ResponseInfo("수정에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
-	}*/
+	}
 	
 	@GetMapping(value = "/detail/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContDetail>> getAllDetail() {
