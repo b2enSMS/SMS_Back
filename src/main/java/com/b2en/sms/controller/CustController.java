@@ -52,7 +52,8 @@ public class CustController {
 	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CustDtoToClient>> showAll() {
 
-		List<Cust> entityList = repositoryC.findAll();
+		//List<Cust> entityList = repositoryC.findAll();
+		List<Cust> entityList = repositoryC.findAllOrderByName();
 		List<CustDtoToClient> list;
 		int orgId;
 		String orgNm;
@@ -155,16 +156,15 @@ public class CustController {
 			res.add(new ResponseInfo("해당 id를 가진 row가 없습니다."));
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
-		
-		String custNm = cust.getCustNm();
-		String custRankNm = cust.getCustRankNm();
-		String email = cust.getEmail();
-		String telNo = cust.getTelNo();
 
-		toUpdate.setCustNm(custNm);
-		toUpdate.setCustRankNm(custRankNm);
-		toUpdate.setEmail(email);
-		toUpdate.setTelNo(telNo);
+		Org org = repositoryO.findByOrgId(cust.getOrgId());
+		
+		toUpdate.setOrg(org);
+		toUpdate.setCustNm(cust.getCustNm());
+		toUpdate.setCustRankNm(cust.getCustRankNm());
+		toUpdate.setEmail(cust.getEmail());
+		toUpdate.setTelNo(cust.getTelNo());
+		toUpdate.setCustTpCd(cust.getCustTpCd());
 
 		repositoryC.save(toUpdate);
 		
