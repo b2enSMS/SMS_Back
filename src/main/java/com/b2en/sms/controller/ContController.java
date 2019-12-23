@@ -228,7 +228,7 @@ public class ContController {
 			lcnsEntity[i].setPrdt(prdt);
 			
 			log.info("Lcns:{}", lcnsEntity[i]);
-			repositoryL.save(lcnsEntity[i]);
+			lcnsEntity[i] = repositoryL.save(lcnsEntity[i]);
 		}
 		
 		// ======================= Cont 생성 ==========================
@@ -257,11 +257,10 @@ public class ContController {
 		contEntity.setContTotAmt(Integer.toString(tot));
 		
 		log.info("Cont:{}", contEntity);
-		repositoryC.save(contEntity);
+		contEntity = repositoryC.save(contEntity);
 		
 		// ======================= ContDetail 생성 ==========================
-		int contId = repositoryC.findMaxContId(); // 가장 마지막에 생성된 Cont의 cont_id가 가장 크다
-		Cont contInContDetail = repositoryC.findByContId(contId);
+		int contId = contEntity.getContId();
 		
 		int maxSeq; // contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
 		if(repositoryCD.findMaxContSeq()==null) {
@@ -278,7 +277,7 @@ public class ContController {
 			Lcns lcns = repositoryL.findByLcnsId(lcnsEntity[i].getLcnsId());
 
 			contDetail.setContDetailPK(contDetailPK);
-			contDetail.setCont(contInContDetail);
+			contDetail.setCont(contEntity);
 			contDetail.setLcns(lcns);
 			contDetail.setContAmt(contAmt[i]);
 			contDetail.setDelYn("N");
@@ -333,19 +332,9 @@ public class ContController {
 
 		repositoryCCH.save(contChngHist);
 		
-		// ======================= contDetail, lcns 판별 ==========================
+		// ======================= contDetail 삭제, lcns 삭제 ==========================
 		List<ContDetail> cdList = repositoryCD.findByContDetailPKContId(id);
-		int[] contSeqList = contAndLcnsDto.getContSeq();
-		int[] lcnsIdList = new int[contSeqList.length];
-		
-		for(int i = 0; i < cdList.size(); i++) {
-			lcnsIdList[i] = cdList.get(i).getLcns().getLcnsId();
-			for(int j = 0; j < contSeqList.length; j++) {
-				
-			}
-		}
-		
-		for(int i = 0; i < cdList.size(); i++) {
+		for (int i = 0; i < cdList.size(); i++) {
 			repositoryCD.deleteByContDetailPKContSeq(cdList.get(i).getContDetailPK().getContSeq());
 			repositoryL.deleteByLcnsId(cdList.get(i).getLcns().getLcnsId());
 		}
@@ -362,7 +351,7 @@ public class ContController {
 			lcnsEntity[i].setPrdt(prdt);
 			
 			log.info("Lcns:{}", lcnsEntity[i]);
-			repositoryL.save(lcnsEntity[i]);
+			lcnsEntity[i] = repositoryL.save(lcnsEntity[i]);
 		}
 		
 		// ======================= Cont 수정 ==========================
