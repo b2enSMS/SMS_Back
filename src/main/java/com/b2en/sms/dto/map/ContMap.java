@@ -14,11 +14,17 @@ public class ContMap extends PropertyMap<ContAndLcnsDto, Cont>{
 		// Cont.contId는 매핑하지 않음
 		skip().setContId(0);
 		
+		// Cont.cust는 매핑하지 않음
+		skip().setCust(null);
+		
 		// Cont.org는 매핑하지 않음
 		skip().setOrg(null);
 		
 		// Cont.b2en은 매핑하지 않음
 		skip().setB2en(null);
+		
+		// Cont.headContId는 매핑하지 않음
+		skip().setHeadContId(0);
 		
 		// Cont.contTotAmt는 매핑하지 않음
 		skip().setContTotAmt(null);

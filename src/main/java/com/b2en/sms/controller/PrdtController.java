@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.PrdtDto;
 import com.b2en.sms.dto.PrdtDtoToClient;
 import com.b2en.sms.dto.ResponseInfo;
@@ -100,10 +101,12 @@ public class PrdtController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> delete(@PathVariable("id") int id) {
-
-		repository.deleteByPrdtId(id);
+	@DeleteMapping(value = "")
+	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
+		int[] idx = id.getIdx();
+		for(int i = 0; i < idx.length; i++) {
+			repository.deleteByPrdtId(idx[i]);
+		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 	

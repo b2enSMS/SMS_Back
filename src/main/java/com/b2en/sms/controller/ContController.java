@@ -3,7 +3,6 @@ package com.b2en.sms.controller;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +41,7 @@ import com.b2en.sms.entity.Cont;
 import com.b2en.sms.entity.ContChngHist;
 import com.b2en.sms.entity.ContDetail;
 import com.b2en.sms.entity.ContDetailHist;
+import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Lcns;
 import com.b2en.sms.entity.Org;
 import com.b2en.sms.entity.Prdt;
@@ -54,6 +54,7 @@ import com.b2en.sms.repo.ContChngHistRepository;
 import com.b2en.sms.repo.ContDetailHistRepository;
 import com.b2en.sms.repo.ContDetailRepository;
 import com.b2en.sms.repo.ContRepository;
+import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.LcnsRepository;
 import com.b2en.sms.repo.OrgRepository;
 import com.b2en.sms.repo.PrdtRepository;
@@ -75,6 +76,8 @@ public class ContController {
 	private ContDetailHistRepository repositoryCDH;
 	@Autowired
 	private OrgRepository repositoryO;
+	@Autowired
+	private CustRepository repositoryCust;
 	@Autowired
 	private B2enRepository repositoryB;
 	@Autowired
@@ -235,11 +238,14 @@ public class ContController {
 		// ======================= Cont 생성 ==========================
 		Cont contEntity = modelMapper.map(contAndLcnsDto, Cont.class);
 		
+		int custId = contAndLcnsDto.getCustId();
+		Cust cust = repositoryCust.findByCustId(custId);
 		int orgId = contAndLcnsDto.getOrgId();
 		Org org = repositoryO.findByOrgId(orgId);
 		int empId = contAndLcnsDto.getEmpId();
 		B2en b2en = repositoryB.findByEmpId(empId);
 		
+		contEntity.setCust(cust);
 		contEntity.setOrg(org);
 		contEntity.setB2en(b2en);
 		contEntity.setDelYn("N");
@@ -282,6 +288,7 @@ public class ContController {
 			contDetail.setLcns(lcns);
 			contDetail.setContAmt(contAmt[i]);
 			contDetail.setDelYn("N");
+			contDetail.setContNote(lcnsDto[i].getContNote());
 
 			log.info("ContDetail:{}", contDetail);
 			repositoryCD.save(contDetail);
@@ -333,104 +340,97 @@ public class ContController {
 
 		repositoryCCH.save(contChngHist);
 		
-		// ======================= contDetail 탐색 ==========================
-		List<ContDetail> cdList = repositoryCD.findByContDetailPKContId(id);
-		int[] contSeq = contAndLcnsDto.getContSeq();
-		LcnsDto[] lcnsList = contAndLcnsDto.getLcns();
-		List<Integer> updateList = new ArrayList<Integer>();
-		List<Integer> deleteList = new ArrayList<Integer>();
-		List<Integer> createList = new ArrayList<Integer>();
-		
-		for(int i = 0; i < contSeq.length; i++) {
-			ContDetail contDetail = repositoryCD.findByContDetailPKContSeq(contSeq[i]);
-			if(contDetail == null) { // 새로 생김
-				contDetail = new ContDetail();
-				ContDetailPK contDetailPK = new ContDetailPK();
-				contDetailPK.setContId(id);
-				// contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
-				int maxSeq = (repositoryCD.findMaxContSeq()==null) ? 0 : repositoryCD.findMaxContSeq();
-				contDetailPK.setContSeq(maxSeq+1);
-				contDetail.setContDetailPK(contDetailPK);
-			}
-			
-		}
-		
-		for (int i = 0; i < cdList.size(); i++) {
-			repositoryCD.deleteByContDetailPKContSeq(cdList.get(i).getContDetailPK().getContSeq());
-			repositoryL.deleteByLcnsId(cdList.get(i).getLcns().getLcnsId());
-		}
-	
-		// ======================= Lcns 생성 ==========================
-		LcnsDto[] lcnsDto = contAndLcnsDto.getLcns();
-		int lcnsNum = lcnsDto.length;
-		Lcns[] lcnsEntity = new Lcns[lcnsNum];
-		
-		for(int i = 0; i < lcnsNum; i++) {
-			lcnsEntity[i] = modelMapper.map(lcnsDto[i], Lcns.class);
-			int prdtId = lcnsDto[i].getPrdtId();
-			Prdt prdt = repositoryP.findByPrdtId(prdtId);
-			lcnsEntity[i].setPrdt(prdt);
-			
-			log.info("Lcns:{}", lcnsEntity[i]);
-			lcnsEntity[i] = repositoryL.save(lcnsEntity[i]);
-		}
-		
 		// ======================= Cont 수정 ==========================
+		int custId = contAndLcnsDto.getCustId();
+		Cust cust = repositoryCust.findByCustId(custId);
 		int orgId = contAndLcnsDto.getOrgId();
 		Org org = repositoryO.findByOrgId(orgId);
 		int empId = contAndLcnsDto.getEmpId();
 		B2en b2en = repositoryB.findByEmpId(empId);
-		
+		LcnsDto[] lcnsDto = contAndLcnsDto.getLcns();
+
+		toUpdate.setCust(cust);
 		toUpdate.setOrg(org);
 		toUpdate.setB2en(b2en);
+		toUpdate.setHeadContId(contAndLcnsDto.getHeadContId());
+		toUpdate.setContNm(contAndLcnsDto.getContNm());
 		toUpdate.setContDt(java.sql.Date.valueOf(contAndLcnsDto.getContDt()));
-		toUpdate.setDelYn("N");
 		toUpdate.setContReportNo(contAndLcnsDto.getContReportNo());
 		toUpdate.setContTpCd(contAndLcnsDto.getContTpCd());
 		toUpdate.setInstallDt(java.sql.Date.valueOf(contAndLcnsDto.getInstallDt()));
 		toUpdate.setCheckDt(java.sql.Date.valueOf(contAndLcnsDto.getCheckDt()));
 		toUpdate.setMtncStartDt(java.sql.Date.valueOf(contAndLcnsDto.getMtncStartDt()));
 		toUpdate.setMtncEndDt(java.sql.Date.valueOf(contAndLcnsDto.getMtncEndDt()));
-		
+
 		String[] contAmt = new String[lcnsDto.length];
-		
-		for(int i = 0; i < lcnsDto.length; i++) {
+
+		for (int i = 0; i < lcnsDto.length; i++) {
 			contAmt[i] = lcnsDto[i].getContAmt();
 		}
-		
+
 		int tot = 0;
 		for (int i = 0; i < contAmt.length; i++) {
 			tot += Integer.parseInt(contAmt[i]);
 		}
-		
+
 		toUpdate.setContTotAmt(Integer.toString(tot));
-		
-		log.info("Cont:{}", toUpdate);
+
 		repositoryC.save(toUpdate);
 		
-		// ======================= ContDetail 생성 ==========================
-		int maxSeq; // contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
-		if(repositoryCD.findMaxContSeq()==null) {
-			maxSeq = 0;
-		} else {
-			maxSeq = repositoryCD.findMaxContSeq();
+		// ======================= contDetail, Lcns 탐색(생성, 수정, 삭제) ==========================
+		List<ContDetail> cdList = repositoryCD.findByContDetailPKContId(id); // 기존의 contDetail
+		int[] contSeq = contAndLcnsDto.getContSeq(); // 수정할 contDetail의 contSeq, contSeq.length == lcnsDto.length
+		
+		for(int i = 0; i < contSeq.length; i++) {
+			ContDetail contDetail = repositoryCD.findByContDetailPKContSeq(contSeq[i]); // 해당 contSeq를 가진 contDetail이 있나 탐색
+			if(contDetail == null) { // 새로 생김
+				Lcns lcns = modelMapper.map(lcnsDto[i], Lcns.class);
+				int prdtId = lcnsDto[i].getPrdtId();
+				Prdt prdt = repositoryP.findByPrdtId(prdtId);
+				lcns.setPrdt(prdt);
+				lcns = repositoryL.save(lcns);
+				
+				contDetail = new ContDetail();
+				ContDetailPK contDetailPK = new ContDetailPK();
+				contDetailPK.setContId(id);
+				
+				int maxSeq = (repositoryCD.findMaxContSeq()==null) ? 0 : repositoryCD.findMaxContSeq();// contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
+				contDetailPK.setContSeq(maxSeq+1);
+				contDetail.setContDetailPK(contDetailPK);
+				contDetail.setCont(toUpdate);
+				contDetail.setLcns(lcns);
+				contDetail.setContAmt(lcnsDto[i].getContAmt());
+				contDetail.setDelYn("N");
+				contDetail.setContNote(lcnsDto[i].getContNote());
+				
+				repositoryCD.save(contDetail);
+			} else { // 기존에 있던거 수정
+				cdList.remove(contDetail);
+				
+				Lcns lcns = repositoryCD.findByContDetailPKContSeq(contSeq[i]).getLcns();
+				int prdtId = lcnsDto[i].getPrdtId();
+				Prdt prdt = repositoryP.findByPrdtId(prdtId);
+				lcns.setPrdt(prdt);
+				lcns.setLcnsNo(lcnsDto[i].getLcnsNo());
+				lcns.setLcnsIssuDt(java.sql.Date.valueOf(lcnsDto[i].getLcnsIssuDt()));
+				lcns.setLcnsTpCd(lcnsDto[i].getLcnsTpCd());
+				lcns.setCertNo(lcnsDto[i].getCertNo());
+				lcns.setLcnsStartDt(java.sql.Date.valueOf(lcnsDto[i].getLcnsStartDt()));
+				lcns.setLcnsEndDt(java.sql.Date.valueOf(lcnsDto[i].getLcnsEndDt()));
+				lcns.setScan(lcnsDto[i].getScan());
+				lcns = repositoryL.save(lcns);
+				
+				contDetail.setCont(toUpdate);
+				contDetail.setLcns(lcns);
+				contDetail.setContAmt(lcnsDto[i].getContAmt());
+				contDetail.setContNote(lcnsDto[i].getContNote());
+				repositoryCD.save(contDetail);
+			}
 		}
 		
-		for (int i = 0; i < lcnsEntity.length; i++) {
-			ContDetailPK contDetailPK = new ContDetailPK();
-			contDetailPK.setContSeq(maxSeq+i+1); // contSeq 직접 할당
-			contDetailPK.setContId(id);
-			ContDetail contDetail = new ContDetail();
-			Lcns lcns = repositoryL.findByLcnsId(lcnsEntity[i].getLcnsId());
-
-			contDetail.setContDetailPK(contDetailPK);
-			contDetail.setCont(toUpdate);
-			contDetail.setLcns(lcns);
-			contDetail.setContAmt(contAmt[i]);
-			contDetail.setDelYn("N");
-
-			log.info("ContDetail:{}", contDetail);
-			repositoryCD.save(contDetail);
+		for (int i = 0; i < cdList.size(); i++) { // 있다가 없어짐
+			repositoryCD.deleteByContDetailPKContSeq(cdList.get(i).getContDetailPK().getContSeq());
+			repositoryL.deleteByLcnsId(cdList.get(i).getLcns().getLcnsId());
 		}
 		
 		res.add(new ResponseInfo("수정에 성공했습니다."));

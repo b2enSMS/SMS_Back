@@ -52,4 +52,8 @@ public class ContDetail extends TimeEntity implements Serializable {
 	// 삭제여부
 	@Column(name="del_yn")
 	private String delYn;
+	
+	// 비고
+	@Column(name="cont_note")
+	private String contNote;
 }
