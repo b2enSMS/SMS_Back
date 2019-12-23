@@ -3,6 +3,7 @@ package com.b2en.sms.controller;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -332,8 +333,28 @@ public class ContController {
 
 		repositoryCCH.save(contChngHist);
 		
-		// ======================= contDetail 삭제, lcns 삭제 ==========================
+		// ======================= contDetail 탐색 ==========================
 		List<ContDetail> cdList = repositoryCD.findByContDetailPKContId(id);
+		int[] contSeq = contAndLcnsDto.getContSeq();
+		LcnsDto[] lcnsList = contAndLcnsDto.getLcns();
+		List<Integer> updateList = new ArrayList<Integer>();
+		List<Integer> deleteList = new ArrayList<Integer>();
+		List<Integer> createList = new ArrayList<Integer>();
+		
+		for(int i = 0; i < contSeq.length; i++) {
+			ContDetail contDetail = repositoryCD.findByContDetailPKContSeq(contSeq[i]);
+			if(contDetail == null) { // 새로 생김
+				contDetail = new ContDetail();
+				ContDetailPK contDetailPK = new ContDetailPK();
+				contDetailPK.setContId(id);
+				// contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
+				int maxSeq = (repositoryCD.findMaxContSeq()==null) ? 0 : repositoryCD.findMaxContSeq();
+				contDetailPK.setContSeq(maxSeq+1);
+				contDetail.setContDetailPK(contDetailPK);
+			}
+			
+		}
+		
 		for (int i = 0; i < cdList.size(); i++) {
 			repositoryCD.deleteByContDetailPKContSeq(cdList.get(i).getContDetailPK().getContSeq());
 			repositoryL.deleteByLcnsId(cdList.get(i).getLcns().getLcnsId());
