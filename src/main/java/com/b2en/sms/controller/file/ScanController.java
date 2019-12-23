@@ -36,16 +36,20 @@ public class ScanController {
     
     @PostMapping("/upload")
     public ScanResponse uploadFile(@RequestParam("file") MultipartFile file) {
-        String fileName = scanStorageService.storeFile(file);
-        
+    
+    	String fileName = file.getOriginalFilename();
+    	
         Scan scan = new Scan();
         scan.setFileName(fileName);
         scan.setFileType(file.getContentType());
         scan = scanRepository.save(scan);
+        String scanId = scan.getId();
+        
+       scanStorageService.storeFile(file, scanId);
         
         String url = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/scan/download/")
-                .path(scan.getId())
+                .path(scanId)
                 .toUriString();
 
         return new ScanResponse(fileName, "sss", url, url);

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.b2en.sms.property.FileStorageProperties;
@@ -32,9 +31,10 @@ public class ScanStorageService {
         }
     }
     
-    public String storeFile(MultipartFile file) {
-        // Normalize file name
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+    public void storeFile(MultipartFile file, String scanId) {
+
+        String[] splitted = file.getContentType().split("/"); // 확장자 가져오기
+        String fileName = scanId + "." + splitted[1]; // 파일명을 scanId로 변경
 
         try {
             // Check if the file's name contains invalid characters
@@ -46,7 +46,7 @@ public class ScanStorageService {
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            return fileName;
+            //return fileName;
         } catch (IOException ex) {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
         }
