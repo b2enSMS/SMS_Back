@@ -377,7 +377,7 @@ public class ContController {
 
 		repositoryC.save(toUpdate);
 		
-		// ======================= contDetail, Lcns 탐색(생성, 수정, 삭제) ==========================
+		// ======================= contDetail, Lcns 탐색(생성/수정/삭제) ==========================
 		List<ContDetail> cdList = repositoryCD.findByContDetailPKContId(id); // 기존의 contDetail
 		int[] contSeq = contAndLcnsDto.getContSeq(); // 수정할 contDetail의 contSeq, contSeq.length == lcnsDto.length
 		
