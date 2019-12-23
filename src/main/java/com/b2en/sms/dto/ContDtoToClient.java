@@ -7,6 +7,8 @@ public class ContDtoToClient {
 
 	private int contId;
 	
+	private int custId;
+	
 	private int orgId;
 	
 	private String orgNm;
@@ -14,6 +16,10 @@ public class ContDtoToClient {
 	private int empId;
 	
 	private String empNm;
+	
+	private int headContId;
+	
+	private String contNm;
 	
 	private String contDt;
 	

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.B2enDto;
 import com.b2en.sms.dto.B2enDtoToClient;
+import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.B2enAC;
 import com.b2en.sms.entity.B2en;
@@ -100,10 +101,12 @@ public class B2enController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 
-	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> delete(@PathVariable("id") int id) {
-
-		repository.deleteByEmpId(id);
+	@DeleteMapping(value = "")
+	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
+		int[] idx = id.getIdx();
+		for(int i = 0; i < idx.length; i++) {
+			repository.deleteByEmpId(idx[i]);
+		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 

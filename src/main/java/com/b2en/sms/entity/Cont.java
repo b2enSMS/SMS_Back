@@ -33,6 +33,11 @@ public class Cont extends TimeEntity implements Serializable {
 	@Column(name="cont_id")
 	private int contId;
 	
+	// 고객사담당자ID (FK)
+	@ManyToOne(cascade=CascadeType.DETACH)
+	@JoinColumn(name="cust_id")
+	private Cust cust;
+	
 	// 고객사ID (FK)
 	@ManyToOne(cascade=CascadeType.DETACH)
 	@JoinColumn(name="org_id")
@@ -42,6 +47,14 @@ public class Cont extends TimeEntity implements Serializable {
 	@ManyToOne(cascade=CascadeType.DETACH)
 	@JoinColumn(name="emp_id")
 	private B2en b2en;
+	
+	// 모계약ID
+	@Column(name="head_cont_id")
+	private int headContId;
+	
+	// 사업명
+	@Column(name="cont_nm")
+	private String contNm;
 	
 	// 계약일자
 	@Column(name="cont_dt")

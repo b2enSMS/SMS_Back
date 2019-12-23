@@ -27,4 +27,6 @@ public class LcnsDtoToClient {
 	private String scan;
 	
 	private String contAmt;
+	
+	private String contNote;
 }
