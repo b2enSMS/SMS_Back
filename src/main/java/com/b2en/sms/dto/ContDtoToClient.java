@@ -9,6 +9,8 @@ public class ContDtoToClient {
 	
 	private int custId;
 	
+	private String custNm;
+	
 	private int orgId;
 	
 	private String orgNm;
