@@ -184,7 +184,7 @@ public class ContController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ContAndLcnsDtoToClient> findContAndLcnsByContId(@PathVariable("id") int id) {
 		
-		Cont cont = repositoryC.findByContId(id);
+		Cont cont = repositoryC.getOne(id);
 		
 		ContAndLcnsDtoToClient contAndLcnsDtoToClient = modelMapper.map(cont, ContAndLcnsDtoToClient.class);
 		contAndLcnsDtoToClient.setOrgId(cont.getOrg().getOrgId());
@@ -228,7 +228,7 @@ public class ContController {
 		for(int i = 0; i < lcnsNum; i++) {
 			lcnsEntity[i] = modelMapper.map(lcnsDto[i], Lcns.class);
 			int prdtId = lcnsDto[i].getPrdtId();
-			Prdt prdt = repositoryP.findByPrdtId(prdtId);
+			Prdt prdt = repositoryP.getOne(prdtId);
 			lcnsEntity[i].setPrdt(prdt);
 			
 			log.info("Lcns:{}", lcnsEntity[i]);
@@ -239,11 +239,11 @@ public class ContController {
 		Cont contEntity = modelMapper.map(contAndLcnsDto, Cont.class);
 		
 		int custId = contAndLcnsDto.getCustId();
-		Cust cust = repositoryCust.findByCustId(custId);
+		Cust cust = repositoryCust.getOne(custId);
 		int orgId = contAndLcnsDto.getOrgId();
-		Org org = repositoryO.findByOrgId(orgId);
+		Org org = repositoryO.getOne(orgId);
 		int empId = contAndLcnsDto.getEmpId();
-		B2en b2en = repositoryB.findByEmpId(empId);
+		B2en b2en = repositoryB.getOne(empId);
 		
 		contEntity.setCust(cust);
 		contEntity.setOrg(org);
@@ -281,7 +281,7 @@ public class ContController {
 			contDetailPK.setContSeq(maxSeq+i+1); // contSeq 직접 할당
 			contDetailPK.setContId(contId);
 			ContDetail contDetail = new ContDetail();
-			Lcns lcns = repositoryL.findByLcnsId(lcnsEntity[i].getLcnsId());
+			Lcns lcns = repositoryL.getOne(lcnsEntity[i].getLcnsId());
 
 			contDetail.setContDetailPK(contDetailPK);
 			contDetail.setCont(contEntity);
@@ -302,7 +302,7 @@ public class ContController {
 	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
-			Cont cont = repositoryC.findByContId(idx[i]);
+			Cont cont = repositoryC.getOne(idx[i]);
 			cont.setDelYn("Y");
 			repositoryC.save(cont);
 		}
@@ -323,7 +323,7 @@ public class ContController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		Cont toUpdate = repositoryC.findByContId(id);
+		Cont toUpdate = repositoryC.getOne(id);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
@@ -342,11 +342,11 @@ public class ContController {
 		
 		// ======================= Cont 수정 ==========================
 		int custId = contAndLcnsDto.getCustId();
-		Cust cust = repositoryCust.findByCustId(custId);
+		Cust cust = repositoryCust.getOne(custId);
 		int orgId = contAndLcnsDto.getOrgId();
-		Org org = repositoryO.findByOrgId(orgId);
+		Org org = repositoryO.getOne(orgId);
 		int empId = contAndLcnsDto.getEmpId();
-		B2en b2en = repositoryB.findByEmpId(empId);
+		B2en b2en = repositoryB.getOne(empId);
 		LcnsDto[] lcnsDto = contAndLcnsDto.getLcns();
 
 		toUpdate.setCust(cust);
@@ -386,7 +386,7 @@ public class ContController {
 			if(contDetail == null) { // 새로 생김
 				Lcns lcns = modelMapper.map(lcnsDto[i], Lcns.class);
 				int prdtId = lcnsDto[i].getPrdtId();
-				Prdt prdt = repositoryP.findByPrdtId(prdtId);
+				Prdt prdt = repositoryP.getOne(prdtId);
 				lcns.setPrdt(prdt);
 				lcns = repositoryL.save(lcns);
 				
@@ -409,7 +409,7 @@ public class ContController {
 				
 				Lcns lcns = repositoryCD.findByContDetailPKContSeq(contSeq[i]).getLcns();
 				int prdtId = lcnsDto[i].getPrdtId();
-				Prdt prdt = repositoryP.findByPrdtId(prdtId);
+				Prdt prdt = repositoryP.getOne(prdtId);
 				lcns.setPrdt(prdt);
 				lcns.setLcnsNo(lcnsDto[i].getLcnsNo());
 				lcns.setLcnsIssuDt(java.sql.Date.valueOf(lcnsDto[i].getLcnsIssuDt()));
@@ -430,7 +430,7 @@ public class ContController {
 		
 		for (int i = 0; i < cdList.size(); i++) { // 있다가 없어짐
 			repositoryCD.deleteByContDetailPKContSeq(cdList.get(i).getContDetailPK().getContSeq());
-			repositoryL.deleteByLcnsId(cdList.get(i).getLcns().getLcnsId());
+			repositoryL.deleteById(cdList.get(i).getLcns().getLcnsId());
 		}
 		
 		res.add(new ResponseInfo("수정에 성공했습니다."));

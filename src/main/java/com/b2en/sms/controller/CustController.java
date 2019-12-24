@@ -52,7 +52,6 @@ public class CustController {
 	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CustDtoToClient>> showAll() {
 
-		//List<Cust> entityList = repositoryC.findAll();
 		List<Cust> entityList = repositoryC.findAllOrderByName();
 		List<CustDtoToClient> list;
 		int orgId;
@@ -88,7 +87,7 @@ public class CustController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CustDtoToClientExpanded> findById(@PathVariable("id") int id) {
 		
-		Cust cust = repositoryC.findByCustId(id);
+		Cust cust = repositoryC.getOne(id);
 		
 		CustDtoToClientExpanded custDtoToClient = modelMapper.map(cust, CustDtoToClientExpanded.class);
 		custDtoToClient.setOrgId(cust.getOrg().getOrgId());
@@ -116,7 +115,7 @@ public class CustController {
 		Cust custEntity = modelMapper.map(cust, Cust.class);
 		
 		int orgId = cust.getOrgId();
-		Org org = repositoryO.findByOrgId(orgId);
+		Org org = repositoryO.getOne(orgId);
 		
 		custEntity.setOrg(org);
 		
@@ -130,7 +129,7 @@ public class CustController {
 	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
-			repositoryC.deleteByCustId(idx[i]);
+			repositoryC.deleteById(idx[i]);
 		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
@@ -149,7 +148,7 @@ public class CustController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		Cust toUpdate = repositoryC.findByCustId(id);
+		Cust toUpdate = repositoryC.getOne(id);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
@@ -157,7 +156,7 @@ public class CustController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 
-		Org org = repositoryO.findByOrgId(cust.getOrgId());
+		Org org = repositoryO.getOne(cust.getOrgId());
 		
 		toUpdate.setOrg(org);
 		toUpdate.setCustNm(cust.getCustNm());
