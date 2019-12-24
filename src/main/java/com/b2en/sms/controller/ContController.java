@@ -43,11 +43,13 @@ import com.b2en.sms.entity.ContDetail;
 import com.b2en.sms.entity.ContDetailHist;
 import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Lcns;
+import com.b2en.sms.entity.LcnsChngHist;
 import com.b2en.sms.entity.Org;
 import com.b2en.sms.entity.Prdt;
 import com.b2en.sms.entity.pk.ContChngHistPK;
 import com.b2en.sms.entity.pk.ContDetailHistPK;
 import com.b2en.sms.entity.pk.ContDetailPK;
+import com.b2en.sms.entity.pk.LcnsChngHistPK;
 import com.b2en.sms.repo.B2enRepository;
 import com.b2en.sms.repo.CmmnDetailCdRepository;
 import com.b2en.sms.repo.ContChngHistRepository;
@@ -55,6 +57,7 @@ import com.b2en.sms.repo.ContDetailHistRepository;
 import com.b2en.sms.repo.ContDetailRepository;
 import com.b2en.sms.repo.ContRepository;
 import com.b2en.sms.repo.CustRepository;
+import com.b2en.sms.repo.LcnsChngHistRepository;
 import com.b2en.sms.repo.LcnsRepository;
 import com.b2en.sms.repo.OrgRepository;
 import com.b2en.sms.repo.PrdtRepository;
@@ -82,6 +85,8 @@ public class ContController {
 	private B2enRepository repositoryB;
 	@Autowired
 	private LcnsRepository repositoryL;
+	@Autowired
+	private LcnsChngHistRepository repositoryLCH;
 	@Autowired
 	private PrdtRepository repositoryP;
 	@Autowired
@@ -121,6 +126,7 @@ public class ContController {
 	public ResponseEntity<List<ContDtoToClient>> getAllNotDeleted() {
 		// delYn의 값이 "N"인 경우(삭제된걸로 처리되지 않은 경우)만 불러옴
 		List<Cont> entityList = repositoryC.findByDelYnOrderByContIdDesc("N");
+		
 		List<ContDtoToClient> list;
 		int orgId;
 		String orgNm;
@@ -141,7 +147,7 @@ public class ContController {
 			list.get(i).setEmpNm(empNm);
 			list.get(i).setTight(calculateIsTight(list.get(i).getMtncEndDt()));
 		}
-
+		
 		return new ResponseEntity<List<ContDtoToClient>>(list, HttpStatus.OK);
 
 	}
@@ -164,22 +170,6 @@ public class ContController {
 			return false;
 		}
 	}
-	
-	/*
-	 * @GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	 * public ResponseEntity<ContDtoToClient> findById(@PathVariable("id") int id) {
-	 * 
-	 * Cont cont = repositoryC.findByContId(id);
-	 * 
-	 * ContDtoToClient contDtoToClient = modelMapper.map(cont,
-	 * ContDtoToClient.class); contDtoToClient.setOrgId(cont.getOrg().getOrgId());
-	 * contDtoToClient.setOrgNm(cont.getOrg().getOrgNm());
-	 * contDtoToClient.setEmpId(cont.getB2en().getEmpId());
-	 * contDtoToClient.setEmpNm(cont.getB2en().getEmpNm());
-	 * contDtoToClient.setTight(calculateIsTight(contDtoToClient.getMtncEndDt()));
-	 * 
-	 * return new ResponseEntity<ContDtoToClient>(contDtoToClient, HttpStatus.OK); }
-	 */
 	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ContAndLcnsDtoToClient> findContAndLcnsByContId(@PathVariable("id") int id) {
@@ -410,6 +400,8 @@ public class ContController {
 				// 1. contDetailHist 생성
 				ContDetailHist contDetailHist = new ContDetailHist();
 				ContDetailHistPK contDetailHistPK = new ContDetailHistPK();
+				int maxDetailSeq = (repositoryCDH.findMaxDetailSeq()==null) ? 0 : repositoryCDH.findMaxDetailSeq();// detailSeq를 현존하는 가장 큰 detailSeq값+1로 직접 할당하기 위한 변수
+				contDetailHistPK.setDetailSeq(maxDetailSeq+1);
 				contDetailHistPK.setContDetailPK(contDetail.getContDetailPK());
 				contDetailHist.setContDetailHistPK(contDetailHistPK);
 				contDetailHist.setContDetail(contDetail);
@@ -419,8 +411,18 @@ public class ContController {
 				
 				cdList.remove(contDetail);
 				
-				// Lcns 수정
+				// 2. LcnsChngHist 생성
 				Lcns lcns = repositoryCD.findByContDetailPKContSeq(contSeq[i]).getLcns();
+				LcnsChngHist lcnsChngHist = modelMapper.map(lcns, LcnsChngHist.class);
+				LcnsChngHistPK lcnsChngHistPK = new LcnsChngHistPK();
+				int maxHistSeq = (repositoryLCH.findMaxHistSeq()==null) ? 0 : repositoryLCH.findMaxHistSeq();// histSeq를 현존하는 가장 큰 histSeq값+1로 직접 할당하기 위한 변수
+				lcnsChngHistPK.setHistSeq(maxHistSeq+1);
+				lcnsChngHistPK.setLcnsId(lcns.getLcnsId());
+				lcnsChngHist.setLcnsChngHistPK(lcnsChngHistPK);
+				lcnsChngHist.setLcns(lcns);
+				repositoryLCH.save(lcnsChngHist);
+				
+				// 3. Lcns 수정
 				int prdtId = lcnsDto[i].getPrdtId();
 				Prdt prdt = repositoryP.getOne(prdtId);
 				lcns.setPrdt(prdt);
@@ -433,7 +435,7 @@ public class ContController {
 				lcns.setScan(lcnsDto[i].getScan()[0]);
 				lcns = repositoryL.save(lcns);
 				
-				// ContDetail 수정
+				// 4. ContDetail 수정
 				contDetail.setCont(toUpdate);
 				contDetail.setLcns(lcns);
 				contDetail.setContAmt(lcnsDto[i].getContAmt());
