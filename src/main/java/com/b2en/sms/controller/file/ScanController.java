@@ -7,11 +7,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.b2en.sms.dto.DeleteFileDto;
 import com.b2en.sms.entity.file.Scan;
 import com.b2en.sms.repo.file.ScanRepository;
 import com.b2en.sms.service.file.MyFileNotFoundException;
@@ -26,14 +30,14 @@ import com.b2en.sms.service.file.ScanResponse;
 import com.b2en.sms.service.file.ScanStorageService;
 
 @RestController
-@RequestMapping("/api/scan/")
+@RequestMapping("/api/scan")
 public class ScanController {
 	
 	@Autowired
     private ScanStorageService scanStorageService;
 	
 	@Autowired
-    private ScanRepository scanRepository;
+    private ScanRepository repository;
     
     @PostMapping("/upload")
     public ScanResponse uploadFile(@RequestParam("file") MultipartFile file) {
@@ -43,7 +47,7 @@ public class ScanController {
         Scan scan = new Scan();
         scan.setFileName(fileName);
         scan.setFileType(file.getContentType());
-        scan = scanRepository.save(scan);
+        scan = repository.save(scan);
         String scanId = scan.getId();
         
        scanStorageService.storeFile(file, scanId);
@@ -64,7 +68,7 @@ public class ScanController {
         Scan scan = new Scan();
         scan.setFileName(fileName);
         scan.setFileType(file.getContentType());
-        scan = scanRepository.save(scan);
+        scan = repository.save(scan);
         String scanId = scan.getId();
         
        scanStorageService.storeFile(file, scanId);
@@ -79,7 +83,7 @@ public class ScanController {
     
     @GetMapping("/download/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileId, HttpServletRequest request) {
-    	Scan scan = scanRepository.findById(fileId).orElseThrow(() -> new MyFileNotFoundException("File not found with id " + fileId));
+    	Scan scan = repository.findById(fileId).orElseThrow(() -> new MyFileNotFoundException("File not found with id " + fileId));
     	
         // Load file as Resource
         Resource resource = scanStorageService.loadFileAsResource(scan.getFileName());
@@ -102,5 +106,14 @@ public class ScanController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
+    
+    @DeleteMapping(value = "")
+	public ResponseEntity<Void> delete(@RequestBody DeleteFileDto id) {
+		String[] idx = id.getIdx();
+		for(int i = 0; i < idx.length; i++) {
+			repository.deleteById(idx[i]);
+		}
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	}
     
 }
