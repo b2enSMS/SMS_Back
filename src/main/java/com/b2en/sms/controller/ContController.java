@@ -230,6 +230,7 @@ public class ContController {
 			int prdtId = lcnsDto[i].getPrdtId();
 			Prdt prdt = repositoryP.getOne(prdtId);
 			lcnsEntity[i].setPrdt(prdt);
+			lcnsEntity[i].setScan(lcnsDto[i].getScan()[0]);
 			
 			log.info("Lcns:{}", lcnsEntity[i]);
 			lcnsEntity[i] = repositoryL.save(lcnsEntity[i]);
@@ -428,7 +429,7 @@ public class ContController {
 				lcns.setCertNo(lcnsDto[i].getCertNo());
 				lcns.setLcnsStartDt(java.sql.Date.valueOf(lcnsDto[i].getLcnsStartDt()));
 				lcns.setLcnsEndDt(java.sql.Date.valueOf(lcnsDto[i].getLcnsEndDt()));
-				lcns.setScan(lcnsDto[i].getScan());
+				lcns.setScan(lcnsDto[i].getScan()[0]);
 				lcns = repositoryL.save(lcns);
 				
 				// ContDetail 수정

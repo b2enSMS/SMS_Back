@@ -113,7 +113,12 @@ public class ScanController {
 		for(int i = 0; i < idx.length; i++) {
 			idx[i] = dto.getIdx()[i].getResponse().getUrl();
 			String[] splitted = idx[i].split("/");
-			repository.deleteById(splitted[splitted.length-1]);
+			String scanId = splitted[splitted.length-1];
+			
+			String type = repository.findById(scanId).orElse(null).getFileType();
+			scanStorageService.deleteFile(scanId, type);
+			
+			repository.deleteById(scanId);
 		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
