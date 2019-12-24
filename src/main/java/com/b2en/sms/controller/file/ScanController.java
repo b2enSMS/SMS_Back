@@ -111,7 +111,8 @@ public class ScanController {
 	public ResponseEntity<Void> delete(@RequestBody DeleteFileDto id) {
 		String[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
-			repository.deleteById(idx[i]);
+			String[] splitted = idx[i].split("/");
+			repository.deleteById(splitted[splitted.length-1]);
 		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
