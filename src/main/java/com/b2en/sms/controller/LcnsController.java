@@ -87,7 +87,7 @@ public class LcnsController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LcnsDtoToClient> findById(@PathVariable("id") int id) {
 		
-		Lcns lcns = repositoryL.findByLcnsId(id);
+		Lcns lcns = repositoryL.getOne(id);
 		
 		LcnsDtoToClient lcnsDtoToClient = modelMapper.map(lcns, LcnsDtoToClient.class);
 		lcnsDtoToClient.setPrdtId(lcns.getPrdt().getPrdtId());
@@ -114,7 +114,7 @@ public class LcnsController {
 		Lcns lcnsEntity = modelMapper.map(lcns, Lcns.class);
 		
 		int prdtId = lcns.getPrdtId();
-		Prdt prdt = repositoryP.findByPrdtId(prdtId);
+		Prdt prdt = repositoryP.getOne(prdtId);
 		
 		lcnsEntity.setPrdt(prdt);
 		
@@ -127,7 +127,7 @@ public class LcnsController {
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable("id") int id) {
 
-		repositoryL.deleteByLcnsId(id);
+		repositoryL.deleteById(id);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 	
@@ -145,7 +145,7 @@ public class LcnsController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		Lcns toUpdate = repositoryL.findByLcnsId(id);
+		Lcns toUpdate = repositoryL.getOne(id);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));

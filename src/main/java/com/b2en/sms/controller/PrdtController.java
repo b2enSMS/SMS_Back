@@ -72,7 +72,7 @@ public class PrdtController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<PrdtDtoToClient> findById(@PathVariable("id") int id) {
 		
-		Prdt prdt = repository.findByPrdtId(id);
+		Prdt prdt = repository.getOne(id);
 		
 		PrdtDtoToClient prdtDtoToClient = modelMapper.map(prdt, PrdtDtoToClient.class);
 		
@@ -105,7 +105,7 @@ public class PrdtController {
 	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
-			repository.deleteByPrdtId(idx[i]);
+			repository.deleteById(idx[i]);
 		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
@@ -126,7 +126,7 @@ public class PrdtController {
 		}
 		 
 		
-		Prdt toUpdate = repository.findByPrdtId(id);
+		Prdt toUpdate = repository.getOne(id);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));

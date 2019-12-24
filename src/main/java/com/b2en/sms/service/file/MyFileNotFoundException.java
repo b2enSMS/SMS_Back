@@ -1,4 +1,4 @@
-package com.b2en.sms.service;
+package com.b2en.sms.service.file;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

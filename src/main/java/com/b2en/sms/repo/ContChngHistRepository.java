@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.b2en.sms.entity.ContChngHist;
 
-public interface ContChngHistRepository extends JpaRepository<ContChngHist, Long>{
+public interface ContChngHistRepository extends JpaRepository<ContChngHist, Integer>{
 
 }

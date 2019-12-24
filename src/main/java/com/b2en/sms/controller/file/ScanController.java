@@ -21,9 +21,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.b2en.sms.entity.file.Scan;
 import com.b2en.sms.repo.file.ScanRepository;
-import com.b2en.sms.service.MyFileNotFoundException;
-import com.b2en.sms.service.ScanResponse;
-import com.b2en.sms.service.ScanStorageService;
+import com.b2en.sms.service.file.MyFileNotFoundException;
+import com.b2en.sms.service.file.ScanResponse;
+import com.b2en.sms.service.file.ScanStorageService;
 
 @RestController
 @RequestMapping("/api/scan/")

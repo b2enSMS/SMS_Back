@@ -72,7 +72,7 @@ public class B2enController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<B2enDtoToClient> findById(@PathVariable("id") int id) {
 		
-		B2en b2en = repository.findByEmpId(id);
+		B2en b2en = repository.getOne(id);
 		
 		B2enDtoToClient b2enDtoToClient = modelMapper.map(b2en, B2enDtoToClient.class);
 		
@@ -105,7 +105,7 @@ public class B2enController {
 	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
-			repository.deleteByEmpId(idx[i]);
+			repository.deleteById(idx[i]);
 		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
@@ -124,7 +124,7 @@ public class B2enController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		B2en toUpdate = repository.findByEmpId(id);
+		B2en toUpdate = repository.getOne(id);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));

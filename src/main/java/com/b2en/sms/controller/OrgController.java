@@ -72,7 +72,7 @@ public class OrgController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<OrgDtoToClient> findById(@PathVariable("id") int id) {
 		
-		Org org = repository.findByOrgId(id);
+		Org org = repository.getOne(id);
 		
 		OrgDtoToClient orgDtoToClient = modelMapper.map(org, OrgDtoToClient.class);
 		
@@ -105,7 +105,7 @@ public class OrgController {
 	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
-			repository.deleteByOrgId(idx[i]);
+			repository.deleteById(idx[i]);
 		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
@@ -126,7 +126,7 @@ public class OrgController {
 		}
 		 
 		
-		Org toUpdate = repository.findByOrgId(id);
+		Org toUpdate = repository.getOne(id);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));

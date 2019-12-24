@@ -78,7 +78,7 @@ public class MeetController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<MeetDtoToClient> findById(@PathVariable("id") int id) {
 		
-		Meet meet = repositoryM.findByMeetId(id);
+		Meet meet = repositoryM.getOne(id);
 		
 		MeetDtoToClient meetDtoToClient = modelMapper.map(meet, MeetDtoToClient.class);
 		meetDtoToClient.setOrgId(meet.getOrg().getOrgId());
@@ -105,7 +105,7 @@ public class MeetController {
 		Meet meetEntity = modelMapper.map(meet, Meet.class);
 		
 		int orgId = meet.getOrgId(); // 해당 id를 갖는 Org 찾아서 저장
-		Org org = repositoryO.findByOrgId(orgId);
+		Org org = repositoryO.getOne(orgId);
 		
 		meetEntity.setOrg(org);
 		
@@ -118,7 +118,7 @@ public class MeetController {
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable("id") int id) {
 
-		repositoryM.deleteByMeetId(id);
+		repositoryM.deleteById(id);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 
@@ -136,7 +136,7 @@ public class MeetController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		Meet toUpdate = repositoryM.findByMeetId(id);
+		Meet toUpdate = repositoryM.getOne(id);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
