@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,27 +40,6 @@ public class ScanController {
     
     @PostMapping("/upload")
     public ScanResponse uploadFile(@RequestParam("file") MultipartFile file) {
-    
-    	String fileName = file.getOriginalFilename();
-    	
-        Scan scan = new Scan();
-        scan.setFileName(fileName);
-        scan.setFileType(file.getContentType());
-        scan = repository.save(scan);
-        String scanId = scan.getId();
-        
-       scanStorageService.storeFile(file, scanId);
-        
-        String url = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/api/scan/download/")
-                .path(scanId)
-                .toUriString();
-
-        return new ScanResponse(fileName, "sss", url, url);
-    }
-    
-    @RequestMapping(value="/upload", method = RequestMethod.OPTIONS)
-    public ScanResponse uploadFile2(@RequestParam("file") MultipartFile file) {
     
     	String fileName = file.getOriginalFilename();
     	
