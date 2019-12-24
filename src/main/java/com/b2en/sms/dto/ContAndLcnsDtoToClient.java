@@ -9,17 +9,19 @@ public class ContAndLcnsDtoToClient {
 	
 	private int custId;
 	
+	private String custNm;
+	
 	private int orgId;
 	
 	private String orgNm;
 	
 	private int empId;
 	
+	private String empNm;
+	
 	private int headContId;
 	
 	private String contNm;
-	
-	private String empNm;
 	
 	private String contDt;
 	

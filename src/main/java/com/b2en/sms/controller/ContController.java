@@ -30,12 +30,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.ContAndLcnsDto;
 import com.b2en.sms.dto.ContAndLcnsDtoForUpdate;
 import com.b2en.sms.dto.ContAndLcnsDtoToClient;
-import com.b2en.sms.dto.ContDetailDto;
 import com.b2en.sms.dto.ContDtoToClient;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.LcnsDto;
 import com.b2en.sms.dto.LcnsDtoToClient;
 import com.b2en.sms.dto.ResponseInfo;
+import com.b2en.sms.dto.autocompleteinfo.ContAC;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.entity.Cont;
 import com.b2en.sms.entity.ContChngHist;
@@ -99,23 +99,17 @@ public class ContController {
 		// delYn의 값에 상관없이 모두 불러옴
 		List<Cont> entityList = repositoryC.findAll();
 		List<ContDtoToClient> list;
-		int orgId;
-		String orgNm;
-		int empId;
-		String empNm;
-
+		
 		list = modelMapper.map(entityList, new TypeToken<List<ContDtoToClient>>() {
 		}.getType());
 		
 		for(int i = 0; i < entityList.size(); i++) {
-			orgId = entityList.get(i).getOrg().getOrgId();
-			orgNm = entityList.get(i).getOrg().getOrgNm();
-			empId = entityList.get(i).getB2en().getEmpId();
-			empNm = entityList.get(i).getB2en().getEmpNm();
-			list.get(i).setOrgId(orgId);
-			list.get(i).setOrgNm(orgNm);
-			list.get(i).setEmpId(empId);
-			list.get(i).setEmpNm(empNm);
+			list.get(i).setCustId(entityList.get(i).getCust().getCustId());
+			list.get(i).setCustNm(entityList.get(i).getCust().getCustNm());
+			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
+			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
+			list.get(i).setEmpId(entityList.get(i).getB2en().getEmpId());
+			list.get(i).setEmpNm(entityList.get(i).getB2en().getEmpNm());
 		}
 
 		return new ResponseEntity<List<ContDtoToClient>>(list, HttpStatus.OK);
@@ -128,23 +122,17 @@ public class ContController {
 		List<Cont> entityList = repositoryC.findByDelYnOrderByContIdDesc("N");
 		
 		List<ContDtoToClient> list;
-		int orgId;
-		String orgNm;
-		int empId;
-		String empNm;
 
 		list = modelMapper.map(entityList, new TypeToken<List<ContDtoToClient>>() {
 		}.getType());
 		
 		for(int i = 0; i < entityList.size(); i++) {
-			orgId = entityList.get(i).getOrg().getOrgId();
-			orgNm = entityList.get(i).getOrg().getOrgNm();
-			empId = entityList.get(i).getB2en().getEmpId();
-			empNm = entityList.get(i).getB2en().getEmpNm();
-			list.get(i).setOrgId(orgId);
-			list.get(i).setOrgNm(orgNm);
-			list.get(i).setEmpId(empId);
-			list.get(i).setEmpNm(empNm);
+			list.get(i).setCustId(entityList.get(i).getCust().getCustId());
+			list.get(i).setCustNm(entityList.get(i).getCust().getCustNm());
+			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
+			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
+			list.get(i).setEmpId(entityList.get(i).getB2en().getEmpId());
+			list.get(i).setEmpNm(entityList.get(i).getB2en().getEmpNm());
 			list.get(i).setTight(calculateIsTight(list.get(i).getMtncEndDt()));
 		}
 		
@@ -177,6 +165,8 @@ public class ContController {
 		Cont cont = repositoryC.getOne(id);
 		
 		ContAndLcnsDtoToClient contAndLcnsDtoToClient = modelMapper.map(cont, ContAndLcnsDtoToClient.class);
+		contAndLcnsDtoToClient.setCustId(cont.getCust().getCustId());
+		contAndLcnsDtoToClient.setCustNm(cont.getCust().getCustNm());
 		contAndLcnsDtoToClient.setOrgId(cont.getOrg().getOrgId());
 		contAndLcnsDtoToClient.setOrgNm(cont.getOrg().getOrgNm());
 		contAndLcnsDtoToClient.setEmpId(cont.getB2en().getEmpId());
@@ -194,6 +184,22 @@ public class ContController {
 		contAndLcnsDtoToClient.setLcns(lcnsDtoToClient);
 		
 		return new ResponseEntity<ContAndLcnsDtoToClient>(contAndLcnsDtoToClient, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ContAC>> acList() {
+
+		List<Cont> entityList = repositoryC.findAll();
+		List<ContAC> list = new ArrayList<ContAC>();
+		
+		for(int i = 0; i < entityList.size(); i++) {
+			ContAC contAC = new ContAC();
+			contAC.setHeadContId(entityList.get(i).getHeadContId());
+			contAC.setContNm(entityList.get(i).getContNm());
+			list.add(contAC);
+		}
+
+		return new ResponseEntity<List<ContAC>>(list, HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -242,6 +248,10 @@ public class ContController {
 		contEntity.setOrg(org);
 		contEntity.setB2en(b2en);
 		contEntity.setDelYn("N");
+		
+		// 유지보수 계약인 경우 모계약(구매 계약)의 Id, 구매 계약인 경우 0
+		int headContId = (contAndLcnsDto.getContTpCd().equals("cont02")) ? contAndLcnsDto.getHeadContId() : 0;
+		contEntity.setHeadContId(headContId);
 		
 		String[] contAmt = new String[lcnsDto.length];
 		
@@ -471,56 +481,6 @@ public class ContController {
 		contDetail.setDelYn("Y");
 		repositoryCD.save(contDetail);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-	}
-	
-	@PutMapping(value = "/detail/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> updateDetail(@PathVariable("id") int id, @Valid @RequestBody ContDetailDto contDetailDto, BindingResult result) {
-		
-		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
-		
-		if(result.hasErrors()) {
-			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
-			List<FieldError> errors = result.getFieldErrors();
-			for(int i = 0; i < errors.size(); i++) {
-				res.add(new ResponseInfo(errors.get(i).getDefaultMessage()));
-			}
-			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
-		}
-		
-		ContDetail toUpdate = repositoryCD.findByContDetailPKContSeq(id);
-
-		if (toUpdate == null) {
-			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
-			res.add(new ResponseInfo("해당 id를 가진 row가 없습니다."));
-			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
-		}
-		
-		// ContDetailHist가 자동 생성되는 부분
-		ContDetailHist contDetailHist = new ContDetailHist();
-		ContDetailHistPK contDetailHistPK = new ContDetailHistPK();
-		ContDetailPK contDetailPK = toUpdate.getContDetailPK();
-		contDetailHistPK.setContDetailPK(contDetailPK);
-		contDetailHist.setContDetailHistPK(contDetailHistPK);
-		contDetailHist.setContDetail(toUpdate);
-		contDetailHist.setContAmt(toUpdate.getContAmt());
-		contDetailHist.setLcns(toUpdate.getLcns());
-		
-		toUpdate.setContAmt(contDetailDto.getContAmt());
-		
-		repositoryCD.save(toUpdate);
-		repositoryCDH.save(contDetailHist);
-		
-		res.add(new ResponseInfo("수정에 성공했습니다."));
-		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
-	}
-	
-	@GetMapping(value = "/detail/hist/showall", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ContDetailHist>> getAllDetailHist() {
-
-		List<ContDetailHist> entityList = repositoryCDH.findAll();
-
-		return new ResponseEntity<List<ContDetailHist>>(entityList, HttpStatus.OK);
-
 	}
 	
 }
