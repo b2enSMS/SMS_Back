@@ -1,4 +1,4 @@
-package com.b2en.sms.service.file;
+package com.b2en.sms.dto.file;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

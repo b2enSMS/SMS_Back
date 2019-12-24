@@ -1,8 +1,8 @@
-package com.b2en.sms.dto;
+package com.b2en.sms.dto.file;
 
 import lombok.Data;
 
 @Data
 public class DeleteFileDto {
-	private String[] idx;
+	private ScanResponse response;
 }

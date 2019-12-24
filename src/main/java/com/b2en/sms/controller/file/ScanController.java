@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.b2en.sms.dto.DeleteFileDto;
+import com.b2en.sms.dto.file.FileDto;
+import com.b2en.sms.dto.file.ScanResponse;
 import com.b2en.sms.entity.file.Scan;
 import com.b2en.sms.repo.file.ScanRepository;
 import com.b2en.sms.service.file.MyFileNotFoundException;
-import com.b2en.sms.service.file.ScanResponse;
 import com.b2en.sms.service.file.ScanStorageService;
 
 @RestController
@@ -108,9 +108,10 @@ public class ScanController {
     }
     
     @DeleteMapping(value = "")
-	public ResponseEntity<Void> delete(@RequestBody DeleteFileDto id) {
-		String[] idx = id.getIdx();
+	public ResponseEntity<Void> delete(@RequestBody FileDto dto) {
+		String[] idx = new String[dto.getIdx().length];
 		for(int i = 0; i < idx.length; i++) {
+			idx[i] = dto.getIdx()[i].getResponse().getUrl();
 			String[] splitted = idx[i].split("/");
 			repository.deleteById(splitted[splitted.length-1]);
 		}

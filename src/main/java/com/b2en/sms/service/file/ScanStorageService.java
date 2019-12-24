@@ -65,4 +65,6 @@ public class ScanStorageService {
             throw new MyFileNotFoundException("File not found " + fileName, ex);
         }
     }
+    
+    //public void deleteFile()
 }
