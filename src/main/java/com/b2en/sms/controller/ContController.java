@@ -405,8 +405,19 @@ public class ContController {
 				
 				repositoryCD.save(contDetail);
 			} else { // 기존에 있던거 수정
+				// 1. contDetailHist 생성
+				ContDetailHist contDetailHist = new ContDetailHist();
+				ContDetailHistPK contDetailHistPK = new ContDetailHistPK();
+				contDetailHistPK.setContDetailPK(contDetail.getContDetailPK());
+				contDetailHist.setContDetailHistPK(contDetailHistPK);
+				contDetailHist.setContDetail(contDetail);
+				contDetailHist.setContAmt(contDetail.getContAmt());
+				contDetailHist.setLcns(contDetail.getLcns());
+				repositoryCDH.save(contDetailHist);
+				
 				cdList.remove(contDetail);
 				
+				// Lcns 수정
 				Lcns lcns = repositoryCD.findByContDetailPKContSeq(contSeq[i]).getLcns();
 				int prdtId = lcnsDto[i].getPrdtId();
 				Prdt prdt = repositoryP.getOne(prdtId);
@@ -420,6 +431,7 @@ public class ContController {
 				lcns.setScan(lcnsDto[i].getScan());
 				lcns = repositoryL.save(lcns);
 				
+				// ContDetail 수정
 				contDetail.setCont(toUpdate);
 				contDetail.setLcns(lcns);
 				contDetail.setContAmt(lcnsDto[i].getContAmt());
