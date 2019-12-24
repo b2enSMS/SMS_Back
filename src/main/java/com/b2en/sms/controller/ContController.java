@@ -389,6 +389,7 @@ public class ContController {
 				int prdtId = lcnsDto[i].getPrdtId();
 				Prdt prdt = repositoryP.getOne(prdtId);
 				lcns.setPrdt(prdt);
+				lcns.setScan(lcnsDto[i].getScan()[0]);
 				lcns = repositoryL.save(lcns);
 				
 				contDetail = new ContDetail();
