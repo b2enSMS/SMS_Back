@@ -25,9 +25,12 @@ import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.TempVerDto;
 import com.b2en.sms.dto.TempVerDtoToClient;
 import com.b2en.sms.entity.TempVer;
+import com.b2en.sms.entity.TempVerHist;
+import com.b2en.sms.entity.pk.TempVerHistPK;
 import com.b2en.sms.repo.B2enRepository;
 import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.LcnsRepository;
+import com.b2en.sms.repo.TempVerHistRepository;
 import com.b2en.sms.repo.TempVerRepository;
 
 @RestController
@@ -36,13 +39,12 @@ public class TempVerController {
 
 	@Autowired
 	private TempVerRepository repositoryTemp;
-	
+	@Autowired
+	private TempVerHistRepository repositoryTempHist;
 	@Autowired
 	private CustRepository repositoryCust;
-	
 	@Autowired
 	private LcnsRepository repositoryLcns;
-	
 	@Autowired
 	private B2enRepository repositoryB2en;
 	
@@ -144,7 +146,19 @@ public class TempVerController {
 			res.add(new ResponseInfo("해당 id를 가진 row가 없습니다."));
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
-
+		
+		TempVerHist tempVerHist = new TempVerHist();
+		TempVerHistPK tempVerHistPK = new TempVerHistPK();
+		tempVerHistPK.setTempVerId(toUpdate.getTempVerId());
+		tempVerHist.setTempVerHistPK(tempVerHistPK);
+		tempVerHist.setTempVer(toUpdate);
+		tempVerHist.setCust(toUpdate.getCust());
+		tempVerHist.setLcns(toUpdate.getLcns());
+		tempVerHist.setB2en(toUpdate.getB2en());
+		tempVerHist.setMacAddr(toUpdate.getMacAddr());
+		
+		repositoryTempHist.save(tempVerHist);
+		
 		toUpdate.setCust(repositoryCust.getOne(tempVerDto.getCustId()));
 		toUpdate.setLcns(repositoryLcns.getOne(tempVerDto.getLcnsId()));
 		toUpdate.setB2en(repositoryB2en.getOne(tempVerDto.getEmpId()));
