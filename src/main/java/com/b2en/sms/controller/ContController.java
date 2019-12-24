@@ -188,6 +188,8 @@ public class ContController {
 		for(int i = 0; i < lcnsDtoToClient.length; i++) {
 			lcnsDtoToClient[i] = modelMapper.map(contDetail.get(i).getLcns(), LcnsDtoToClient.class);
 			lcnsDtoToClient[i].setContAmt(contDetail.get(i).getContAmt());
+			String lcnsTpNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(contDetail.get(i).getLcns().getLcnsTpCd()).getCmmnDetailCdNm();
+			lcnsDtoToClient[i].setLcnsTpNm(lcnsTpNm);
 		}
 		contAndLcnsDtoToClient.setLcns(lcnsDtoToClient);
 		
