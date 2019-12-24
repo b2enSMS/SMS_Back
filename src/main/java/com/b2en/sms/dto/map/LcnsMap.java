@@ -14,6 +14,9 @@ public class LcnsMap extends PropertyMap<LcnsDto, Lcns>{
 		
 		// Lcns.prdt는 매핑하지 않음
 		skip().setPrdt(null);
+		
+		// Lcns.scan은 매핑하지 않음
+		skip().setScan(null);
 	}
 
 }

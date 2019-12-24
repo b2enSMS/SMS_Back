@@ -1,5 +1,6 @@
 package com.b2en.sms.service.file;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -66,5 +67,15 @@ public class ScanStorageService {
         }
     }
     
-    //public void deleteFile()
+    public void deleteFile(String scanId, String type) {
+    	 String[] splitted = type.split("/"); // 확장자 가져오기
+         String fileName = scanId + "." + splitted[1]; // 파일명을 scanId로 변경
+         Path targetLocation = this.fileStorageLocation.resolve(fileName);
+         try {
+			Files.delete(targetLocation);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 }
