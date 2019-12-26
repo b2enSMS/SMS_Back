@@ -34,4 +34,9 @@ public class LcnsDtoToClient {
 	private String contAmt;
 	
 	private String contNote;
+	
+	public void customSetFileList(ResponseEntity<Resource> fileList) {
+		System.out.println("BBBBBBBBBBBB");
+		this.fileList = fileList;
+	}
 }

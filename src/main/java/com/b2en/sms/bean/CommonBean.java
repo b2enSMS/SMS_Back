@@ -9,6 +9,7 @@ import com.b2en.sms.dto.map.ContMap;
 import com.b2en.sms.dto.map.CustMap;
 import com.b2en.sms.dto.map.LcnsChngHistMap;
 import com.b2en.sms.dto.map.LcnsMap;
+import com.b2en.sms.dto.map.LcnsToClientMap;
 
 @Configuration
 public class CommonBean {
@@ -21,6 +22,7 @@ public class CommonBean {
 		modelMapper.addMappings(new CustMap());
 		modelMapper.addMappings(new LcnsMap());
 		modelMapper.addMappings(new LcnsChngHistMap());
+		modelMapper.addMappings(new LcnsToClientMap());
 		return modelMapper;
 	}
 	

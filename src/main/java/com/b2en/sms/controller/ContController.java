@@ -188,23 +188,27 @@ public class ContController {
 		LcnsDtoToClient[] lcnsDtoToClient = new LcnsDtoToClient[contDetail.size()];
 		for(int i = 0; i < lcnsDtoToClient.length; i++) {
 			lcnsDtoToClient[i] = modelMapper.map(contDetail.get(i).getLcns(), LcnsDtoToClient.class);
+			lcnsDtoToClient[i].setPrdtId(contDetail.get(i).getLcns().getPrdt().getPrdtId());
+			lcnsDtoToClient[i].setPrdtNm(contDetail.get(i).getLcns().getPrdt().getPrdtNm());
 			lcnsDtoToClient[i].setContAmt(contDetail.get(i).getContAmt());
 			String lcnsTpNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(contDetail.get(i).getLcns().getLcnsTpCd()).getCmmnDetailCdNm();
 			lcnsDtoToClient[i].setLcnsTpNm(lcnsTpNm);
-			String[] splitted = contDetail.get(i).getLcns().getScan().split("/");
-			String scanId = splitted[splitted.length-1];
-			lcnsDtoToClient[i].setFileList(getScanImg(scanId));
+			//String[] splitted = contDetail.get(i).getLcns().getScan().split("/");
+			//String scanId = splitted[splitted.length-1];
+			//lcnsDtoToClient[i].customSetFileList(getScanImg(scanId));
 		}
 		contAndLcnsDtoToClient.setLcns(lcnsDtoToClient);
 		
 		return new ResponseEntity<ContAndLcnsDtoToClient>(contAndLcnsDtoToClient, HttpStatus.OK);
 	}
 	
-	private ResponseEntity<Resource> getScanImg(String fileId) {
-		Scan scan = repositoryS.findById(fileId).orElseThrow(() -> new MyFileNotFoundException("File not found with id " + fileId));
-
+	private ResponseEntity<Resource> getScanImg(String scanId) {
+		Scan scan = repositoryS.findById(scanId).orElseThrow(() -> new MyFileNotFoundException("File not found with id " + scanId));
+		String[] splitted = scan.getFileType().split("/"); // 확장자 가져오기
+        String fileName = scanId + "." + splitted[1]; // 파일명을 scanId로 변경
+		
 		// Load file as Resource
-		Resource resource = scanStorageService.loadFileAsResource(scan.getFileName());
+		Resource resource = scanStorageService.loadFileAsResource(fileName);
 
 		// Try to determine file's content type
 		String contentType = scan.getFileType();

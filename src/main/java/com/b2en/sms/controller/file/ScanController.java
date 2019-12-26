@@ -28,8 +28,11 @@ import com.b2en.sms.repo.file.ScanRepository;
 import com.b2en.sms.service.file.MyFileNotFoundException;
 import com.b2en.sms.service.file.ScanStorageService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/scan")
+@Slf4j
 public class ScanController {
 	
 	@Autowired
@@ -41,6 +44,7 @@ public class ScanController {
     @PostMapping("/upload")
     public ScanResponse uploadFile(@RequestParam("file") MultipartFile file) {
     
+    	log.info("file:{}", file);
     	String fileName = file.getOriginalFilename();
     	
         Scan scan = new Scan();
@@ -78,12 +82,39 @@ public class ScanController {
         if(contentType == null) {
             contentType = "application/octet-stream";
         }
-
-        return ResponseEntity.ok()
+        
+        ResponseEntity<Resource> res = ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+        
+        return res;
+
+		/*
+		 * return ResponseEntity.ok()
+		 * .contentType(MediaType.parseMediaType(contentType))
+		 * .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
+		 * resource.getFilename() + "\"") .body(resource);
+		 */
     }
+    
+    @GetMapping("/{scanId}")
+    private ResponseEntity<Resource> getScanImg(@PathVariable String scanId) {
+		Scan scan = repository.findById(scanId).orElseThrow(() -> new MyFileNotFoundException("File not found with id " + scanId));
+		String[] splitted = scan.getFileType().split("/"); // 확장자 가져오기
+        String fileName = scanId + "." + splitted[1]; // 파일명을 scanId로 변경
+		
+		// Load file as Resource
+		Resource resource = scanStorageService.loadFileAsResource(fileName);
+
+		// Try to determine file's content type
+		String contentType = scan.getFileType();
+
+		return ResponseEntity.ok()
+				.contentType(MediaType.parseMediaType(contentType))
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+				.body(resource);
+	}
     
     @DeleteMapping(value = "")
 	public ResponseEntity<Void> delete(@RequestBody FileDto dto) {
