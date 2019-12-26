@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.LcnsDto;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.LcnsAC;
+import com.b2en.sms.dto.toclient.LcnsChngHistDtoToClient;
 import com.b2en.sms.dto.toclient.LcnsDtoToClient;
 import com.b2en.sms.entity.Lcns;
 import com.b2en.sms.entity.LcnsChngHist;
@@ -167,5 +168,24 @@ public class LcnsController {
 		
 		res.add(new ResponseInfo("수정에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/hist/showall", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<LcnsChngHistDtoToClient>> getAllHist() {
+		List<LcnsChngHist> entityList = repositoryLCH.findAll();
+
+		List<LcnsChngHistDtoToClient> list;
+
+		list = modelMapper.map(entityList, new TypeToken<List<LcnsChngHistDtoToClient>>() {
+		}.getType());
+
+		/*
+		 * for (int i = 0; i < entityList.size(); i++) {
+		 * list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
+		 * list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm()); }
+		 */
+
+		return new ResponseEntity<List<LcnsChngHistDtoToClient>>(list, HttpStatus.OK);
+
 	}
 }
