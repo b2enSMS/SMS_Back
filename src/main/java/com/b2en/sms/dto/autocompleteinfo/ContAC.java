@@ -6,7 +6,7 @@ import lombok.Data;
 public class ContAC {
 	// Auto-Complete를 위한 DTO
 	
-	private int headContIdAC;
+	private int headContId;
 	
-	private String contNmAC;
+	private String headContNm;
 }
