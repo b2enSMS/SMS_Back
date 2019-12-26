@@ -520,6 +520,7 @@ public class ContController {
 			contChngHistDtoToClient.setMtncStartDt(sdf.format(contChngHist.getMtncStartDt()));
 			contChngHistDtoToClient.setMtncEndDt(sdf.format(contChngHist.getMtncEndDt()));
 			contChngHistDtoToClient.setCreatedDate(contChngHist.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+			contChngHistDtoToClient.setContNm(repositoryC.getOne(id).getContNm());
 			
 			contChngHistDtoToClientList.add(contChngHistDtoToClient);
 		}
