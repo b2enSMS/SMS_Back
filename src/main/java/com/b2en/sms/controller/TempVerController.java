@@ -1,5 +1,6 @@
 package com.b2en.sms.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.TempVerDto;
+import com.b2en.sms.dto.toclient.ContChngHistDtoToClient;
 import com.b2en.sms.dto.toclient.LcnsDtoToClientTempVer;
 import com.b2en.sms.dto.toclient.TempVerAndLcnsDtoToClient;
 import com.b2en.sms.dto.toclient.TempVerDtoToClient;
+import com.b2en.sms.entity.ContChngHist;
 import com.b2en.sms.entity.TempVer;
 import com.b2en.sms.entity.TempVerHist;
 import com.b2en.sms.entity.pk.TempVerHistPK;
@@ -177,6 +180,40 @@ public class TempVerController {
 		res.add(new ResponseInfo("수정에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
+	
+	/*
+	 * @GetMapping(value="/hist/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	 * public ResponseEntity<List<ContChngHistDtoToClient>>
+	 * findHistByTempVerId(@PathVariable("id") int id) {
+	 * 
+	 * List<TempVerHist> tempVerHistList =
+	 * repositoryTempHist.findByTempVerHistPKTempVerId(id); List<TempVerDtoToClient>
+	 * list = new ArrayList<TempVerDtoToClient>();
+	 * 
+	 * SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); for(int i = 0; i <
+	 * tempVerHistList.size(); i++) { TempVerDtoToClient tempVerDtoToClient = new
+	 * TempVerHistDtoToClient(); ContChngHist contChngHist =
+	 * contChngHistList.get(i);
+	 * contChngHistDtoToClient.setHistSeq(contChngHist.getContChngHistPK().
+	 * getHistSeq());
+	 * contChngHistDtoToClient.setCustNm(contChngHist.getCust().getCustNm());
+	 * contChngHistDtoToClient.setOrgNm(contChngHist.getOrg().getOrgNm());
+	 * contChngHistDtoToClient.setEmpNm(contChngHist.getB2en().getEmpNm());
+	 * contChngHistDtoToClient.setContDt(sdf.format(contChngHist.getContDt()));
+	 * contChngHistDtoToClient.setContTotAmt(contChngHist.getContTotAmt());
+	 * contChngHistDtoToClient.setInstallDt(sdf.format(contChngHist.getInstallDt()))
+	 * ; contChngHistDtoToClient.setCheckDt(sdf.format(contChngHist.getCheckDt()));
+	 * contChngHistDtoToClient.setMtncStartDt(sdf.format(contChngHist.getMtncStartDt
+	 * ()));
+	 * contChngHistDtoToClient.setMtncEndDt(sdf.format(contChngHist.getMtncEndDt()))
+	 * ;
+	 * 
+	 * contChngHistDtoToClientList.add(contChngHistDtoToClient); }
+	 * 
+	 * return new
+	 * ResponseEntity<List<ContChngHistDtoToClient>>(contChngHistDtoToClientList,
+	 * HttpStatus.OK); }
+	 */
 	
 	@GetMapping(value = "/hist/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<TempVerDtoToClient>> showAllHist() {
