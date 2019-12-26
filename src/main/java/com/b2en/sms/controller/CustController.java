@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.CustDto;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.ResponseInfo;
+import com.b2en.sms.dto.autocompleteinfo.CustAC;
 import com.b2en.sms.dto.toclient.CustDtoToClient;
 import com.b2en.sms.dto.toclient.CustDtoToClientExpanded;
 import com.b2en.sms.entity.Cust;
@@ -71,19 +72,6 @@ public class CustController {
 
 	}
 	
-	/*
-	 * @GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	 * public ResponseEntity<CustDtoToClient> findById(@PathVariable("id") int id) {
-	 * 
-	 * Cust cust = repositoryC.findByCustId(id);
-	 * 
-	 * CustDtoToClient custDtoToClient = modelMapper.map(cust,
-	 * CustDtoToClient.class); custDtoToClient.setOrgId(cust.getOrg().getOrgId());
-	 * custDtoToClient.setOrgNm(cust.getOrg().getOrgNm());
-	 * 
-	 * return new ResponseEntity<CustDtoToClient>(custDtoToClient, HttpStatus.OK); }
-	 */
-	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CustDtoToClientExpanded> findById(@PathVariable("id") int id) {
 		
@@ -96,6 +84,22 @@ public class CustController {
 		custDtoToClient.setCustTpCdNm(custTpCdNm);
 		
 		return new ResponseEntity<CustDtoToClientExpanded>(custDtoToClient, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<CustAC>> acList() {
+
+		List<Cust> entityList = repositoryC.findAll();
+		List<CustAC> list = new ArrayList<CustAC>();
+		
+		for(int i = 0; i < entityList.size(); i++) {
+			CustAC custAC = new CustAC();
+			custAC.setCustId(entityList.get(i).getCustId());
+			custAC.setCustNm(entityList.get(i).getCustNm());
+			list.add(custAC);
+		}
+
+		return new ResponseEntity<List<CustAC>>(list, HttpStatus.OK);
 	}
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
