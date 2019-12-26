@@ -498,27 +498,32 @@ public class ContController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	
-	@GetMapping(value = "/hist/showall", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ContChngHistDtoToClient>> getAllHist() {
-		List<ContChngHist> entityList = repositoryCCH.findAll();
-
-		List<ContChngHistDtoToClient> list;
-
-		list = modelMapper.map(entityList, new TypeToken<List<ContChngHistDtoToClient>>() {
-		}.getType());
-
-		for (int i = 0; i < entityList.size(); i++) {
-			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
-			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
-			list.get(i).setEmpId(entityList.get(i).getB2en().getEmpId());
-			list.get(i).setEmpNm(entityList.get(i).getB2en().getEmpNm());
+	@GetMapping(value="/hist/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ContChngHistDtoToClient>> findHistByContId(@PathVariable("id") int id) {
+		
+		List<ContChngHist> contChngHistList = repositoryCCH.findByContChngHistPKContId(id);
+		List<ContChngHistDtoToClient> contChngHistDtoToClientList = new ArrayList<ContChngHistDtoToClient>();
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		for(int i = 0; i < contChngHistList.size(); i++) {
+			ContChngHistDtoToClient contChngHistDtoToClient = new ContChngHistDtoToClient();
+			ContChngHist contChngHist = contChngHistList.get(i);
+			contChngHistDtoToClient.setHistSeq(contChngHist.getContChngHistPK().getHistSeq());
+			//contChngHistDtoToClient.setCustNm(contChngHist.getCust().getCustNm());
+			contChngHistDtoToClient.setOrgNm(contChngHist.getOrg().getOrgNm());
+			contChngHistDtoToClient.setEmpNm(contChngHist.getB2en().getEmpNm());
+			contChngHistDtoToClient.setContDt(sdf.format(contChngHist.getContDt()));
+			contChngHistDtoToClient.setContTotAmt(contChngHist.getContTotAmt());
+			contChngHistDtoToClient.setInstallDt(sdf.format(contChngHist.getInstallDt()));
+			contChngHistDtoToClient.setCheckDt(sdf.format(contChngHist.getCheckDt()));
+			contChngHistDtoToClient.setMtncStartDt(sdf.format(contChngHist.getMtncStartDt()));
+			contChngHistDtoToClient.setMtncEndDt(sdf.format(contChngHist.getMtncEndDt()));
+			
+			contChngHistDtoToClientList.add(contChngHistDtoToClient);
 		}
-
-		return new ResponseEntity<List<ContChngHistDtoToClient>>(list, HttpStatus.OK);
-
+		
+		return new ResponseEntity<List<ContChngHistDtoToClient>>(contChngHistDtoToClientList, HttpStatus.OK);
 	}
-	 
 	
 	@GetMapping(value = "/detail/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContDetail>> getAllDetail() {
