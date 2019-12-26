@@ -24,9 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.OrgDto;
-import com.b2en.sms.dto.OrgDtoToClient;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.OrgAC;
+import com.b2en.sms.dto.toclient.OrgDtoToClient;
 import com.b2en.sms.entity.Org;
 import com.b2en.sms.repo.OrgRepository;
 

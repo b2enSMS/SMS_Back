@@ -1,9 +1,9 @@
-package com.b2en.sms.dto;
+package com.b2en.sms.dto.toclient;
 
 import lombok.Data;
 
 @Data
-public class ContAndLcnsDtoToClient {
+public class ContDtoToClient {
 
 	private int contId;
 	
@@ -25,11 +25,11 @@ public class ContAndLcnsDtoToClient {
 	
 	private String contDt;
 	
+	private String contTotAmt;
+	
 	private String contReportNo;
 	
 	private String contTpCd;
-	
-	private String contTpNm;
 	
 	private String installDt;
 	
@@ -39,5 +39,10 @@ public class ContAndLcnsDtoToClient {
 	
 	private String mtncEndDt;
 	
-	private LcnsDtoToClient[] lcns;
+	// 유지보수종료일까지 30일 이내일 경우 true, 아니면 false
+	private boolean tight;
+
+	public void setTight(boolean tight) {
+		this.tight = tight;
+	}
 }

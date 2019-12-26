@@ -1,4 +1,4 @@
-package com.b2en.sms.dto;
+package com.b2en.sms.dto.toclient;
 
 import java.sql.Date;
 
@@ -26,7 +26,7 @@ public class LcnsDtoToClient {
 
 	private Date lcnsEndDt;
 	
-	private String scan;
+	private String fileList;
 	
 	private String contAmt;
 	

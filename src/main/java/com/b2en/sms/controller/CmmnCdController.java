@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.b2en.sms.dto.CmmnDetailCdDtoToClient;
+import com.b2en.sms.dto.toclient.CmmnDetailCdDtoToClient;
 import com.b2en.sms.entity.CmmnDetailCd;
 import com.b2en.sms.repo.CmmnDetailCdRepository;
 
