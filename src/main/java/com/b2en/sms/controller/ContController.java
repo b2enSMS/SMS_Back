@@ -231,8 +231,8 @@ public class ContController {
 		
 		for(int i = 0; i < entityList.size(); i++) {
 			ContAC contAC = new ContAC();
-			contAC.setHeadContIdAC(entityList.get(i).getHeadContId());
-			contAC.setContNmAC(entityList.get(i).getContNm());
+			contAC.setHeadContId(entityList.get(i).getHeadContId());
+			contAC.setHeadContNm(entityList.get(i).getContNm());
 			list.add(contAC);
 		}
 
