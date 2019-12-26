@@ -23,6 +23,8 @@ public class ContAndLcnsDtoToClient {
 	
 	private String contNm;
 	
+	private String headContNm;
+	
 	private String contDt;
 	
 	private String contReportNo;

@@ -183,6 +183,9 @@ public class ContController {
 		contAndLcnsDtoToClient.setOrgNm(cont.getOrg().getOrgNm());
 		contAndLcnsDtoToClient.setEmpId(cont.getB2en().getEmpId());
 		contAndLcnsDtoToClient.setEmpNm(cont.getB2en().getEmpNm());
+		String headContNm = (cont.getHeadContId() == 0) ? "" : repositoryC.getOne(cont.getHeadContId()).getContNm();
+
+		contAndLcnsDtoToClient.setHeadContNm(headContNm);
 		String contTpNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(cont.getContTpCd()).getCmmnDetailCdNm();
 		contAndLcnsDtoToClient.setContTpNm(contTpNm);
 		List<ContDetail> contDetail = repositoryCD.findByContDetailPKContId(id);
