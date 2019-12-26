@@ -27,6 +27,7 @@ import com.b2en.sms.dto.TempVerDto;
 import com.b2en.sms.dto.toclient.LcnsDtoToClientTempVer;
 import com.b2en.sms.dto.toclient.TempVerAndLcnsDtoToClient;
 import com.b2en.sms.dto.toclient.TempVerDtoToClient;
+import com.b2en.sms.dto.toclient.TempVerHistDtoToClient;
 import com.b2en.sms.entity.TempVer;
 import com.b2en.sms.entity.TempVerHist;
 import com.b2en.sms.entity.pk.TempVerHistPK;
@@ -179,46 +180,22 @@ public class TempVerController {
 	}
 	
 	@GetMapping(value="/hist/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<TempVerDtoToClient>> findHistByTempVerId(@PathVariable("id") int id) {
+	public ResponseEntity<List<TempVerHistDtoToClient>> findHistByTempVerId(@PathVariable("id") int id) {
 		
 		List<TempVerHist> tempVerHistList = repositoryTempHist.findByTempVerHistPKTempVerId(id);
-		List<TempVerDtoToClient> list = new ArrayList<TempVerDtoToClient>();
+		List<TempVerHistDtoToClient> list = new ArrayList<TempVerHistDtoToClient>();
 
 		for(int i = 0; i < tempVerHistList.size(); i++) {
-			TempVerDtoToClient tempVerDtoToClient = new TempVerDtoToClient();
+			TempVerHistDtoToClient tempVerHistDtoToClient = new TempVerHistDtoToClient();
 			TempVerHist tempVerHist = tempVerHistList.get(i);
-			tempVerDtoToClient.setCustNm(tempVerHist.getCust().getCustNm());
-			tempVerDtoToClient.setLcnsNo(tempVerHist.getLcns().getLcnsNo());
-			tempVerDtoToClient.setEmpNm(tempVerHist.getB2en().getEmpNm());
-			tempVerDtoToClient.setMacAddr(tempVerHist.getMacAddr());
+			tempVerHistDtoToClient.setCustNm(tempVerHist.getCust().getCustNm());
+			tempVerHistDtoToClient.setLcnsNo(tempVerHist.getLcns().getLcnsNo());
+			tempVerHistDtoToClient.setEmpNm(tempVerHist.getB2en().getEmpNm());
+			tempVerHistDtoToClient.setMacAddr(tempVerHist.getMacAddr());
 			
-			list.add(tempVerDtoToClient);
+			list.add(tempVerHistDtoToClient);
 		}
 		
-		return new ResponseEntity<List<TempVerDtoToClient>>(list, HttpStatus.OK);
-	}
-	
-	@GetMapping(value = "/hist/showall", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<TempVerDtoToClient>> showAllHist() {
-
-		List<TempVerHist> entityList = repositoryTempHist.findAll();
-		List<TempVerDtoToClient> list = new ArrayList<TempVerDtoToClient>();
-		
-		for(int i = 0; i < entityList.size(); i++) {
-			TempVerDtoToClient tempVerDtoToClient = new TempVerDtoToClient();
-			TempVerHist tempVerHist = entityList.get(i);
-			tempVerDtoToClient.setTempVerId(tempVerHist.getTempVerHistPK().getTempVerId());
-			tempVerDtoToClient.setCustId(tempVerHist.getCust().getCustId());
-			tempVerDtoToClient.setCustNm(tempVerHist.getCust().getCustNm());
-			tempVerDtoToClient.setLcnsId(tempVerHist.getLcns().getLcnsId());
-			tempVerDtoToClient.setLcnsNo(tempVerHist.getLcns().getLcnsNo());
-			tempVerDtoToClient.setEmpId(tempVerHist.getB2en().getEmpId());
-			tempVerDtoToClient.setEmpNm(tempVerHist.getB2en().getEmpNm());
-			tempVerDtoToClient.setMacAddr(tempVerHist.getMacAddr());
-			list.add(tempVerDtoToClient);
-		}
-
-		return new ResponseEntity<List<TempVerDtoToClient>>(list, HttpStatus.OK);
-
+		return new ResponseEntity<List<TempVerHistDtoToClient>>(list, HttpStatus.OK);
 	}
 }
