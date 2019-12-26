@@ -2,6 +2,7 @@ package com.b2en.sms.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -518,6 +519,7 @@ public class ContController {
 			contChngHistDtoToClient.setCheckDt(sdf.format(contChngHist.getCheckDt()));
 			contChngHistDtoToClient.setMtncStartDt(sdf.format(contChngHist.getMtncStartDt()));
 			contChngHistDtoToClient.setMtncEndDt(sdf.format(contChngHist.getMtncEndDt()));
+			contChngHistDtoToClient.setCreatedDate(contChngHist.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 			
 			contChngHistDtoToClientList.add(contChngHistDtoToClient);
 		}
