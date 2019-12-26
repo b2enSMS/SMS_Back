@@ -169,4 +169,28 @@ public class TempVerController {
 		res.add(new ResponseInfo("수정에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
+	
+	@GetMapping(value = "/hist/showall", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<TempVerDtoToClient>> showAllHist() {
+
+		List<TempVerHist> entityList = repositoryTempHist.findAll();
+		List<TempVerDtoToClient> list = new ArrayList<TempVerDtoToClient>();
+		
+		for(int i = 0; i < entityList.size(); i++) {
+			TempVerDtoToClient tempVerDtoToClient = new TempVerDtoToClient();
+			TempVerHist tempVerHist = entityList.get(i);
+			tempVerDtoToClient.setTempVerId(tempVerHist.getTempVerHistPK().getTempVerId());
+			tempVerDtoToClient.setCustId(tempVerHist.getCust().getCustId());
+			tempVerDtoToClient.setCustNm(tempVerHist.getCust().getCustNm());
+			tempVerDtoToClient.setLcnsId(tempVerHist.getLcns().getLcnsId());
+			tempVerDtoToClient.setLcnsNo(tempVerHist.getLcns().getLcnsNo());
+			tempVerDtoToClient.setEmpId(tempVerHist.getB2en().getEmpId());
+			tempVerDtoToClient.setEmpNm(tempVerHist.getB2en().getEmpNm());
+			tempVerDtoToClient.setMacAddr(tempVerHist.getMacAddr());
+			list.add(tempVerDtoToClient);
+		}
+
+		return new ResponseEntity<List<TempVerDtoToClient>>(list, HttpStatus.OK);
+
+	}
 }

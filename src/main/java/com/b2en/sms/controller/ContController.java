@@ -36,6 +36,7 @@ import com.b2en.sms.dto.LcnsDto;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.ContAC;
 import com.b2en.sms.dto.toclient.ContAndLcnsDtoToClient;
+import com.b2en.sms.dto.toclient.ContChngHistDtoToClient;
 import com.b2en.sms.dto.toclient.ContDtoToClient;
 import com.b2en.sms.dto.toclient.LcnsDtoToClient;
 import com.b2en.sms.entity.B2en;
@@ -222,8 +223,8 @@ public class ContController {
 		
 		for(int i = 0; i < entityList.size(); i++) {
 			ContAC contAC = new ContAC();
-			contAC.setHeadContId(entityList.get(i).getHeadContId());
-			contAC.setContNm(entityList.get(i).getContNm());
+			contAC.setHeadContIdAC(entityList.get(i).getHeadContId());
+			contAC.setContNmAC(entityList.get(i).getContNm());
 			list.add(contAC);
 		}
 
@@ -493,31 +494,27 @@ public class ContController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	/*
-	 * @GetMapping(value = "/hist/showall", produces =
-	 * MediaType.APPLICATION_JSON_VALUE) public
-	 * ResponseEntity<List<ContDtoToClient>> getAllHist() { // delYn의 값이 "N"인
-	 * 경우(삭제된걸로 처리되지 않은 경우)만 불러옴 List<ContChngHist> entityList =
-	 * repositoryCCH.findAll();
-	 * 
-	 * List<ContDtoToClient> list;
-	 * 
-	 * list = modelMapper.map(entityList, new TypeToken<List<ContDtoToClient>>() {
-	 * }.getType());
-	 * 
-	 * for(int i = 0; i < entityList.size(); i++) {
-	 * list.get(i).setCustId(entityList.get(i).getCust().getCustId());
-	 * list.get(i).setCustNm(entityList.get(i).getCust().getCustNm());
-	 * list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
-	 * list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
-	 * list.get(i).setEmpId(entityList.get(i).getB2en().getEmpId());
-	 * list.get(i).setEmpNm(entityList.get(i).getB2en().getEmpNm());
-	 * list.get(i).setTight(calculateIsTight(list.get(i).getMtncEndDt())); }
-	 * 
-	 * return new ResponseEntity<List<ContDtoToClient>>(list, HttpStatus.OK);
-	 * 
-	 * }
-	 */
+	
+	@GetMapping(value = "/hist/showall", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ContChngHistDtoToClient>> getAllHist() {
+		List<ContChngHist> entityList = repositoryCCH.findAll();
+
+		List<ContChngHistDtoToClient> list;
+
+		list = modelMapper.map(entityList, new TypeToken<List<ContChngHistDtoToClient>>() {
+		}.getType());
+
+		for (int i = 0; i < entityList.size(); i++) {
+			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
+			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
+			list.get(i).setEmpId(entityList.get(i).getB2en().getEmpId());
+			list.get(i).setEmpNm(entityList.get(i).getB2en().getEmpNm());
+		}
+
+		return new ResponseEntity<List<ContChngHistDtoToClient>>(list, HttpStatus.OK);
+
+	}
+	 
 	
 	@GetMapping(value = "/detail/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContDetail>> getAllDetail() {
