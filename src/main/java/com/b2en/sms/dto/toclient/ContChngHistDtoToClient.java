@@ -26,4 +26,6 @@ public class ContChngHistDtoToClient {
 	private String mtncEndDt;
 	
 	private String createdDate;
+	
+	private String contNm;
 }
