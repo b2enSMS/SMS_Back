@@ -29,13 +29,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.ContAndLcnsDto;
 import com.b2en.sms.dto.ContAndLcnsDtoForUpdate;
-import com.b2en.sms.dto.ContAndLcnsDtoToClient;
-import com.b2en.sms.dto.ContDtoToClient;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.LcnsDto;
-import com.b2en.sms.dto.LcnsDtoToClient;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.ContAC;
+import com.b2en.sms.dto.toclient.ContAndLcnsDtoToClient;
+import com.b2en.sms.dto.toclient.ContDtoToClient;
+import com.b2en.sms.dto.toclient.LcnsDtoToClient;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.entity.Cont;
 import com.b2en.sms.entity.ContChngHist;
@@ -180,6 +180,7 @@ public class ContController {
 			lcnsDtoToClient[i].setContAmt(contDetail.get(i).getContAmt());
 			String lcnsTpNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(contDetail.get(i).getLcns().getLcnsTpCd()).getCmmnDetailCdNm();
 			lcnsDtoToClient[i].setLcnsTpNm(lcnsTpNm);
+			lcnsDtoToClient[i].setFileList(contDetail.get(i).getLcns().getScan());
 		}
 		contAndLcnsDtoToClient.setLcns(lcnsDtoToClient);
 		

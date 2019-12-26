@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.MeetDto;
-import com.b2en.sms.dto.MeetDtoToClient;
 import com.b2en.sms.dto.ResponseInfo;
+import com.b2en.sms.dto.toclient.MeetDtoToClient;
 import com.b2en.sms.entity.Meet;
 import com.b2en.sms.entity.MeetAttendCust;
 import com.b2en.sms.entity.MeetAttendEmp;

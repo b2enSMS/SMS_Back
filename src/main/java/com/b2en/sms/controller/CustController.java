@@ -23,10 +23,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.CustDto;
-import com.b2en.sms.dto.CustDtoToClient;
-import com.b2en.sms.dto.CustDtoToClientExpanded;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.ResponseInfo;
+import com.b2en.sms.dto.toclient.CustDtoToClient;
+import com.b2en.sms.dto.toclient.CustDtoToClientExpanded;
 import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Org;
 import com.b2en.sms.repo.CmmnDetailCdRepository;

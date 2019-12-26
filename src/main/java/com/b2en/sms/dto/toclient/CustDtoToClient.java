@@ -1,9 +1,11 @@
-package com.b2en.sms.dto;
+package com.b2en.sms.dto.toclient;
 
 import lombok.Data;
 
 @Data
-public class CustDtoToClientExpanded {
+public class CustDtoToClient {
+	
+	private int custId;
 	
 	private int orgId;
 	
@@ -16,8 +18,7 @@ public class CustDtoToClientExpanded {
 	private String email;
 
 	private String telNo;
-
+	
 	private String custTpCd;
-
-	private String custTpCdNm;
+	
 }

@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.TempVerDto;
-import com.b2en.sms.dto.TempVerDtoToClient;
+import com.b2en.sms.dto.toclient.TempVerDtoToClient;
 import com.b2en.sms.entity.TempVer;
 import com.b2en.sms.entity.TempVerHist;
 import com.b2en.sms.entity.pk.TempVerHistPK;
