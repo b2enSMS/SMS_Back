@@ -2,6 +2,9 @@ package com.b2en.sms.dto.toclient;
 
 import java.sql.Date;
 
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
+
 import lombok.Data;
 
 @Data
@@ -26,7 +29,7 @@ public class LcnsDtoToClient {
 
 	private Date lcnsEndDt;
 	
-	private String fileList;
+	private ResponseEntity<Resource> fileList;
 	
 	private String contAmt;
 	

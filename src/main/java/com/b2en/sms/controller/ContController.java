@@ -12,6 +12,8 @@ import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +48,7 @@ import com.b2en.sms.entity.Lcns;
 import com.b2en.sms.entity.LcnsChngHist;
 import com.b2en.sms.entity.Org;
 import com.b2en.sms.entity.Prdt;
+import com.b2en.sms.entity.file.Scan;
 import com.b2en.sms.entity.pk.ContChngHistPK;
 import com.b2en.sms.entity.pk.ContDetailHistPK;
 import com.b2en.sms.entity.pk.ContDetailPK;
@@ -61,6 +64,9 @@ import com.b2en.sms.repo.LcnsChngHistRepository;
 import com.b2en.sms.repo.LcnsRepository;
 import com.b2en.sms.repo.OrgRepository;
 import com.b2en.sms.repo.PrdtRepository;
+import com.b2en.sms.repo.file.ScanRepository;
+import com.b2en.sms.service.file.MyFileNotFoundException;
+import com.b2en.sms.service.file.ScanStorageService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -92,7 +98,11 @@ public class ContController {
 	@Autowired
 	private CmmnDetailCdRepository repositoryCDC;
 	@Autowired
+	private ScanRepository repositoryS;
+	@Autowired
 	private ModelMapper modelMapper;
+	@Autowired
+    private ScanStorageService scanStorageService;
 	
 	@GetMapping(value = "/showincludedel", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContDtoToClient>> getAll() {
@@ -180,11 +190,28 @@ public class ContController {
 			lcnsDtoToClient[i].setContAmt(contDetail.get(i).getContAmt());
 			String lcnsTpNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(contDetail.get(i).getLcns().getLcnsTpCd()).getCmmnDetailCdNm();
 			lcnsDtoToClient[i].setLcnsTpNm(lcnsTpNm);
-			lcnsDtoToClient[i].setFileList(contDetail.get(i).getLcns().getScan());
+			String[] splitted = contDetail.get(i).getLcns().getScan().split("/");
+			String scanId = splitted[splitted.length-1];
+			lcnsDtoToClient[i].setFileList(getScanImg(scanId));
 		}
 		contAndLcnsDtoToClient.setLcns(lcnsDtoToClient);
 		
 		return new ResponseEntity<ContAndLcnsDtoToClient>(contAndLcnsDtoToClient, HttpStatus.OK);
+	}
+	
+	private ResponseEntity<Resource> getScanImg(String fileId) {
+		Scan scan = repositoryS.findById(fileId).orElseThrow(() -> new MyFileNotFoundException("File not found with id " + fileId));
+
+		// Load file as Resource
+		Resource resource = scanStorageService.loadFileAsResource(scan.getFileName());
+
+		// Try to determine file's content type
+		String contentType = scan.getFileType();
+
+		return ResponseEntity.ok()
+				.contentType(MediaType.parseMediaType(contentType))
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+				.body(resource);
 	}
 	
 	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -465,6 +492,32 @@ public class ContController {
 		res.add(new ResponseInfo("수정에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
+	
+	/*
+	 * @GetMapping(value = "/hist/showall", produces =
+	 * MediaType.APPLICATION_JSON_VALUE) public
+	 * ResponseEntity<List<ContDtoToClient>> getAllHist() { // delYn의 값이 "N"인
+	 * 경우(삭제된걸로 처리되지 않은 경우)만 불러옴 List<ContChngHist> entityList =
+	 * repositoryCCH.findAll();
+	 * 
+	 * List<ContDtoToClient> list;
+	 * 
+	 * list = modelMapper.map(entityList, new TypeToken<List<ContDtoToClient>>() {
+	 * }.getType());
+	 * 
+	 * for(int i = 0; i < entityList.size(); i++) {
+	 * list.get(i).setCustId(entityList.get(i).getCust().getCustId());
+	 * list.get(i).setCustNm(entityList.get(i).getCust().getCustNm());
+	 * list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
+	 * list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
+	 * list.get(i).setEmpId(entityList.get(i).getB2en().getEmpId());
+	 * list.get(i).setEmpNm(entityList.get(i).getB2en().getEmpNm());
+	 * list.get(i).setTight(calculateIsTight(list.get(i).getMtncEndDt())); }
+	 * 
+	 * return new ResponseEntity<List<ContDtoToClient>>(list, HttpStatus.OK);
+	 * 
+	 * }
+	 */
 	
 	@GetMapping(value = "/detail/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContDetail>> getAllDetail() {
