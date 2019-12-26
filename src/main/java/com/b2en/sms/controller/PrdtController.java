@@ -111,7 +111,7 @@ public class PrdtController {
 	}
 	
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody PrdtDto prdt, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody PrdtDto prdtDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -133,7 +133,13 @@ public class PrdtController {
 			res.add(new ResponseInfo("해당 id를 가진 row가 없습니다."));
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
-
+		
+		toUpdate.setPrdtNm(prdtDto.getPrdtNm());
+		toUpdate.setPrdtVer(prdtDto.getPrdtVer());
+		toUpdate.setPrdtDesc(prdtDto.getPrdtDesc());
+		toUpdate.setPrdtAmt(prdtDto.getPrdtAmt());
+		toUpdate.setPrdtTpCd(prdtDto.getPrdtTpCd());
+		
 		repository.save(toUpdate);
 		
 		res.add(new ResponseInfo("수정에 성공했습니다."));

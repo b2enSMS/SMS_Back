@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.TempVerDto;
+import com.b2en.sms.dto.toclient.LcnsDtoToClientTempVer;
+import com.b2en.sms.dto.toclient.TempVerAndLcnsDtoToClient;
 import com.b2en.sms.dto.toclient.TempVerDtoToClient;
 import com.b2en.sms.entity.TempVer;
 import com.b2en.sms.entity.TempVerHist;
@@ -47,6 +50,8 @@ public class TempVerController {
 	private LcnsRepository repositoryLcns;
 	@Autowired
 	private B2enRepository repositoryB2en;
+	@Autowired
+	private ModelMapper modelMapper;
 	
 	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<TempVerDtoToClient>> showAll() {
@@ -73,21 +78,24 @@ public class TempVerController {
 	}
 	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<TempVerDtoToClient> findById(@PathVariable("id") int id) {
+	public ResponseEntity<TempVerAndLcnsDtoToClient> findById(@PathVariable("id") int id) {
 		
 		TempVer tempVer = repositoryTemp.getOne(id);
 		
-		TempVerDtoToClient tempVerDtoToClient = new TempVerDtoToClient();
-		tempVerDtoToClient.setTempVerId(tempVer.getTempVerId());
-		tempVerDtoToClient.setCustId(tempVer.getCust().getCustId());
-		tempVerDtoToClient.setCustNm(tempVer.getCust().getCustNm());
-		tempVerDtoToClient.setLcnsId(tempVer.getLcns().getLcnsId());
-		tempVerDtoToClient.setLcnsNo(tempVer.getLcns().getLcnsNo());
-		tempVerDtoToClient.setEmpId(tempVer.getB2en().getEmpId());
-		tempVerDtoToClient.setEmpNm(tempVer.getB2en().getEmpNm());
-		tempVerDtoToClient.setMacAddr(tempVer.getMacAddr());
+		TempVerAndLcnsDtoToClient tempVerAndLcnsDtoToClient = new TempVerAndLcnsDtoToClient();
+		tempVerAndLcnsDtoToClient.setTempVerId(tempVer.getTempVerId());
+		tempVerAndLcnsDtoToClient.setCustId(tempVer.getCust().getCustId());
+		tempVerAndLcnsDtoToClient.setCustNm(tempVer.getCust().getCustNm());
+		LcnsDtoToClientTempVer lcnsDto = new LcnsDtoToClientTempVer();
+		lcnsDto = modelMapper.map(tempVer.getLcns(), LcnsDtoToClientTempVer.class);
+		lcnsDto.setPrdtId(tempVer.getLcns().getPrdt().getPrdtId());
+		lcnsDto.setPrdtNm(tempVer.getLcns().getPrdt().getPrdtNm());
+		tempVerAndLcnsDtoToClient.setLcns(lcnsDto);
+		tempVerAndLcnsDtoToClient.setEmpId(tempVer.getB2en().getEmpId());
+		tempVerAndLcnsDtoToClient.setEmpNm(tempVer.getB2en().getEmpNm());
+		tempVerAndLcnsDtoToClient.setMacAddr(tempVer.getMacAddr());
 		
-		return new ResponseEntity<TempVerDtoToClient>(tempVerDtoToClient, HttpStatus.OK);
+		return new ResponseEntity<TempVerAndLcnsDtoToClient>(tempVerAndLcnsDtoToClient, HttpStatus.OK);
 	}
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
