@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.MeetDto;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.toclient.MeetDtoToClient;
@@ -88,7 +89,7 @@ public class MeetController {
 	}
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody MeetDto meet, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody MeetDto meetDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -102,9 +103,9 @@ public class MeetController {
 		}
 		 
 		
-		Meet meetEntity = modelMapper.map(meet, Meet.class);
+		Meet meetEntity = modelMapper.map(meetDto, Meet.class);
 		
-		int orgId = meet.getOrgId(); // 해당 id를 갖는 Org 찾아서 저장
+		int orgId = meetDto.getOrgId(); // 해당 id를 갖는 Org 찾아서 저장
 		Org org = repositoryO.getOne(orgId);
 		
 		meetEntity.setOrg(org);
@@ -115,15 +116,17 @@ public class MeetController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> delete(@PathVariable("id") int id) {
-
-		repositoryM.deleteById(id);
+	@DeleteMapping(value = "")
+	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
+		int[] idx = id.getIdx();
+		for(int i = 0; i < idx.length; i++) {
+			repositoryM.deleteById(idx[i]);
+		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody MeetDto meet, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody MeetDto meetDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -143,10 +146,12 @@ public class MeetController {
 			res.add(new ResponseInfo("해당 id를 가진 row가 없습니다."));
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
-		
-		String meetCnt = meet.getMeetCnt();
 
-		toUpdate.setMeetCnt(meetCnt);
+		toUpdate.setMeetDt(java.sql.Date.valueOf(meetDto.getMeetDt()));
+		toUpdate.setMeetCnt(meetDto.getMeetCnt());
+		toUpdate.setMeetStartTime(java.sql.Time.valueOf(meetDto.getMeetStartTime()));
+		toUpdate.setMeetTotTime(meetDto.getMeetTotTime());
+		toUpdate.setMeetTpCd(meetDto.getMeetTpCd());
 
 		repositoryM.save(toUpdate);
 		
