@@ -159,19 +159,19 @@ public class MeetController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	@GetMapping(value = "/attend/cust/showall", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<MeetAttendCust>> showAllAttendCust() {
+	@GetMapping(value = "/attend/cust/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<MeetAttendCust>> showAttendCust(@PathVariable int id) {
 
-		List<MeetAttendCust> entityList = repositoryMAC.findAll();
+		List<MeetAttendCust> entityList = repositoryMAC.findByMeetAttendCustPKMeetId(id);
 		
 		return new ResponseEntity<List<MeetAttendCust>>(entityList, HttpStatus.OK);
 
 	}
 	
-	@GetMapping(value = "/attend/b2en/showall", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<MeetAttendEmp>> showAllAttendEmp() {
+	@GetMapping(value = "/attend/b2en/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<MeetAttendEmp>> showAttendEmp(@PathVariable int id) {
 
-		List<MeetAttendEmp> entityList = repositoryMAE.findAll();
+		List<MeetAttendEmp> entityList = repositoryMAE.findByMeetAttendEmpPKMeetId(id);
 		
 		return new ResponseEntity<List<MeetAttendEmp>>(entityList, HttpStatus.OK);
 

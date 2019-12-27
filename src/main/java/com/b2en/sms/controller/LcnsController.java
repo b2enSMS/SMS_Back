@@ -183,4 +183,17 @@ public class LcnsController {
 		return new ResponseEntity<List<LcnsChngHistDtoToClient>>(list, HttpStatus.OK);
 
 	}
+	
+	@GetMapping(value = "/hist/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<LcnsChngHistDtoToClient>> getHistByLcnsId(@PathVariable int id) {
+		List<LcnsChngHist> entityList = repositoryLCH.findByLcnsChngHistPKLcnsId(id);
+
+		List<LcnsChngHistDtoToClient> list;
+
+		list = modelMapper.map(entityList, new TypeToken<List<LcnsChngHistDtoToClient>>() {
+		}.getType());
+
+		return new ResponseEntity<List<LcnsChngHistDtoToClient>>(list, HttpStatus.OK);
+
+	}
 }

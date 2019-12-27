@@ -1,5 +1,6 @@
 package com.b2en.sms.controller.file;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,14 +54,29 @@ public class ScanController {
         scan = repository.save(scan);
         String scanId = scan.getId();
         
-       scanStorageService.storeFile(file, scanId);
-        
-        String url = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/api/scan/download/")
-                .path(scanId)
-                .toUriString();
+		scanStorageService.storeFile(file, scanId);
 
-        return new ScanResponse(fileName, "sss", url, url);
+		String[] splitted = scan.getFileType().split("/"); // 확장자 가져오기
+		String responseFileName = scanId + "." + splitted[1]; // 파일명을 scanId로 변경
+
+		// Load file as Resource
+		Resource resource = scanStorageService.loadFileAsResource(responseFileName);
+
+		File responseFile = null;
+		try {
+			responseFile = resource.getFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        
+		/*
+		 * String url = ServletUriComponentsBuilder.fromCurrentContextPath()
+		 * .path("/api/scan/download/") .path(scanId) .toUriString();
+		 */
+		
+		String url = responseFile.toString();
+		
+        return new ScanResponse(fileName, "done", url, url);
     }
     
     @GetMapping("/download/{fileId}")

@@ -160,7 +160,7 @@ public class ContController {
 	}
 	
 	private boolean calculateIsTight(String strEnd) {
-		long alertRange = 90;
+		long alertRange = 90; // 남은 날짜가 이것 이하면 경고
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar c1 = Calendar.getInstance();
         String strToday = sdf.format(c1.getTime());
@@ -230,7 +230,6 @@ public class ContController {
 		try {
 			file = resource.getFile();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
