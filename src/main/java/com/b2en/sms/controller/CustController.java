@@ -28,9 +28,11 @@ import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.CustAC;
 import com.b2en.sms.dto.toclient.CustDtoToClient;
 import com.b2en.sms.dto.toclient.CustDtoToClientExpanded;
+import com.b2en.sms.entity.Cont;
 import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Org;
 import com.b2en.sms.repo.CmmnDetailCdRepository;
+import com.b2en.sms.repo.ContRepository;
 import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.OrgRepository;
 
@@ -39,7 +41,10 @@ import com.b2en.sms.repo.OrgRepository;
 public class CustController {
 
 	@Autowired
-	private CustRepository repositoryC;
+	private CustRepository repositoryCust;
+	
+	@Autowired
+	private ContRepository repositoryCont;
 	
 	@Autowired
 	private OrgRepository repositoryO;
@@ -53,7 +58,7 @@ public class CustController {
 	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CustDtoToClient>> showAll() {
 
-		List<Cust> entityList = repositoryC.findAllOrderByName();
+		List<Cust> entityList = repositoryCust.findAllOrderByName();
 		List<CustDtoToClient> list;
 		int orgId;
 		String orgNm;
@@ -72,10 +77,66 @@ public class CustController {
 
 	}
 	
+	@GetMapping(value = "/cont", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<CustDtoToClient>> showCont() {
+
+		List<Cont> contList = repositoryCont.findByDelYn("N");
+		List<Cust> entityList = new ArrayList<Cust>();
+		List<CustDtoToClient> list;
+		for(int i = 0; i < contList.size(); i++) {
+			Cust contCust = contList.get(i).getCust();
+			if(contCust == null || entityList.contains(contCust)) {
+				continue;
+			}
+			entityList.add(contCust); // 가망고객만 리스트에 추가
+		}
+
+		list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
+		}.getType());
+
+		for(int i = 0; i < entityList.size(); i++) {
+			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
+			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
+		}
+		
+		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
+
+	}
+	
+	
+	@GetMapping(value = "/presale", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<CustDtoToClient>> showPresale() {
+
+		List<Cont> contList = repositoryCont.findByDelYn("N");
+		List<Cust> entityList = repositoryCust.findAll();
+
+		for (int i = 0; i < contList.size(); i++) {
+			Cust contCust = contList.get(i).getCust();
+			if (contCust == null) {
+				continue;
+			}
+			if(entityList.contains(contCust)) {
+				entityList.remove(contCust); // 전체 리스트에서 가망고객을 제거
+			}
+		}
+
+		List<CustDtoToClient> list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
+		}.getType());
+
+		for (int i = 0; i < entityList.size(); i++) {
+			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
+			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
+		}
+
+		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
+
+	}
+	 
+	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CustDtoToClientExpanded> findById(@PathVariable("id") int id) {
 		
-		Cust cust = repositoryC.getOne(id);
+		Cust cust = repositoryCust.getOne(id);
 		
 		CustDtoToClientExpanded custDtoToClient = modelMapper.map(cust, CustDtoToClientExpanded.class);
 		custDtoToClient.setOrgId(cust.getOrg().getOrgId());
@@ -89,7 +150,7 @@ public class CustController {
 	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CustAC>> acList() {
 
-		List<Cust> entityList = repositoryC.findAll();
+		List<Cust> entityList = repositoryCust.findAll();
 		List<CustAC> list = new ArrayList<CustAC>();
 		
 		for(int i = 0; i < entityList.size(); i++) {
@@ -123,7 +184,7 @@ public class CustController {
 		
 		custEntity.setOrg(org);
 		
-		repositoryC.save(custEntity);
+		repositoryCust.save(custEntity);
 		
 		res.add(new ResponseInfo("등록에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
@@ -133,7 +194,7 @@ public class CustController {
 	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
-			repositoryC.deleteById(idx[i]);
+			repositoryCust.deleteById(idx[i]);
 		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
@@ -152,7 +213,7 @@ public class CustController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		Cust toUpdate = repositoryC.getOne(id);
+		Cust toUpdate = repositoryCust.getOne(id);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
@@ -169,7 +230,7 @@ public class CustController {
 		toUpdate.setTelNo(cust.getTelNo());
 		toUpdate.setCustTpCd(cust.getCustTpCd());
 
-		repositoryC.save(toUpdate);
+		repositoryCust.save(toUpdate);
 		
 		res.add(new ResponseInfo("수정에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
