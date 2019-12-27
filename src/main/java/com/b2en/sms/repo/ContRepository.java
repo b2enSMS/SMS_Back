@@ -8,6 +8,8 @@ import com.b2en.sms.entity.Cont;
 
 public interface ContRepository extends JpaRepository<Cont, Integer>{
 	
+	Cont findByHeadContId(int headContId);
+	
 	List<Cont> findByDelYn(String yn);
 	
 	List<Cont> findByDelYnOrderByContIdDesc(String yn);

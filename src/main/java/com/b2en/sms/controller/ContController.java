@@ -1,5 +1,7 @@
 package com.b2en.sms.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +16,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +68,7 @@ import com.b2en.sms.repo.LcnsRepository;
 import com.b2en.sms.repo.OrgRepository;
 import com.b2en.sms.repo.PrdtRepository;
 import com.b2en.sms.repo.file.ScanRepository;
+import com.b2en.sms.service.file.FileList;
 import com.b2en.sms.service.file.MyFileNotFoundException;
 import com.b2en.sms.service.file.ScanStorageService;
 
@@ -183,7 +185,7 @@ public class ContController {
 		contAndLcnsDtoToClient.setOrgNm(cont.getOrg().getOrgNm());
 		contAndLcnsDtoToClient.setEmpId(cont.getB2en().getEmpId());
 		contAndLcnsDtoToClient.setEmpNm(cont.getB2en().getEmpNm());
-		String headContNm = (cont.getHeadContId() == 0) ? "" : repositoryC.getOne(cont.getHeadContId()).getContNm();
+		String headContNm = (cont.getHeadContId() == 0) ? "" : repositoryC.findByHeadContId(cont.getHeadContId()).getContNm();
 
 		contAndLcnsDtoToClient.setHeadContNm(headContNm);
 		String contTpNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(cont.getContTpCd()).getCmmnDetailCdNm();
@@ -197,30 +199,43 @@ public class ContController {
 			lcnsDtoToClient[i].setContAmt(contDetail.get(i).getContAmt());
 			String lcnsTpNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(contDetail.get(i).getLcns().getLcnsTpCd()).getCmmnDetailCdNm();
 			lcnsDtoToClient[i].setLcnsTpNm(lcnsTpNm);
-			//String[] splitted = contDetail.get(i).getLcns().getScan().split("/");
-			//String scanId = splitted[splitted.length-1];
-			//lcnsDtoToClient[i].customSetFileList(getScanImg(scanId));
+			String[] splitted = contDetail.get(i).getLcns().getScan().split("/");
+			String scanId = splitted[splitted.length-1];
+			lcnsDtoToClient[i].setFileList(getScanImg(scanId));
 		}
 		contAndLcnsDtoToClient.setLcns(lcnsDtoToClient);
 		
 		return new ResponseEntity<ContAndLcnsDtoToClient>(contAndLcnsDtoToClient, HttpStatus.OK);
 	}
 	
-	private ResponseEntity<Resource> getScanImg(String scanId) {
+	private FileList getScanImg(String scanId) {
 		Scan scan = repositoryS.findById(scanId).orElseThrow(() -> new MyFileNotFoundException("File not found with id " + scanId));
 		String[] splitted = scan.getFileType().split("/"); // 확장자 가져오기
         String fileName = scanId + "." + splitted[1]; // 파일명을 scanId로 변경
 		
 		// Load file as Resource
 		Resource resource = scanStorageService.loadFileAsResource(fileName);
+		
+		System.out.println(resource.toString());
 
-		// Try to determine file's content type
-		String contentType = scan.getFileType();
-
-		return ResponseEntity.ok()
-				.contentType(MediaType.parseMediaType(contentType))
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-				.body(resource);
+		File file = null;
+		try {
+			file = resource.getFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		FileList fileList = new FileList();
+		fileList.setUid("-1");
+		fileList.setName(scan.getFileName());
+		fileList.setStatus("done");
+		fileList.setUrl(file.toString());
+		fileList.setThumbUrl(file.toString());
+		
+		System.out.println(file.toString());
+		
+		return fileList;
 	}
 	
 	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
