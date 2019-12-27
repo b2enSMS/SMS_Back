@@ -35,6 +35,7 @@ import com.b2en.sms.dto.ContAndLcnsDto;
 import com.b2en.sms.dto.ContAndLcnsDtoForUpdate;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.LcnsDto;
+import com.b2en.sms.dto.LcnsDtoForUpdate;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.ContAC;
 import com.b2en.sms.dto.toclient.ContAndLcnsDtoToClient;
@@ -194,13 +195,16 @@ public class ContController {
 		LcnsDtoToClient[] lcnsDtoToClient = new LcnsDtoToClient[contDetail.size()];
 		for(int i = 0; i < lcnsDtoToClient.length; i++) {
 			lcnsDtoToClient[i] = modelMapper.map(contDetail.get(i).getLcns(), LcnsDtoToClient.class);
+			lcnsDtoToClient[i].setContSeq(contDetail.get(i).getContDetailPK().getContSeq());
 			lcnsDtoToClient[i].setPrdtId(contDetail.get(i).getLcns().getPrdt().getPrdtId());
 			lcnsDtoToClient[i].setPrdtNm(contDetail.get(i).getLcns().getPrdt().getPrdtNm());
 			lcnsDtoToClient[i].setContAmt(contDetail.get(i).getContAmt());
 			String lcnsTpNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(contDetail.get(i).getLcns().getLcnsTpCd()).getCmmnDetailCdNm();
 			lcnsDtoToClient[i].setLcnsTpNm(lcnsTpNm);
-			String[] splitted = contDetail.get(i).getLcns().getScan().split("/");
-			String scanId = splitted[splitted.length-1];
+			String[] splitted1 = contDetail.get(i).getLcns().getScan().split("/");
+			String fn = splitted1[splitted1.length-1];
+			String[] splitted2 = fn.split("\\.");
+			String scanId = splitted2[0];
 			lcnsDtoToClient[i].setFileList(getScanImg(scanId));
 		}
 		contAndLcnsDtoToClient.setLcns(lcnsDtoToClient);
@@ -402,7 +406,7 @@ public class ContController {
 		Org org = repositoryO.getOne(orgId);
 		int empId = contAndLcnsDto.getEmpId();
 		B2en b2en = repositoryB.getOne(empId);
-		LcnsDto[] lcnsDto = contAndLcnsDto.getLcns();
+		LcnsDtoForUpdate[] lcnsDto = contAndLcnsDto.getLcns();
 
 		toUpdate.setCust(cust);
 		toUpdate.setOrg(org);
@@ -434,16 +438,16 @@ public class ContController {
 		
 		// ======================= contDetail, Lcns 탐색(생성/수정/삭제) ==========================
 		List<ContDetail> cdList = repositoryCD.findByContDetailPKContId(id); // 기존의 contDetail
-		int[] contSeq = contAndLcnsDto.getContSeq(); // 수정할 contDetail의 contSeq, contSeq.length == lcnsDto.length
+		//[] contSeq = contAndLcnsDto.getContSeq(); // 수정할 contDetail의 contSeq, contSeq.length == lcnsDto.length
 		
-		for(int i = 0; i < contSeq.length; i++) {
-			ContDetail contDetail = repositoryCD.findByContDetailPKContSeq(contSeq[i]); // 해당 contSeq를 가진 contDetail이 있나 탐색
+		for(int i = 0; i < lcnsDto.length; i++) {
+			ContDetail contDetail = repositoryCD.findByContDetailPKContSeq(lcnsDto[i].getContSeq()); // 해당 contSeq를 가진 contDetail이 있나 탐색
 			if(contDetail == null) { // 새로 생김
 				Lcns lcns = modelMapper.map(lcnsDto[i], Lcns.class);
 				int prdtId = lcnsDto[i].getPrdtId();
 				Prdt prdt = repositoryP.getOne(prdtId);
 				lcns.setPrdt(prdt);
-				lcns.setScan(lcnsDto[i].getScan()[0]);
+				lcns.setScan(lcnsDto[i].getFileList().getUrl());
 				lcns = repositoryL.save(lcns);
 				
 				contDetail = new ContDetail();
@@ -476,7 +480,7 @@ public class ContController {
 				cdList.remove(contDetail);
 				
 				// 2. LcnsChngHist 생성
-				Lcns lcns = repositoryCD.findByContDetailPKContSeq(contSeq[i]).getLcns();
+				Lcns lcns = repositoryCD.findByContDetailPKContSeq(lcnsDto[i].getContSeq()).getLcns();
 				LcnsChngHist lcnsChngHist = modelMapper.map(lcns, LcnsChngHist.class);
 				LcnsChngHistPK lcnsChngHistPK = new LcnsChngHistPK();
 				int maxHistSeq = (repositoryLCH.findMaxHistSeq()==null) ? 0 : repositoryLCH.findMaxHistSeq();// histSeq를 현존하는 가장 큰 histSeq값+1로 직접 할당하기 위한 변수
@@ -496,7 +500,7 @@ public class ContController {
 				lcns.setCertNo(lcnsDto[i].getCertNo());
 				lcns.setLcnsStartDt(java.sql.Date.valueOf(lcnsDto[i].getLcnsStartDt()));
 				lcns.setLcnsEndDt(java.sql.Date.valueOf(lcnsDto[i].getLcnsEndDt()));
-				lcns.setScan(lcnsDto[i].getScan()[0]);
+				lcns.setScan(lcnsDto[i].getFileList().getUrl());
 				lcns = repositoryL.save(lcns);
 				
 				// 4. ContDetail 수정
