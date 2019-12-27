@@ -29,7 +29,7 @@ public class LcnsDtoForUpdate {
 
 	private String lcnsEndDt;
 	
-	private FileList fileList;
+	private FileList[] fileList;
 	
 	private String contAmt;
 	

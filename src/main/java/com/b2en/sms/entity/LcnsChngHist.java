@@ -40,6 +40,11 @@ public class LcnsChngHist extends TimeEntity implements Serializable {
 	@JoinColumn(name="lcns_id")
 	@OnDelete(action=OnDeleteAction.CASCADE)
 	private Lcns lcns;
+	
+	// 제품ID (FK)
+	@ManyToOne(cascade=CascadeType.DETACH)
+	@JoinColumn(name="prdt_id")
+	private Prdt prdt;
 
 	// 라이센스번호
 	@Column(name = "lcns_no")

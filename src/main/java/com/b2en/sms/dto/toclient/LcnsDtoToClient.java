@@ -31,7 +31,7 @@ public class LcnsDtoToClient {
 
 	private Date lcnsEndDt;
 	
-	private FileList fileList;
+	private FileList[] fileList;
 	
 	private String contAmt;
 	

@@ -14,6 +14,9 @@ public class LcnsChngHistMap extends PropertyMap<Lcns, LcnsChngHist> {
 
 		// LcnsChngHist.Lcns는 매핑하지 않음
 		skip().setLcns(null);
+		
+		// LcnsChngHist.Prdt는 매핑하지 않음
+		skip().setPrdt(null);
 	}
 
 }
