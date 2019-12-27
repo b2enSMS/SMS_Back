@@ -160,6 +160,7 @@ public class LcnsController {
 		lcnsChngHistPK.setLcnsId(id);
 		lcnsChngHist.setLcnsChngHistPK(lcnsChngHistPK);
 		lcnsChngHist.setLcns(toUpdate);
+		lcnsChngHist.setPrdt(toUpdate.getPrdt());
 		
 		toUpdate.setLcnsNo(lcns.getLcnsNo());
 

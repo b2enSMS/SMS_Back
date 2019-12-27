@@ -41,6 +41,11 @@ public class ContChngHist extends TimeEntity implements Serializable {
 	@OnDelete(action=OnDeleteAction.CASCADE)
 	private Cont cont;
 	
+	// 고객사담당자ID (FK)
+	@ManyToOne(cascade=CascadeType.DETACH)
+	@JoinColumn(name="cust_id")
+	private Cust cust;
+	
 	// 고객사ID (FK)
 	@ManyToOne(cascade=CascadeType.DETACH)
 	@JoinColumn(name="org_id")

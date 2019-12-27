@@ -212,7 +212,7 @@ public class ContController {
 		return new ResponseEntity<ContAndLcnsDtoToClient>(contAndLcnsDtoToClient, HttpStatus.OK);
 	}
 	
-	private FileList getScanImg(String scanId) {
+	private FileList[] getScanImg(String scanId) {
 		Scan scan = repositoryS.findById(scanId).orElseThrow(() -> new MyFileNotFoundException("File not found with id " + scanId));
 		String[] splitted = scan.getFileType().split("/"); // 확장자 가져오기
         String fileName = scanId + "." + splitted[1]; // 파일명을 scanId로 변경
@@ -237,9 +237,11 @@ public class ContController {
 		fileList.setUrl(file.toString());
 		fileList.setThumbUrl(file.toString());
 		
+		FileList[] result = {fileList};
+		
 		System.out.println(file.toString());
 		
-		return fileList;
+		return result;
 	}
 	
 	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -438,7 +440,6 @@ public class ContController {
 		
 		// ======================= contDetail, Lcns 탐색(생성/수정/삭제) ==========================
 		List<ContDetail> cdList = repositoryCD.findByContDetailPKContId(id); // 기존의 contDetail
-		//[] contSeq = contAndLcnsDto.getContSeq(); // 수정할 contDetail의 contSeq, contSeq.length == lcnsDto.length
 		
 		for(int i = 0; i < lcnsDto.length; i++) {
 			ContDetail contDetail = repositoryCD.findByContDetailPKContSeq(lcnsDto[i].getContSeq()); // 해당 contSeq를 가진 contDetail이 있나 탐색
@@ -447,7 +448,7 @@ public class ContController {
 				int prdtId = lcnsDto[i].getPrdtId();
 				Prdt prdt = repositoryP.getOne(prdtId);
 				lcns.setPrdt(prdt);
-				lcns.setScan(lcnsDto[i].getFileList().getUrl());
+				lcns.setScan(lcnsDto[i].getFileList()[0].getUrl());
 				lcns = repositoryL.save(lcns);
 				
 				contDetail = new ContDetail();
@@ -500,7 +501,7 @@ public class ContController {
 				lcns.setCertNo(lcnsDto[i].getCertNo());
 				lcns.setLcnsStartDt(java.sql.Date.valueOf(lcnsDto[i].getLcnsStartDt()));
 				lcns.setLcnsEndDt(java.sql.Date.valueOf(lcnsDto[i].getLcnsEndDt()));
-				lcns.setScan(lcnsDto[i].getFileList().getUrl());
+				lcns.setScan(lcnsDto[i].getFileList()[0].getUrl());
 				lcns = repositoryL.save(lcns);
 				
 				// 4. ContDetail 수정
@@ -532,7 +533,7 @@ public class ContController {
 			ContChngHistDtoToClient contChngHistDtoToClient = new ContChngHistDtoToClient();
 			ContChngHist contChngHist = contChngHistList.get(i);
 			contChngHistDtoToClient.setHistSeq(contChngHist.getContChngHistPK().getHistSeq());
-			//contChngHistDtoToClient.setCustNm(contChngHist.getCust().getCustNm());
+			contChngHistDtoToClient.setCustNm(contChngHist.getCust().getCustNm());
 			contChngHistDtoToClient.setOrgNm(contChngHist.getOrg().getOrgNm());
 			contChngHistDtoToClient.setEmpNm(contChngHist.getB2en().getEmpNm());
 			contChngHistDtoToClient.setContDt(sdf.format(contChngHist.getContDt()));
