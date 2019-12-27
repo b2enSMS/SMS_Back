@@ -5,9 +5,6 @@ import lombok.Data;
 @Data
 public class ContAndLcnsDtoForUpdate {
 	
-	// =============== update를 위해 필요한 id =================
-	private int[] contSeq;
-	
 	// =============== Cont =================
 	//@Min(value = 1, message="custId는 {value}보다 크거나 같아야 합니다.")
 	private int custId;
@@ -55,6 +52,6 @@ public class ContAndLcnsDtoForUpdate {
 
 	// =============== Lcns =================
 	// @Valid
-	private LcnsDto[] lcns;
+	private LcnsDtoForUpdate[] lcns;
 	
 }

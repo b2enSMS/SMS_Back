@@ -1,13 +1,11 @@
-package com.b2en.sms.dto.toclient;
-
-import java.sql.Date;
+package com.b2en.sms.dto;
 
 import com.b2en.sms.service.file.FileList;
 
 import lombok.Data;
 
 @Data
-public class LcnsDtoToClient {
+public class LcnsDtoForUpdate {
 	
 	private int lcnsId;
 	
@@ -19,7 +17,7 @@ public class LcnsDtoToClient {
 
 	private String lcnsNo;
 
-	private Date lcnsIssuDt;
+	private String lcnsIssuDt;
 	
 	private String lcnsTpCd;
 	
@@ -27,9 +25,9 @@ public class LcnsDtoToClient {
 
 	private String certNo;
 	
-	private Date lcnsStartDt;
+	private String lcnsStartDt;
 
-	private Date lcnsEndDt;
+	private String lcnsEndDt;
 	
 	private FileList fileList;
 	
