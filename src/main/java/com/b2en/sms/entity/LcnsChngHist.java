@@ -11,9 +11,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import com.b2en.sms.entity.pk.LcnsChngHistPK;
 
 import lombok.Getter;
@@ -38,7 +35,7 @@ public class LcnsChngHist extends TimeEntity implements Serializable {
 	@MapsId("lcnsId")
 	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name="lcns_id")
-	@OnDelete(action=OnDeleteAction.CASCADE)
+	//@OnDelete(action=OnDeleteAction.CASCADE)
 	private Lcns lcns;
 	
 	// 제품ID (FK)

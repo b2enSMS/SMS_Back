@@ -10,9 +10,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import com.b2en.sms.entity.pk.CmmnDetailCdPK;
 
 import lombok.Getter;
@@ -37,7 +34,7 @@ public class CmmnDetailCd extends TimeEntity implements Serializable {
 	@MapsId("cmmnCd")
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="cmmn_cd")
-	@OnDelete(action=OnDeleteAction.CASCADE)
+	//@OnDelete(action=OnDeleteAction.CASCADE)
 	private CmmnCd cmmnCd;
 	
 	// 공통상세코드명

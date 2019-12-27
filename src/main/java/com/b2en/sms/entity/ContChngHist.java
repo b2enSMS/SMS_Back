@@ -11,9 +11,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import com.b2en.sms.entity.pk.ContChngHistPK;
 
 import lombok.Getter;
@@ -38,7 +35,7 @@ public class ContChngHist extends TimeEntity implements Serializable {
 	@MapsId("contId")
 	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name="cont_id")
-	@OnDelete(action=OnDeleteAction.CASCADE)
+	//@OnDelete(action=OnDeleteAction.CASCADE)
 	private Cont cont;
 	
 	// 고객사담당자ID (FK)
