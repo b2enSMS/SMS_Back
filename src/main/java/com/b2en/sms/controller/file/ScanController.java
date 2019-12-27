@@ -1,6 +1,5 @@
 package com.b2en.sms.controller.file;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,26 +54,9 @@ public class ScanController {
         String scanId = scan.getId();
         
 		scanStorageService.storeFile(file, scanId);
-
-		String[] splitted = scan.getFileType().split("/"); // 확장자 가져오기
-		String responseFileName = scanId + "." + splitted[1]; // 파일명을 scanId로 변경
-
-		// Load file as Resource
-		Resource resource = scanStorageService.loadFileAsResource(responseFileName);
-
-		File responseFile = null;
-		try {
-			responseFile = resource.getFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-        
-		/*
-		 * String url = ServletUriComponentsBuilder.fromCurrentContextPath()
-		 * .path("/api/scan/download/") .path(scanId) .toUriString();
-		 */
 		
-		String url = responseFile.toString();
+		String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/scan/download/").path(scanId)
+				.toUriString();
 		
         return new ScanResponse(fileName, "done", url, url);
     }
@@ -137,8 +119,10 @@ public class ScanController {
 		String[] idx = new String[dto.getIdx().length];
 		for(int i = 0; i < idx.length; i++) {
 			idx[i] = dto.getIdx()[i].getResponse().getUrl();
-			String[] splitted = idx[i].split("/");
-			String scanId = splitted[splitted.length-1];
+			String[] splitted1 = idx[i].split("/");
+			String fn = splitted1[splitted1.length-1];
+			String[] splitted2 = fn.split("\\.");
+			String scanId = splitted2[0];
 			
 			String type = repository.findById(scanId).orElse(null).getFileType();
 			scanStorageService.deleteFile(scanId, type);
