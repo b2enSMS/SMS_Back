@@ -180,12 +180,6 @@ public class LcnsController {
 		list = modelMapper.map(entityList, new TypeToken<List<LcnsChngHistDtoToClient>>() {
 		}.getType());
 
-		/*
-		 * for (int i = 0; i < entityList.size(); i++) {
-		 * list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
-		 * list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm()); }
-		 */
-
 		return new ResponseEntity<List<LcnsChngHistDtoToClient>>(list, HttpStatus.OK);
 
 	}

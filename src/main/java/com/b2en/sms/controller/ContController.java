@@ -119,8 +119,10 @@ public class ContController {
 		}.getType());
 		
 		for(int i = 0; i < entityList.size(); i++) {
-			list.get(i).setCustId(entityList.get(i).getCust().getCustId());
-			list.get(i).setCustNm(entityList.get(i).getCust().getCustNm());
+			int custId = (entityList.get(i).getCust()==null) ? 0 : entityList.get(i).getCust().getCustId();
+			String custNm = (entityList.get(i).getCust()==null) ? "" : entityList.get(i).getCust().getCustNm();
+			list.get(i).setCustId(custId);
+			list.get(i).setCustNm(custNm);
 			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
 			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
 			list.get(i).setEmpId(entityList.get(i).getB2en().getEmpId());
@@ -142,8 +144,10 @@ public class ContController {
 		}.getType());
 		
 		for(int i = 0; i < entityList.size(); i++) {
-			list.get(i).setCustId(entityList.get(i).getCust().getCustId());
-			list.get(i).setCustNm(entityList.get(i).getCust().getCustNm());
+			int custId = (entityList.get(i).getCust()==null) ? 0 : entityList.get(i).getCust().getCustId();
+			String custNm = (entityList.get(i).getCust()==null) ? "" : entityList.get(i).getCust().getCustNm();
+			list.get(i).setCustId(custId);
+			list.get(i).setCustNm(custNm);
 			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
 			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
 			list.get(i).setEmpId(entityList.get(i).getB2en().getEmpId());
@@ -180,8 +184,10 @@ public class ContController {
 		Cont cont = repositoryC.getOne(id);
 		
 		ContAndLcnsDtoToClient contAndLcnsDtoToClient = modelMapper.map(cont, ContAndLcnsDtoToClient.class);
-		contAndLcnsDtoToClient.setCustId(cont.getCust().getCustId());
-		contAndLcnsDtoToClient.setCustNm(cont.getCust().getCustNm());
+		int custId = (cont.getCust()==null) ? 0 : cont.getCust().getCustId();
+		String custNm = (cont.getCust()==null) ? "" : cont.getCust().getCustNm();
+		contAndLcnsDtoToClient.setCustId(custId);
+		contAndLcnsDtoToClient.setCustNm(custNm);
 		contAndLcnsDtoToClient.setOrgId(cont.getOrg().getOrgId());
 		contAndLcnsDtoToClient.setOrgNm(cont.getOrg().getOrgNm());
 		contAndLcnsDtoToClient.setEmpId(cont.getB2en().getEmpId());
@@ -219,8 +225,6 @@ public class ContController {
 		
 		// Load file as Resource
 		Resource resource = scanStorageService.loadFileAsResource(fileName);
-		
-		System.out.println(resource.toString());
 
 		File file = null;
 		try {
@@ -238,8 +242,6 @@ public class ContController {
 		fileList.setThumbUrl(file.toString());
 		
 		FileList[] result = {fileList};
-		
-		System.out.println(file.toString());
 		
 		return result;
 	}
