@@ -100,6 +100,7 @@ public class CustController {
 		for(int i = 0; i < entityList.size(); i++) {
 			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
 			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
+			list.get(i).setCustTpCdNm(repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(entityList.get(i).getCustTpCd()).getCmmnDetailCdNm());
 		}
 		
 		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
@@ -129,6 +130,7 @@ public class CustController {
 		for (int i = 0; i < entityList.size(); i++) {
 			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
 			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
+			list.get(i).setCustTpCdNm(repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(entityList.get(i).getCustTpCd()).getCmmnDetailCdNm());
 		}
 
 		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
