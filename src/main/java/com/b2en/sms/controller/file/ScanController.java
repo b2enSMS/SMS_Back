@@ -80,39 +80,32 @@ public class ScanController {
         if(contentType == null) {
             contentType = "application/octet-stream";
         }
-        
-        ResponseEntity<Resource> res = ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
-        
-        return res;
-
-		/*
-		 * return ResponseEntity.ok()
-		 * .contentType(MediaType.parseMediaType(contentType))
-		 * .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
-		 * resource.getFilename() + "\"") .body(resource);
-		 */
-    }
-    
-    @GetMapping("/{scanId}")
-    private ResponseEntity<Resource> getScanImg(@PathVariable String scanId) {
-		Scan scan = repository.findById(scanId).orElseThrow(() -> new MyFileNotFoundException("File not found with id " + scanId));
-		String[] splitted = scan.getFileType().split("/"); // 확장자 가져오기
-        String fileName = scanId + "." + splitted[1]; // 파일명을 scanId로 변경
 		
-		// Load file as Resource
-		Resource resource = scanStorageService.loadFileAsResource(fileName);
-
-		// Try to determine file's content type
-		String contentType = scan.getFileType();
-
 		return ResponseEntity.ok()
 				.contentType(MediaType.parseMediaType(contentType))
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
 				.body(resource);
-	}
+    }
+    
+	/*
+	 * @GetMapping("/{scanId}") private ResponseEntity<Resource>
+	 * getScanImg(@PathVariable String scanId) { Scan scan =
+	 * repository.findById(scanId).orElseThrow(() -> new
+	 * MyFileNotFoundException("File not found with id " + scanId)); String[]
+	 * splitted = scan.getFileType().split("/"); // 확장자 가져오기 String fileName =
+	 * scanId + "." + splitted[1]; // 파일명을 scanId로 변경
+	 * 
+	 * // Load file as Resource Resource resource =
+	 * scanStorageService.loadFileAsResource(fileName);
+	 * 
+	 * // Try to determine file's content type String contentType =
+	 * scan.getFileType();
+	 * 
+	 * return ResponseEntity.ok()
+	 * .contentType(MediaType.parseMediaType(contentType))
+	 * .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
+	 * resource.getFilename() + "\"") .body(resource); }
+	 */
     
     @DeleteMapping(value = "")
 	public ResponseEntity<Void> delete(@RequestBody FileDto dto) {

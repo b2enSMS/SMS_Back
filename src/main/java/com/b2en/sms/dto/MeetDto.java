@@ -24,4 +24,8 @@ public class MeetDto {
 	
 	//@NotBlank(message="meetTpCd가 빈칸입니다.")
 	private String meetTpCd;
+	
+	private int[] custId;
+	
+	private int[] empId;
 }

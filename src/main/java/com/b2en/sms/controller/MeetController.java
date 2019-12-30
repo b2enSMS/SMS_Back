@@ -26,10 +26,16 @@ import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.MeetDto;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.toclient.MeetDtoToClient;
+import com.b2en.sms.entity.B2en;
+import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Meet;
 import com.b2en.sms.entity.MeetAttendCust;
 import com.b2en.sms.entity.MeetAttendEmp;
 import com.b2en.sms.entity.Org;
+import com.b2en.sms.entity.pk.MeetAttendCustPK;
+import com.b2en.sms.entity.pk.MeetAttendEmpPK;
+import com.b2en.sms.repo.B2enRepository;
+import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.MeetAttendCustRepository;
 import com.b2en.sms.repo.MeetAttendEmpRepository;
 import com.b2en.sms.repo.MeetRepository;
@@ -50,6 +56,12 @@ public class MeetController {
 	
 	@Autowired
 	private OrgRepository repositoryO;
+	
+	@Autowired
+	private CustRepository repositoryC;
+	
+	@Autowired
+	private B2enRepository repositoryB;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -105,12 +117,42 @@ public class MeetController {
 		
 		Meet meetEntity = modelMapper.map(meetDto, Meet.class);
 		
-		int orgId = meetDto.getOrgId(); // 해당 id를 갖는 Org 찾아서 저장
+		int orgId = meetDto.getOrgId();
 		Org org = repositoryO.getOne(orgId);
 		
 		meetEntity.setOrg(org);
 		
-		repositoryM.save(meetEntity);
+		meetEntity = repositoryM.save(meetEntity);
+		
+		int[] custId = meetDto.getCustId();
+		int[] empId = meetDto.getEmpId();
+		for(int i = 0; i < custId.length; i++) {
+			MeetAttendCust meetAttendCust = new MeetAttendCust();
+			MeetAttendCustPK meetAttendCustPK = new MeetAttendCustPK();
+			Cust cust = repositoryC.getOne(custId[i]);
+			int custSeq = (repositoryMAC.findMaxCustSeq()==null) ? 0 : repositoryMAC.findMaxCustSeq();// contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
+			meetAttendCustPK.setCustSeq(custSeq);
+			meetAttendCustPK.setMeetId(meetEntity.getMeetId());
+			meetAttendCust.setMeetAttendCustPK(meetAttendCustPK);
+			meetAttendCust.setMeet(meetEntity);
+			meetAttendCust.setCust(cust);
+			
+			repositoryMAC.save(meetAttendCust);
+		}
+		
+		for(int i = 0; i < empId.length; i++) {
+			MeetAttendEmp meetAttendEmp = new MeetAttendEmp();
+			MeetAttendEmpPK meetAttendEmpPK = new MeetAttendEmpPK();
+			B2en b2en = repositoryB.getOne(empId[i]);
+			int empSeq = (repositoryMAE.findMaxEmpSeq()==null) ? 0 : repositoryMAE.findMaxEmpSeq();// contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
+			meetAttendEmpPK.setEmpSeq(empSeq);
+			meetAttendEmpPK.setMeetId(meetEntity.getMeetId());
+			meetAttendEmp.setMeetAttendEmpPK(meetAttendEmpPK);
+			meetAttendEmp.setMeet(meetEntity);
+			meetAttendEmp.setB2en(b2en);
+			
+			repositoryMAE.save(meetAttendEmp);
+		}
 		
 		res.add(new ResponseInfo("등록에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
@@ -120,6 +162,8 @@ public class MeetController {
 	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
+			repositoryMAC.deleteByMeetAttendCustPKMeetId(idx[i]);
+			repositoryMAE.deleteByMeetAttendEmpPKMeetId(idx[i]);
 			repositoryM.deleteById(idx[i]);
 		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
@@ -146,14 +190,48 @@ public class MeetController {
 			res.add(new ResponseInfo("해당 id를 가진 row가 없습니다."));
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
-
+		
+		toUpdate.setOrg(repositoryO.getOne(meetDto.getOrgId()));
 		toUpdate.setMeetDt(java.sql.Date.valueOf(meetDto.getMeetDt()));
 		toUpdate.setMeetCnt(meetDto.getMeetCnt());
 		toUpdate.setMeetStartTime(java.sql.Time.valueOf(meetDto.getMeetStartTime()));
 		toUpdate.setMeetTotTime(meetDto.getMeetTotTime());
 		toUpdate.setMeetTpCd(meetDto.getMeetTpCd());
 
-		repositoryM.save(toUpdate);
+		toUpdate = repositoryM.save(toUpdate);
+		
+		repositoryMAC.deleteByMeetAttendCustPKMeetId(id);
+		repositoryMAE.deleteByMeetAttendEmpPKMeetId(id);
+		
+		int[] custId = meetDto.getCustId();
+		int[] empId = meetDto.getEmpId();
+		for(int i = 0; i < custId.length; i++) {
+			MeetAttendCust meetAttendCust = new MeetAttendCust();
+			MeetAttendCustPK meetAttendCustPK = new MeetAttendCustPK();
+			Cust cust = repositoryC.getOne(custId[i]);
+			int custSeq = (repositoryMAC.findMaxCustSeq()==null) ? 0 : repositoryMAC.findMaxCustSeq();// contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
+			meetAttendCustPK.setCustSeq(custSeq);
+			meetAttendCustPK.setMeetId(id);
+			meetAttendCust.setMeetAttendCustPK(meetAttendCustPK);
+			meetAttendCust.setMeet(toUpdate);
+			meetAttendCust.setCust(cust);
+			
+			repositoryMAC.save(meetAttendCust);
+		}
+		
+		for(int i = 0; i < empId.length; i++) {
+			MeetAttendEmp meetAttendEmp = new MeetAttendEmp();
+			MeetAttendEmpPK meetAttendEmpPK = new MeetAttendEmpPK();
+			B2en b2en = repositoryB.getOne(empId[i]);
+			int empSeq = (repositoryMAE.findMaxEmpSeq()==null) ? 0 : repositoryMAE.findMaxEmpSeq();// contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
+			meetAttendEmpPK.setEmpSeq(empSeq);
+			meetAttendEmpPK.setMeetId(id);
+			meetAttendEmp.setMeetAttendEmpPK(meetAttendEmpPK);
+			meetAttendEmp.setMeet(toUpdate);
+			meetAttendEmp.setB2en(b2en);
+			
+			repositoryMAE.save(meetAttendEmp);
+		}
 		
 		res.add(new ResponseInfo("수정에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);

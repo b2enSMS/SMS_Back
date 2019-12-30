@@ -1,7 +1,5 @@
 package com.b2en.sms.controller;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
@@ -15,7 +13,6 @@ import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +27,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.b2en.sms.dto.ContAndLcnsDto;
 import com.b2en.sms.dto.ContAndLcnsDtoForUpdate;
@@ -70,8 +68,6 @@ import com.b2en.sms.repo.OrgRepository;
 import com.b2en.sms.repo.PrdtRepository;
 import com.b2en.sms.repo.file.ScanRepository;
 import com.b2en.sms.service.file.FileList;
-import com.b2en.sms.service.file.MyFileNotFoundException;
-import com.b2en.sms.service.file.ScanStorageService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -106,8 +102,6 @@ public class ContController {
 	private ScanRepository repositoryS;
 	@Autowired
 	private ModelMapper modelMapper;
-	@Autowired
-    private ScanStorageService scanStorageService;
 	
 	@GetMapping(value = "/showincludedel", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContDtoToClient>> getAll() {
@@ -211,34 +205,26 @@ public class ContController {
 			String fn = splitted1[splitted1.length-1];
 			String[] splitted2 = fn.split("\\.");
 			String scanId = splitted2[0];
-			lcnsDtoToClient[i].setFileList(getScanImg(scanId));
+			lcnsDtoToClient[i].setFileList(getFileList(scanId));
 		}
 		contAndLcnsDtoToClient.setLcns(lcnsDtoToClient);
 		
 		return new ResponseEntity<ContAndLcnsDtoToClient>(contAndLcnsDtoToClient, HttpStatus.OK);
 	}
 	
-	private FileList[] getScanImg(String scanId) {
-		Scan scan = repositoryS.findById(scanId).orElseThrow(() -> new MyFileNotFoundException("File not found with id " + scanId));
-		String[] splitted = scan.getFileType().split("/"); // 확장자 가져오기
-        String fileName = scanId + "." + splitted[1]; // 파일명을 scanId로 변경
+	private FileList[] getFileList(String id) {
 		
-		// Load file as Resource
-		Resource resource = scanStorageService.loadFileAsResource(fileName);
-
-		File file = null;
-		try {
-			file = resource.getFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Scan scan = repositoryS.getOne(id);
+		
+		String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/scan/download/").path(id)
+				.toUriString();
 		
 		FileList fileList = new FileList();
 		fileList.setUid("-1");
 		fileList.setName(scan.getFileName());
 		fileList.setStatus("done");
-		fileList.setUrl(file.toString());
-		fileList.setThumbUrl(file.toString());
+		fileList.setUrl(url);
+		fileList.setThumbUrl(url);
 		
 		FileList[] result = {fileList};
 		
