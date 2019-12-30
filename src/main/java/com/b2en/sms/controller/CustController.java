@@ -27,7 +27,6 @@ import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.CustACInterface;
 import com.b2en.sms.dto.toclient.CustDtoToClient;
-import com.b2en.sms.dto.toclient.CustDtoToClientExpanded;
 import com.b2en.sms.entity.Cont;
 import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Org;
@@ -62,6 +61,7 @@ public class CustController {
 		List<CustDtoToClient> list;
 		int orgId;
 		String orgNm;
+		String custTpCdNm;
 
 		list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
 		}.getType());
@@ -71,6 +71,8 @@ public class CustController {
 			orgNm = entityList.get(i).getOrg().getOrgNm();
 			list.get(i).setOrgId(orgId);
 			list.get(i).setOrgNm(orgNm);
+			custTpCdNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(entityList.get(i).getCustTpCd()).getCmmnDetailCdNm();
+			list.get(i).setCustTpCdNm(custTpCdNm);
 		}
 
 		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
@@ -144,17 +146,17 @@ public class CustController {
 	 
 	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CustDtoToClientExpanded> findById(@PathVariable("id") int id) {
+	public ResponseEntity<CustDtoToClient> findById(@PathVariable("id") int id) {
 		
 		Cust cust = repositoryCust.getOne(id);
 		
-		CustDtoToClientExpanded custDtoToClient = modelMapper.map(cust, CustDtoToClientExpanded.class);
+		CustDtoToClient custDtoToClient = modelMapper.map(cust, CustDtoToClient.class);
 		custDtoToClient.setOrgId(cust.getOrg().getOrgId());
 		custDtoToClient.setOrgNm(cust.getOrg().getOrgNm());
 		String custTpCdNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(cust.getCustTpCd()).getCmmnDetailCdNm();
 		custDtoToClient.setCustTpCdNm(custTpCdNm);
 		
-		return new ResponseEntity<CustDtoToClientExpanded>(custDtoToClient, HttpStatus.OK);
+		return new ResponseEntity<CustDtoToClient>(custDtoToClient, HttpStatus.OK);
 	}
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
