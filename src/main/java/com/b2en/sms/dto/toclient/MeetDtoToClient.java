@@ -1,8 +1,5 @@
 package com.b2en.sms.dto.toclient;
 
-import com.b2en.sms.dto.autocompleteinfo.B2enAC;
-import com.b2en.sms.dto.autocompleteinfo.CustAC;
-
 import lombok.Data;
 
 @Data
@@ -24,8 +21,8 @@ public class MeetDtoToClient {
 	
 	private String meetTpCd;
 	
-	private CustAC[] meetAttendCust;
+	private MeetAttendCustDtoToClient[] meetAttendCust;
 	
-	private B2enAC[] meetAttendEmp;
+	private MeetAttendEmpDtoToClient[] meetAttendEmp;
 	
 }

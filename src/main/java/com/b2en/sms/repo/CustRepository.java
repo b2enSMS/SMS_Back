@@ -10,7 +10,7 @@ import com.b2en.sms.entity.Cust;
 
 public interface CustRepository extends JpaRepository<Cust, Integer>{
 	
-	//List<CustACInterface> findAllBy();
+	List<CustACInterface> findAllBy();
 	
 	@Query(value="SELECT * FROM cust ORDER BY binary(cust_nm)", nativeQuery = true)
 	List<Cust> findAllOrderByName();
