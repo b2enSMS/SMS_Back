@@ -31,10 +31,12 @@ import com.b2en.sms.dto.toclient.CustDtoToClientExpanded;
 import com.b2en.sms.entity.Cont;
 import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Org;
+import com.b2en.sms.entity.TempVer;
 import com.b2en.sms.repo.CmmnDetailCdRepository;
 import com.b2en.sms.repo.ContRepository;
 import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.OrgRepository;
+import com.b2en.sms.repo.TempVerRepository;
 
 @RestController
 @RequestMapping("/api/cust")
@@ -51,6 +53,9 @@ public class CustController {
 
 	@Autowired
 	private CmmnDetailCdRepository repositoryCDC;
+	
+	@Autowired
+	private TempVerRepository repositoryT;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -89,7 +94,7 @@ public class CustController {
 			if(contCust == null || entityList.contains(contCust)) {
 				continue;
 			}
-			entityList.add(contCust); // 가망고객만 리스트에 추가
+			entityList.add(contCust); // 계약고객만 리스트에 추가
 		}
 
 		list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
@@ -104,31 +109,29 @@ public class CustController {
 
 	}
 	
-	// 가망고객(cont에 cust_id가 없는 cust)
+	// 가망고객(temp에 cust_id가 있는 cust)
 	@GetMapping(value = "/presale", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CustDtoToClient>> showPresale() {
 
-		List<Cont> contList = repositoryCont.findByDelYn("N");
-		List<Cust> entityList = repositoryCust.findAll();
-
-		for (int i = 0; i < contList.size(); i++) {
-			Cust contCust = contList.get(i).getCust();
-			if (contCust == null) {
+		List<TempVer> tempList = repositoryT.findAll();
+		List<Cust> entityList = new ArrayList<Cust>();
+		List<CustDtoToClient> list;
+		for(int i = 0; i < tempList.size(); i++) {
+			Cust tempCust = tempList.get(i).getCust();
+			if(tempCust == null || entityList.contains(tempCust)) {
 				continue;
 			}
-			if(entityList.contains(contCust)) {
-				entityList.remove(contCust); // 전체 리스트에서 가망고객을 제거
-			}
+			entityList.add(tempCust); // 가망고객만 리스트에 추가
 		}
 
-		List<CustDtoToClient> list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
+		list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
 		}.getType());
 
-		for (int i = 0; i < entityList.size(); i++) {
+		for(int i = 0; i < entityList.size(); i++) {
 			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
 			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
 		}
-
+		
 		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
 
 	}
