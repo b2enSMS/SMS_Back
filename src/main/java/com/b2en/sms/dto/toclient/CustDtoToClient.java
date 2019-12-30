@@ -21,4 +21,6 @@ public class CustDtoToClient {
 	
 	private String custTpCd;
 	
+	private String custTpCdNm;
+	
 }
