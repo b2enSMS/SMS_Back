@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.MeetDto;
 import com.b2en.sms.dto.ResponseInfo;
+import com.b2en.sms.dto.autocompleteinfo.B2enAC;
+import com.b2en.sms.dto.autocompleteinfo.CustAC;
 import com.b2en.sms.dto.toclient.MeetDtoToClient;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.entity.Cust;
@@ -96,6 +98,26 @@ public class MeetController {
 		MeetDtoToClient meetDtoToClient = modelMapper.map(meet, MeetDtoToClient.class);
 		meetDtoToClient.setOrgId(meet.getOrg().getOrgId());
 		meetDtoToClient.setOrgNm(meet.getOrg().getOrgNm());
+		List<MeetAttendCust> meetAttendCust = repositoryMAC.findByMeetAttendCustPKMeetId(id);
+		List<MeetAttendEmp> meetAttendEmp = repositoryMAE.findByMeetAttendEmpPKMeetId(id);
+		CustAC[] custACList = new CustAC[meetAttendCust.size()];
+		B2enAC[] b2enACList = new B2enAC[meetAttendEmp.size()];
+		
+		for(int i = 0; i < meetAttendCust.size(); i++) {
+			CustAC custAC = new CustAC();
+			custAC.setCustId(meetAttendCust.get(i).getCust().getCustId());
+			custAC.setCustNm(meetAttendCust.get(i).getCust().getCustNm());
+			custACList[i] = custAC;
+		}
+		for(int i = 0; i < meetAttendEmp.size(); i++) {
+			B2enAC b2enAC = new B2enAC();
+			b2enAC.setEmpId(meetAttendEmp.get(i).getB2en().getEmpId());
+			b2enAC.setEmpNm(meetAttendEmp.get(i).getB2en().getEmpNm());
+			b2enACList[i] = b2enAC;
+		}
+		
+		meetDtoToClient.setMeetAttendCust(custACList);
+		meetDtoToClient.setMeetAttendEmp(b2enACList);
 		
 		return new ResponseEntity<MeetDtoToClient>(meetDtoToClient, HttpStatus.OK);
 	}
@@ -126,12 +148,13 @@ public class MeetController {
 		
 		int[] custId = meetDto.getCustId();
 		int[] empId = meetDto.getEmpId();
+		int custSeq = (repositoryMAC.findMaxCustSeq()==null) ? 0 : repositoryMAC.findMaxCustSeq();// custSeq를 현존하는 가장 큰 custSeq값+1로 직접 할당하기 위한 변수
+		int empSeq = (repositoryMAE.findMaxEmpSeq()==null) ? 0 : repositoryMAE.findMaxEmpSeq();// empSeq를 현존하는 가장 큰 empSeq값+1로 직접 할당하기 위한 변수
 		for(int i = 0; i < custId.length; i++) {
 			MeetAttendCust meetAttendCust = new MeetAttendCust();
 			MeetAttendCustPK meetAttendCustPK = new MeetAttendCustPK();
 			Cust cust = repositoryC.getOne(custId[i]);
-			int custSeq = (repositoryMAC.findMaxCustSeq()==null) ? 0 : repositoryMAC.findMaxCustSeq();// contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
-			meetAttendCustPK.setCustSeq(custSeq);
+			meetAttendCustPK.setCustSeq(custSeq+i+1);
 			meetAttendCustPK.setMeetId(meetEntity.getMeetId());
 			meetAttendCust.setMeetAttendCustPK(meetAttendCustPK);
 			meetAttendCust.setMeet(meetEntity);
@@ -144,8 +167,7 @@ public class MeetController {
 			MeetAttendEmp meetAttendEmp = new MeetAttendEmp();
 			MeetAttendEmpPK meetAttendEmpPK = new MeetAttendEmpPK();
 			B2en b2en = repositoryB.getOne(empId[i]);
-			int empSeq = (repositoryMAE.findMaxEmpSeq()==null) ? 0 : repositoryMAE.findMaxEmpSeq();// contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
-			meetAttendEmpPK.setEmpSeq(empSeq);
+			meetAttendEmpPK.setEmpSeq(empSeq+i+1);
 			meetAttendEmpPK.setMeetId(meetEntity.getMeetId());
 			meetAttendEmp.setMeetAttendEmpPK(meetAttendEmpPK);
 			meetAttendEmp.setMeet(meetEntity);
@@ -205,12 +227,13 @@ public class MeetController {
 		
 		int[] custId = meetDto.getCustId();
 		int[] empId = meetDto.getEmpId();
+		int custSeq = (repositoryMAC.findMaxCustSeq()==null) ? 0 : repositoryMAC.findMaxCustSeq();// custSeq를 현존하는 가장 큰 custSeq값+1로 직접 할당하기 위한 변수
+		int empSeq = (repositoryMAE.findMaxEmpSeq()==null) ? 0 : repositoryMAE.findMaxEmpSeq();// empSeq를 현존하는 가장 큰 empSeq값+1로 직접 할당하기 위한 변수
 		for(int i = 0; i < custId.length; i++) {
 			MeetAttendCust meetAttendCust = new MeetAttendCust();
 			MeetAttendCustPK meetAttendCustPK = new MeetAttendCustPK();
 			Cust cust = repositoryC.getOne(custId[i]);
-			int custSeq = (repositoryMAC.findMaxCustSeq()==null) ? 0 : repositoryMAC.findMaxCustSeq();// contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
-			meetAttendCustPK.setCustSeq(custSeq);
+			meetAttendCustPK.setCustSeq(custSeq+i+1);
 			meetAttendCustPK.setMeetId(id);
 			meetAttendCust.setMeetAttendCustPK(meetAttendCustPK);
 			meetAttendCust.setMeet(toUpdate);
@@ -218,13 +241,12 @@ public class MeetController {
 			
 			repositoryMAC.save(meetAttendCust);
 		}
-		
+			
 		for(int i = 0; i < empId.length; i++) {
 			MeetAttendEmp meetAttendEmp = new MeetAttendEmp();
 			MeetAttendEmpPK meetAttendEmpPK = new MeetAttendEmpPK();
 			B2en b2en = repositoryB.getOne(empId[i]);
-			int empSeq = (repositoryMAE.findMaxEmpSeq()==null) ? 0 : repositoryMAE.findMaxEmpSeq();// contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
-			meetAttendEmpPK.setEmpSeq(empSeq);
+			meetAttendEmpPK.setEmpSeq(empSeq+i+1);
 			meetAttendEmpPK.setMeetId(id);
 			meetAttendEmp.setMeetAttendEmpPK(meetAttendEmpPK);
 			meetAttendEmp.setMeet(toUpdate);
