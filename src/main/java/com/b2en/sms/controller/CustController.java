@@ -77,6 +77,7 @@ public class CustController {
 
 	}
 	
+	// 계약고객(cont에 cust_id가 있는 cust)
 	@GetMapping(value = "/cont", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CustDtoToClient>> showCont() {
 
@@ -103,7 +104,7 @@ public class CustController {
 
 	}
 	
-	
+	// 가망고객(cont에 cust_id가 없는 cust)
 	@GetMapping(value = "/presale", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CustDtoToClient>> showPresale() {
 
