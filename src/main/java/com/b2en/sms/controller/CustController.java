@@ -31,12 +31,10 @@ import com.b2en.sms.dto.toclient.CustDtoToClientExpanded;
 import com.b2en.sms.entity.Cont;
 import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Org;
-import com.b2en.sms.entity.TempVer;
 import com.b2en.sms.repo.CmmnDetailCdRepository;
 import com.b2en.sms.repo.ContRepository;
 import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.OrgRepository;
-import com.b2en.sms.repo.TempVerRepository;
 
 @RestController
 @RequestMapping("/api/cust")
@@ -53,9 +51,6 @@ public class CustController {
 
 	@Autowired
 	private CmmnDetailCdRepository repositoryCDC;
-	
-	@Autowired
-	private TempVerRepository repositoryT;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -161,20 +156,6 @@ public class CustController {
 		
 		return new ResponseEntity<CustDtoToClientExpanded>(custDtoToClient, HttpStatus.OK);
 	}
-	
-	/*
-	 * @GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
-	 * public ResponseEntity<List<CustAC>> acList() {
-	 * 
-	 * List<Cust> entityList = repositoryCust.findAll(); List<CustAC> list = new
-	 * ArrayList<CustAC>();
-	 * 
-	 * for(int i = 0; i < entityList.size(); i++) { CustAC custAC = new CustAC();
-	 * custAC.setCustId(entityList.get(i).getCustId());
-	 * custAC.setCustNm(entityList.get(i).getCustNm()); list.add(custAC); }
-	 * 
-	 * return new ResponseEntity<List<CustAC>>(list, HttpStatus.OK); }
-	 */
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody CustDto cust, BindingResult result) {

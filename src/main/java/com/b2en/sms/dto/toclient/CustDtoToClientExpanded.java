@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class CustDtoToClientExpanded {
 	
+	private int custId;
+	
 	private int orgId;
 	
 	private String orgNm;
