@@ -109,29 +109,31 @@ public class CustController {
 
 	}
 	
-	// 가망고객(temp에 cust_id가 있는 cust)
+	// 가망고객(cont에 cust_id가 없는 cust)
 	@GetMapping(value = "/presale", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CustDtoToClient>> showPresale() {
 
-		List<TempVer> tempList = repositoryT.findAll();
-		List<Cust> entityList = new ArrayList<Cust>();
-		List<CustDtoToClient> list;
-		for(int i = 0; i < tempList.size(); i++) {
-			Cust tempCust = tempList.get(i).getCust();
-			if(tempCust == null || entityList.contains(tempCust)) {
+		List<Cont> contList = repositoryCont.findByDelYn("N");
+		List<Cust> entityList = repositoryCust.findAll();
+
+		for (int i = 0; i < contList.size(); i++) {
+			Cust contCust = contList.get(i).getCust();
+			if (contCust == null) {
 				continue;
 			}
-			entityList.add(tempCust); // 가망고객만 리스트에 추가
+			if (entityList.contains(contCust)) {
+				entityList.remove(contCust); // 전체 리스트에서 계약고객을 제거
+			}
 		}
 
-		list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
+		List<CustDtoToClient> list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
 		}.getType());
 
-		for(int i = 0; i < entityList.size(); i++) {
+		for (int i = 0; i < entityList.size(); i++) {
 			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
 			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
 		}
-		
+
 		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
 
 	}
