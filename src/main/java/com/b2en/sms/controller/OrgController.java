@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.OrgDto;
 import com.b2en.sms.dto.ResponseInfo;
-import com.b2en.sms.dto.autocompleteinfo.OrgAC;
+import com.b2en.sms.dto.autocompleteinfo.OrgACInterface;
 import com.b2en.sms.dto.toclient.OrgDtoToClient;
 import com.b2en.sms.entity.Org;
 import com.b2en.sms.repo.OrgRepository;
@@ -54,19 +54,11 @@ public class OrgController {
 	}
 	
 	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<OrgAC>> acList() {
+	public ResponseEntity<List<OrgACInterface>> acList() {
 
-		List<Org> entityList = repository.findAll();
-		List<OrgAC> list = new ArrayList<OrgAC>();
-		
-		for(int i = 0; i < entityList.size(); i++) {
-			OrgAC orgAC = new OrgAC();
-			orgAC.setOrgId(entityList.get(i).getOrgId());
-			orgAC.setOrgNm(entityList.get(i).getOrgNm());
-			list.add(orgAC);
-		}
+		List<OrgACInterface> list = repository.findAllBy();
 
-		return new ResponseEntity<List<OrgAC>>(list, HttpStatus.OK);
+		return new ResponseEntity<List<OrgACInterface>>(list, HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

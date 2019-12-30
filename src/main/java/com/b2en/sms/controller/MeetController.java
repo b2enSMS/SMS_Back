@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.MeetDto;
 import com.b2en.sms.dto.ResponseInfo;
-import com.b2en.sms.dto.autocompleteinfo.B2enAC;
-import com.b2en.sms.dto.autocompleteinfo.CustAC;
+import com.b2en.sms.dto.toclient.MeetAttendCustDtoToClient;
+import com.b2en.sms.dto.toclient.MeetAttendEmpDtoToClient;
 import com.b2en.sms.dto.toclient.MeetDtoToClient;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.entity.Cust;
@@ -100,24 +100,24 @@ public class MeetController {
 		meetDtoToClient.setOrgNm(meet.getOrg().getOrgNm());
 		List<MeetAttendCust> meetAttendCust = repositoryMAC.findByMeetAttendCustPKMeetId(id);
 		List<MeetAttendEmp> meetAttendEmp = repositoryMAE.findByMeetAttendEmpPKMeetId(id);
-		CustAC[] custACList = new CustAC[meetAttendCust.size()];
-		B2enAC[] b2enACList = new B2enAC[meetAttendEmp.size()];
+		MeetAttendCustDtoToClient[] meetAttendCustDtoToClientList = new MeetAttendCustDtoToClient[meetAttendCust.size()];
+		MeetAttendEmpDtoToClient[] meetAttendEmpDtoToClientList = new MeetAttendEmpDtoToClient[meetAttendEmp.size()];
 		
 		for(int i = 0; i < meetAttendCust.size(); i++) {
-			CustAC custAC = new CustAC();
-			custAC.setCustId(meetAttendCust.get(i).getCust().getCustId());
-			custAC.setCustNm(meetAttendCust.get(i).getCust().getCustNm());
-			custACList[i] = custAC;
+			MeetAttendCustDtoToClient meetAttendCustDtoToClient = new MeetAttendCustDtoToClient();
+			meetAttendCustDtoToClient.setCustId(meetAttendCust.get(i).getCust().getCustId());
+			meetAttendCustDtoToClient.setCustNm(meetAttendCust.get(i).getCust().getCustNm());
+			meetAttendCustDtoToClientList[i] = meetAttendCustDtoToClient;
 		}
 		for(int i = 0; i < meetAttendEmp.size(); i++) {
-			B2enAC b2enAC = new B2enAC();
-			b2enAC.setEmpId(meetAttendEmp.get(i).getB2en().getEmpId());
-			b2enAC.setEmpNm(meetAttendEmp.get(i).getB2en().getEmpNm());
-			b2enACList[i] = b2enAC;
+			MeetAttendEmpDtoToClient meetAttendEmpDtoToClient = new MeetAttendEmpDtoToClient();
+			meetAttendEmpDtoToClient.setEmpId(meetAttendEmp.get(i).getB2en().getEmpId());
+			meetAttendEmpDtoToClient.setEmpNm(meetAttendEmp.get(i).getB2en().getEmpNm());
+			meetAttendEmpDtoToClientList[i] = meetAttendEmpDtoToClient;
 		}
 		
-		meetDtoToClient.setMeetAttendCust(custACList);
-		meetDtoToClient.setMeetAttendEmp(b2enACList);
+		meetDtoToClient.setMeetAttendCust(meetAttendCustDtoToClientList);
+		meetDtoToClient.setMeetAttendEmp(meetAttendEmpDtoToClientList);
 		
 		return new ResponseEntity<MeetDtoToClient>(meetDtoToClient, HttpStatus.OK);
 	}

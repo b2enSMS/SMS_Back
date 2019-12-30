@@ -36,6 +36,7 @@ import com.b2en.sms.dto.LcnsDto;
 import com.b2en.sms.dto.LcnsDtoForUpdate;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.ContAC;
+import com.b2en.sms.dto.autocompleteinfo.ContACInterface;
 import com.b2en.sms.dto.toclient.ContAndLcnsDtoToClient;
 import com.b2en.sms.dto.toclient.ContChngHistDtoToClient;
 import com.b2en.sms.dto.toclient.ContDtoToClient;
@@ -234,7 +235,7 @@ public class ContController {
 	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContAC>> acList() {
 
-		List<Cont> entityList = repositoryC.findAll();
+		List<ContACInterface> entityList = repositoryC.findAllBy();
 		List<ContAC> list = new ArrayList<ContAC>();
 		
 		for(int i = 0; i < entityList.size(); i++) {

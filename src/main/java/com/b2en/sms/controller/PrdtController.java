@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.PrdtDto;
 import com.b2en.sms.dto.ResponseInfo;
-import com.b2en.sms.dto.autocompleteinfo.PrdtAC;
+import com.b2en.sms.dto.autocompleteinfo.PrdtACInterface;
 import com.b2en.sms.dto.toclient.PrdtDtoToClient;
 import com.b2en.sms.entity.Prdt;
 import com.b2en.sms.repo.PrdtRepository;
@@ -54,19 +54,11 @@ public class PrdtController {
 	}
 	
 	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<PrdtAC>> acList() {
+	public ResponseEntity<List<PrdtACInterface>> acList() {
 
-		List<Prdt> entityList = repository.findAll();
-		List<PrdtAC> list = new ArrayList<PrdtAC>();
-		
-		for(int i = 0; i < entityList.size(); i++) {
-			PrdtAC prdtAC = new PrdtAC();
-			prdtAC.setPrdtId(entityList.get(i).getPrdtId());
-			prdtAC.setPrdtNm(entityList.get(i).getPrdtNm());
-			list.add(prdtAC);
-		}
+		List<PrdtACInterface> list = repository.findAllBy();
 
-		return new ResponseEntity<List<PrdtAC>>(list, HttpStatus.OK);
+		return new ResponseEntity<List<PrdtACInterface>>(list, HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
