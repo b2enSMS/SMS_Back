@@ -320,7 +320,13 @@ public class ContController {
 		Cont contEntity = modelMapper.map(contAndLcnsDto, Cont.class);
 		
 		int custId = contAndLcnsDto.getCustId();
-		Cust cust = repositoryCust.getOne(custId);
+		Cust cust = null;
+		try {
+			cust = repositoryCust.getOne(custId);
+		} catch(Exception e) {
+			cust = null;
+		}
+		
 		int orgId = contAndLcnsDto.getOrgId();
 		Org org = repositoryO.getOne(orgId);
 		int empId = contAndLcnsDto.getEmpId();
@@ -425,7 +431,12 @@ public class ContController {
 		
 		// ======================= Cont 수정 ==========================
 		int custId = contAndLcnsDto.getCustId();
-		Cust cust = repositoryCust.getOne(custId);
+		Cust cust = null;
+		try {
+			cust = repositoryCust.getOne(custId);
+		} catch(Exception e) {
+			cust = null;
+		}
 		int orgId = contAndLcnsDto.getOrgId();
 		Org org = repositoryO.getOne(orgId);
 		int empId = contAndLcnsDto.getEmpId();
