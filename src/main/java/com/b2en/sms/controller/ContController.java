@@ -252,7 +252,7 @@ public class ContController {
 	
 	private String getScanIdFromUrl(String url) {
 		
-		if(url.equals("")||url==null) {
+		if(url==null||url.equals("")) {
 			return "";
 		}
 		String[] splitted1 = url.split("/");
