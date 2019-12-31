@@ -67,8 +67,10 @@ public class ScanController {
 			return ResponseEntity.noContent().build();
 		}
     	
-    	Scan scan = repository.getOne(fileId);
-    	if(scan==null) {
+    	Scan scan = null;
+    	try {
+    		scan = repository.getOne(fileId);
+    	} catch(Exception e) {
     		return ResponseEntity.noContent().build();
     	}
     	
