@@ -67,8 +67,10 @@ public class ScanController {
     		return ResponseEntity.noContent().build();
     	}
     	
+    	String type[] = scan.getFileType().split("/");
+    	String fileName = fileId+"."+type[1];
         // Load file as Resource
-        Resource resource = scanStorageService.loadFileAsResource(scan.getFileName());
+        Resource resource = scanStorageService.loadFileAsResource(fileName);
         if(resource==null) {
     		return ResponseEntity.noContent().build();
     	}
@@ -88,7 +90,7 @@ public class ScanController {
 		
 		return ResponseEntity.ok()
 				.contentType(MediaType.parseMediaType(contentType))
-				.header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"" + resource.getFilename() + "\"")
+				.header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"" + scan.getFileName() + "\"")
 				.body(resource);
     }
     
