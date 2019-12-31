@@ -25,7 +25,6 @@ import com.b2en.sms.dto.file.FileDto;
 import com.b2en.sms.dto.file.ScanResponse;
 import com.b2en.sms.entity.file.Scan;
 import com.b2en.sms.repo.file.ScanRepository;
-import com.b2en.sms.service.file.MyFileNotFoundException;
 import com.b2en.sms.service.file.ScanStorageService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -63,10 +62,16 @@ public class ScanController {
     
     @GetMapping("/download/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileId, HttpServletRequest request) {
-    	Scan scan = repository.findById(fileId).orElseThrow(() -> new MyFileNotFoundException("File not found with id " + fileId));
+    	Scan scan = repository.getOne(fileId);
+    	if(scan==null) {
+    		return ResponseEntity.noContent().build();
+    	}
     	
         // Load file as Resource
         Resource resource = scanStorageService.loadFileAsResource(scan.getFileName());
+        if(resource==null) {
+    		return ResponseEntity.noContent().build();
+    	}
 
         // Try to determine file's content type
         String contentType = null;

@@ -210,11 +210,7 @@ public class ContController {
 			lcnsDtoToClient[i].setPrdtNm(contDetail.get(i).getLcns().getPrdt().getPrdtNm());
 			lcnsDtoToClient[i].setContAmt(contDetail.get(i).getContAmt());
 			lcnsDtoToClient[i].setLcnsTpNm(cmmnDetailCdMap.get(contDetail.get(i).getLcns().getLcnsTpCd()));
-			String[] splitted1 = contDetail.get(i).getLcns().getScan().split("/");
-			String fn = splitted1[splitted1.length-1];
-			String[] splitted2 = fn.split("\\.");
-			String scanId = splitted2[0];
-			lcnsDtoToClient[i].setFileList(getFileList(scanId));
+			lcnsDtoToClient[i].setFileList(getFileList(contDetail.get(i).getLcns().getScan()));
 		}
 		contAndLcnsDtoToClient.setLcns(lcnsDtoToClient);
 		
@@ -230,14 +226,34 @@ public class ContController {
 		
 		FileList fileList = new FileList();
 		fileList.setUid("-1");
-		fileList.setName(scan.getFileName());
+		if(scan==null) {
+			fileList.setName("");
+			fileList.setUrl("");
+			fileList.setThumbUrl("");
+		} else {
+			fileList.setName(scan.getFileName());
+			fileList.setUrl(url);
+			fileList.setThumbUrl(url);
+		}
 		fileList.setStatus("done");
-		fileList.setUrl(url);
-		fileList.setThumbUrl(url);
+		
 		
 		FileList[] result = {fileList};
 		
 		return result;
+	}
+	
+	private String getScanIdFromUrl(String url) {
+		
+		if(url.equals("")||url==null) {
+			return "";
+		}
+		String[] splitted1 = url.split("/");
+		String fn = splitted1[splitted1.length-1];
+		String[] splitted2 = fn.split("\\.");
+		String scanId = splitted2[0];
+		
+		return scanId;
 	}
 	
 	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -287,7 +303,8 @@ public class ContController {
 			lcnsEntity[i] = modelMapper.map(lcnsDto[i], Lcns.class);
 			int prdtId = lcnsDto[i].getPrdtId();
 			lcnsEntity[i].setPrdt(prdtMap.get(prdtId));
-			lcnsEntity[i].setScan(lcnsDto[i].getScan()[0]);
+			String scanId = getScanIdFromUrl(lcnsDto[i].getFileList()[0].getUrl());
+			lcnsEntity[i].setScan(scanId);
 			
 			lcnsEntity[i] = repositoryL.save(lcnsEntity[i]);
 		}
@@ -451,7 +468,8 @@ public class ContController {
 				Lcns lcns = modelMapper.map(lcnsDto[i], Lcns.class);
 				int prdtId = lcnsDto[i].getPrdtId();
 				lcns.setPrdt(prdtMap.get(prdtId));
-				lcns.setScan(lcnsDto[i].getFileList()[0].getUrl());
+				String scanId = getScanIdFromUrl(lcnsDto[i].getFileList()[0].getUrl());
+				lcns.setScan(scanId);
 				lcns = repositoryL.save(lcns);
 				
 				contDetail = new ContDetail();
@@ -507,7 +525,8 @@ public class ContController {
 				lcns.setCertNo(lcnsDto[i].getCertNo());
 				lcns.setLcnsStartDt(java.sql.Date.valueOf(lcnsDto[i].getLcnsStartDt()));
 				lcns.setLcnsEndDt(java.sql.Date.valueOf(lcnsDto[i].getLcnsEndDt()));
-				lcns.setScan(lcnsDto[i].getFileList()[0].getUrl());
+				String scanId = getScanIdFromUrl(lcnsDto[i].getFileList()[0].getUrl());
+				lcns.setScan(scanId);
 				lcns = repositoryL.save(lcns);
 				
 				// 4. ContDetail 수정
