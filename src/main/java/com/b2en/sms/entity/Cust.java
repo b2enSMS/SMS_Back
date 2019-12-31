@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,7 +34,7 @@ public class Cust extends TimeEntity implements Serializable {
 	private int custId;
 	
 	// 고객사ID (FK)
-	@ManyToOne(cascade=CascadeType.DETACH)
+	@ManyToOne(cascade=CascadeType.DETACH, fetch=FetchType.LAZY)
 	@JoinColumn(name="org_id")
 	private Org org;
 	

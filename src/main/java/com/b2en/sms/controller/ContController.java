@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -42,6 +43,7 @@ import com.b2en.sms.dto.toclient.ContChngHistDtoToClient;
 import com.b2en.sms.dto.toclient.ContDtoToClient;
 import com.b2en.sms.dto.toclient.LcnsDtoToClient;
 import com.b2en.sms.entity.B2en;
+import com.b2en.sms.entity.CmmnDetailCd;
 import com.b2en.sms.entity.Cont;
 import com.b2en.sms.entity.ContChngHist;
 import com.b2en.sms.entity.ContDetail;
@@ -192,6 +194,13 @@ public class ContController {
 		contAndLcnsDtoToClient.setHeadContNm(headContNm);
 		String contTpNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(cont.getContTpCd()).getCmmnDetailCdNm();
 		contAndLcnsDtoToClient.setContTpNm(contTpNm);
+		
+		HashMap<String, String> cmmnDetailCdMap = new HashMap<String, String>();
+		List<CmmnDetailCd> cmmnDetailCdList = repositoryCDC.findByCmmnDetailCdPKCmmnCd("lcns_tp_cd");
+		for(int i = 0; i < cmmnDetailCdList.size(); i++) {
+			cmmnDetailCdMap.put(cmmnDetailCdList.get(i).getCmmnDetailCdPK().getCmmnDetailCd(), cmmnDetailCdList.get(i).getCmmnDetailCdNm());
+		}
+		
 		List<ContDetail> contDetail = repositoryCD.findByContDetailPKContId(id);
 		LcnsDtoToClient[] lcnsDtoToClient = new LcnsDtoToClient[contDetail.size()];
 		for(int i = 0; i < lcnsDtoToClient.length; i++) {
@@ -200,8 +209,7 @@ public class ContController {
 			lcnsDtoToClient[i].setPrdtId(contDetail.get(i).getLcns().getPrdt().getPrdtId());
 			lcnsDtoToClient[i].setPrdtNm(contDetail.get(i).getLcns().getPrdt().getPrdtNm());
 			lcnsDtoToClient[i].setContAmt(contDetail.get(i).getContAmt());
-			String lcnsTpNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(contDetail.get(i).getLcns().getLcnsTpCd()).getCmmnDetailCdNm();
-			lcnsDtoToClient[i].setLcnsTpNm(lcnsTpNm);
+			lcnsDtoToClient[i].setLcnsTpNm(cmmnDetailCdMap.get(contDetail.get(i).getLcns().getLcnsTpCd()));
 			String[] splitted1 = contDetail.get(i).getLcns().getScan().split("/");
 			String fn = splitted1[splitted1.length-1];
 			String[] splitted2 = fn.split("\\.");
@@ -269,14 +277,18 @@ public class ContController {
 		int lcnsNum = lcnsDto.length;
 		Lcns[] lcnsEntity = new Lcns[lcnsNum];
 		
+		HashMap<Integer, Prdt> prdtMap = new HashMap<Integer, Prdt>();
+		List<Prdt> prdtList = repositoryP.findAll();
+		for(int i = 0; i < prdtList.size(); i++) {
+			prdtMap.put(prdtList.get(i).getPrdtId(), prdtList.get(i));
+		}
+		
 		for(int i = 0; i < lcnsNum; i++) {
 			lcnsEntity[i] = modelMapper.map(lcnsDto[i], Lcns.class);
 			int prdtId = lcnsDto[i].getPrdtId();
-			Prdt prdt = repositoryP.getOne(prdtId);
-			lcnsEntity[i].setPrdt(prdt);
+			lcnsEntity[i].setPrdt(prdtMap.get(prdtId));
 			lcnsEntity[i].setScan(lcnsDto[i].getScan()[0]);
 			
-			log.info("Lcns:{}", lcnsEntity[i]);
 			lcnsEntity[i] = repositoryL.save(lcnsEntity[i]);
 		}
 		
@@ -312,7 +324,6 @@ public class ContController {
 		
 		contEntity.setContTotAmt(Integer.toString(tot));
 		
-		log.info("Cont:{}", contEntity);
 		contEntity = repositoryC.save(contEntity);
 		
 		// ======================= ContDetail 생성 ==========================
@@ -339,7 +350,6 @@ public class ContController {
 			contDetail.setDelYn("N");
 			contDetail.setContNote(lcnsDto[i].getContNote());
 
-			log.info("ContDetail:{}", contDetail);
 			repositoryCD.save(contDetail);
 		}
 		
@@ -429,13 +439,18 @@ public class ContController {
 		// ======================= contDetail, Lcns 탐색(생성/수정/삭제) ==========================
 		List<ContDetail> cdList = repositoryCD.findByContDetailPKContId(id); // 기존의 contDetail
 		
+		HashMap<Integer, Prdt> prdtMap = new HashMap<Integer, Prdt>();
+		List<Prdt> prdtList = repositoryP.findAll();
+		for(int i = 0; i < prdtList.size(); i++) {
+			prdtMap.put(prdtList.get(i).getPrdtId(), prdtList.get(i));
+		}
+		
 		for(int i = 0; i < lcnsDto.length; i++) {
 			ContDetail contDetail = repositoryCD.findByContDetailPKContSeq(lcnsDto[i].getContSeq()); // 해당 contSeq를 가진 contDetail이 있나 탐색
 			if(contDetail == null) { // 새로 생김
 				Lcns lcns = modelMapper.map(lcnsDto[i], Lcns.class);
 				int prdtId = lcnsDto[i].getPrdtId();
-				Prdt prdt = repositoryP.getOne(prdtId);
-				lcns.setPrdt(prdt);
+				lcns.setPrdt(prdtMap.get(prdtId));
 				lcns.setScan(lcnsDto[i].getFileList()[0].getUrl());
 				lcns = repositoryL.save(lcns);
 				
@@ -443,7 +458,8 @@ public class ContController {
 				ContDetailPK contDetailPK = new ContDetailPK();
 				contDetailPK.setContId(id);
 				
-				int maxSeq = (repositoryCD.findMaxContSeq()==null) ? 0 : repositoryCD.findMaxContSeq();// contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
+				Integer findMaxSeq = repositoryCD.findMaxContSeq();
+				int maxSeq = (findMaxSeq==null) ? 0 : findMaxSeq;// contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
 				contDetailPK.setContSeq(maxSeq+1);
 				contDetail.setContDetailPK(contDetailPK);
 				contDetail.setCont(toUpdate);
@@ -457,7 +473,8 @@ public class ContController {
 				// 1. contDetailHist 생성
 				ContDetailHist contDetailHist = new ContDetailHist();
 				ContDetailHistPK contDetailHistPK = new ContDetailHistPK();
-				int maxDetailSeq = (repositoryCDH.findMaxDetailSeq()==null) ? 0 : repositoryCDH.findMaxDetailSeq();// detailSeq를 현존하는 가장 큰 detailSeq값+1로 직접 할당하기 위한 변수
+				Integer findMaxDetailSeq = repositoryCDH.findMaxDetailSeq();
+				int maxDetailSeq = (findMaxDetailSeq==null) ? 0 : findMaxDetailSeq;// detailSeq를 현존하는 가장 큰 detailSeq값+1로 직접 할당하기 위한 변수
 				contDetailHistPK.setDetailSeq(maxDetailSeq+1);
 				contDetailHistPK.setContDetailPK(contDetail.getContDetailPK());
 				contDetailHist.setContDetailHistPK(contDetailHistPK);
@@ -472,7 +489,8 @@ public class ContController {
 				Lcns lcns = repositoryCD.findByContDetailPKContSeq(lcnsDto[i].getContSeq()).getLcns();
 				LcnsChngHist lcnsChngHist = modelMapper.map(lcns, LcnsChngHist.class);
 				LcnsChngHistPK lcnsChngHistPK = new LcnsChngHistPK();
-				int maxHistSeq = (repositoryLCH.findMaxHistSeq()==null) ? 0 : repositoryLCH.findMaxHistSeq();// histSeq를 현존하는 가장 큰 histSeq값+1로 직접 할당하기 위한 변수
+				Integer findMaxHistSeq = repositoryCD.findMaxContSeq();
+				int maxHistSeq = (findMaxHistSeq==null) ? 0 : findMaxHistSeq;// histSeq를 현존하는 가장 큰 histSeq값+1로 직접 할당하기 위한 변수
 				lcnsChngHistPK.setHistSeq(maxHistSeq+1);
 				lcnsChngHistPK.setLcnsId(lcns.getLcnsId());
 				lcnsChngHist.setLcnsChngHistPK(lcnsChngHistPK);
@@ -515,6 +533,7 @@ public class ContController {
 		
 		List<ContChngHist> contChngHistList = repositoryCCH.findByContChngHistPKContId(id);
 		List<ContChngHistDtoToClient> contChngHistDtoToClientList = new ArrayList<ContChngHistDtoToClient>();
+		String contNm = repositoryC.getOne(id).getContNm();
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		for(int i = 0; i < contChngHistList.size(); i++) {
@@ -531,7 +550,7 @@ public class ContController {
 			contChngHistDtoToClient.setMtncStartDt(sdf.format(contChngHist.getMtncStartDt()));
 			contChngHistDtoToClient.setMtncEndDt(sdf.format(contChngHist.getMtncEndDt()));
 			contChngHistDtoToClient.setCreatedDate(contChngHist.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-			contChngHistDtoToClient.setContNm(repositoryC.getOne(id).getContNm());
+			contChngHistDtoToClient.setContNm(contNm);
 			
 			contChngHistDtoToClientList.add(contChngHistDtoToClient);
 		}
