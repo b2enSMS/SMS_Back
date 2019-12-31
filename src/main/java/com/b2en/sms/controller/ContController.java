@@ -220,7 +220,8 @@ public class ContController {
 	private FileList[] getFileList(String id) {
 		
 		if(id.equals("")) {
-			return new FileList[1];
+			FileList[] fileList = new FileList[0];
+			return fileList;
 		}
 		
 		Scan scan = null;
@@ -228,7 +229,8 @@ public class ContController {
 		try {
 			scan = repositoryS.getOne(id);
 		} catch(Exception e) {
-			return new FileList[1];
+			FileList[] fileList = new FileList[0];
+			return fileList;
 		}
 		
 		String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/scan/download/").path(id)
