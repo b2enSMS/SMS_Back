@@ -222,8 +222,12 @@ public class ContController {
 		if(id.equals("")) {
 			return new FileList[1];
 		}
-		Scan scan = repositoryS.getOne(id);
-		if(scan==null) {
+		
+		Scan scan = null;
+		
+		try {
+			scan = repositoryS.getOne(id);
+		} catch(Exception e) {
 			return new FileList[1];
 		}
 		
