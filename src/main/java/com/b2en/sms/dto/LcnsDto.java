@@ -1,5 +1,7 @@
 package com.b2en.sms.dto;
 
+import com.b2en.sms.service.file.FileList;
+
 import lombok.Data;
 
 @Data
@@ -34,7 +36,7 @@ public class LcnsDto {
 	
 	//배열이지만 값이 하나만 들어갈 예정
 	//@NotBlank(message="scan이 빈칸입니다.")
-	private String[] scan;
+	private FileList[] fileList;
 	
 	// 납품단가, contDetail 생성에 필요
 	//@NotBlank(message="conttAmt가 빈칸입니다.")

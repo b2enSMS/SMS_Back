@@ -59,10 +59,12 @@ public class ScanStorageService {
             if(resource.exists()) {
                 return resource;
             } else {
-                throw new MyFileNotFoundException("File not found " + fileName);
+            	return null;
+                //throw new MyFileNotFoundException("File not found " + fileName);
             }
         } catch (MalformedURLException ex) {
-            throw new MyFileNotFoundException("File not found " + fileName, ex);
+        	return null;
+            //throw new MyFileNotFoundException("File not found " + fileName, ex);
         }
     }
     

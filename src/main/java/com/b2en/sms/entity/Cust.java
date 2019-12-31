@@ -5,12 +5,13 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.BatchSize;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
+@BatchSize(size=10)
 public class Cust extends TimeEntity implements Serializable {
 	
 	// 고객사 담당자
@@ -34,7 +36,7 @@ public class Cust extends TimeEntity implements Serializable {
 	private int custId;
 	
 	// 고객사ID (FK)
-	@ManyToOne(cascade=CascadeType.DETACH, fetch=FetchType.LAZY)
+	@ManyToOne(cascade=CascadeType.DETACH)
 	@JoinColumn(name="org_id")
 	private Org org;
 	
