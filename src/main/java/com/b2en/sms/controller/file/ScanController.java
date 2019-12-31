@@ -62,6 +62,11 @@ public class ScanController {
     
     @GetMapping("/download/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileId, HttpServletRequest request) {
+    	
+    	if(fileId.equals("")) {
+			return ResponseEntity.noContent().build();
+		}
+    	
     	Scan scan = repository.getOne(fileId);
     	if(scan==null) {
     		return ResponseEntity.noContent().build();

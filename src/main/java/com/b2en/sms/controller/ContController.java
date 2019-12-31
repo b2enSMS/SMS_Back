@@ -219,23 +219,24 @@ public class ContController {
 	
 	private FileList[] getFileList(String id) {
 		
+		if(id.equals("")) {
+			return new FileList[1];
+		}
 		Scan scan = repositoryS.getOne(id);
+		if(scan==null) {
+			return new FileList[1];
+		}
 		
 		String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/scan/download/").path(id)
 				.toUriString();
 		
 		FileList fileList = new FileList();
 		fileList.setUid("-1");
-		if(scan==null) {
-			fileList.setName("");
-			fileList.setUrl("");
-			fileList.setThumbUrl("");
-		} else {
-			fileList.setName(scan.getFileName());
-			fileList.setUrl(url);
-			fileList.setThumbUrl(url);
-		}
 		fileList.setStatus("done");
+		fileList.setName(scan.getFileName());
+		fileList.setUrl(url);
+		fileList.setThumbUrl(url);
+		
 		
 		
 		FileList[] result = {fileList};
