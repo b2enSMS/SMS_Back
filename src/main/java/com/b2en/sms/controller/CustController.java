@@ -1,6 +1,7 @@
 package com.b2en.sms.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -27,6 +28,7 @@ import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.CustACInterface;
 import com.b2en.sms.dto.toclient.CustDtoToClient;
+import com.b2en.sms.entity.CmmnDetailCd;
 import com.b2en.sms.entity.Cont;
 import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Org;
@@ -61,7 +63,11 @@ public class CustController {
 		List<CustDtoToClient> list;
 		int orgId;
 		String orgNm;
-		String custTpCdNm;
+		HashMap<String, String> cmmnDetailCdMap = new HashMap<String, String>();
+		List<CmmnDetailCd> cmmnDetailCdList = repositoryCDC.findByCmmnDetailCdPKCmmnCd("cust_tp_cd");
+		for(int i = 0; i < cmmnDetailCdList.size(); i++) {
+			cmmnDetailCdMap.put(cmmnDetailCdList.get(i).getCmmnDetailCdPK().getCmmnDetailCd(), cmmnDetailCdList.get(i).getCmmnDetailCdNm());
+		}
 
 		list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
 		}.getType());
@@ -71,8 +77,7 @@ public class CustController {
 			orgNm = entityList.get(i).getOrg().getOrgNm();
 			list.get(i).setOrgId(orgId);
 			list.get(i).setOrgNm(orgNm);
-			custTpCdNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(entityList.get(i).getCustTpCd()).getCmmnDetailCdNm();
-			list.get(i).setCustTpCdNm(custTpCdNm);
+			list.get(i).setCustTpCdNm(cmmnDetailCdMap.get(entityList.get(i).getCustTpCd()));
 		}
 
 		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
@@ -96,11 +101,17 @@ public class CustController {
 
 		list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
 		}.getType());
+		
+		HashMap<String, String> cmmnDetailCdMap = new HashMap<String, String>();
+		List<CmmnDetailCd> cmmnDetailCdList = repositoryCDC.findByCmmnDetailCdPKCmmnCd("cust_tp_cd");
+		for(int i = 0; i < cmmnDetailCdList.size(); i++) {
+			cmmnDetailCdMap.put(cmmnDetailCdList.get(i).getCmmnDetailCdPK().getCmmnDetailCd(), cmmnDetailCdList.get(i).getCmmnDetailCdNm());
+		}
 
 		for(int i = 0; i < entityList.size(); i++) {
 			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
 			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
-			list.get(i).setCustTpCdNm(repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(entityList.get(i).getCustTpCd()).getCmmnDetailCdNm());
+			list.get(i).setCustTpCdNm(cmmnDetailCdMap.get(entityList.get(i).getCustTpCd()));
 		}
 		
 		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
@@ -126,11 +137,17 @@ public class CustController {
 
 		List<CustDtoToClient> list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
 		}.getType());
+		
+		HashMap<String, String> cmmnDetailCdMap = new HashMap<String, String>();
+		List<CmmnDetailCd> cmmnDetailCdList = repositoryCDC.findByCmmnDetailCdPKCmmnCd("cust_tp_cd");
+		for(int i = 0; i < cmmnDetailCdList.size(); i++) {
+			cmmnDetailCdMap.put(cmmnDetailCdList.get(i).getCmmnDetailCdPK().getCmmnDetailCd(), cmmnDetailCdList.get(i).getCmmnDetailCdNm());
+		}
 
 		for (int i = 0; i < entityList.size(); i++) {
 			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
 			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
-			list.get(i).setCustTpCdNm(repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(entityList.get(i).getCustTpCd()).getCmmnDetailCdNm());
+			list.get(i).setCustTpCdNm(cmmnDetailCdMap.get(entityList.get(i).getCustTpCd()));
 		}
 
 		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
