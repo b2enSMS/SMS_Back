@@ -557,7 +557,8 @@ public class ContController {
 		}
 		
 		for (int i = 0; i < cdList.size(); i++) { // 있다가 없어짐
-			repositoryCD.deleteByContDetailPKContSeq(cdList.get(i).getContDetailPK().getContSeq());
+			cdList.get(i).setDelYn("Y");
+			repositoryCD.save(cdList.get(i));
 			repositoryL.deleteById(cdList.get(i).getLcns().getLcnsId());
 		}
 		

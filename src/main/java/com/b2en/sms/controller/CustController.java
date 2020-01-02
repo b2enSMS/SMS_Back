@@ -32,10 +32,12 @@ import com.b2en.sms.entity.CmmnDetailCd;
 import com.b2en.sms.entity.Cont;
 import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Org;
+import com.b2en.sms.entity.TempVer;
 import com.b2en.sms.repo.CmmnDetailCdRepository;
 import com.b2en.sms.repo.ContRepository;
 import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.OrgRepository;
+import com.b2en.sms.repo.TempVerRepository;
 
 @RestController
 @RequestMapping("/api/cust")
@@ -46,6 +48,9 @@ public class CustController {
 	
 	@Autowired
 	private ContRepository repositoryCont;
+	
+	@Autowired
+	private TempVerRepository repositoryT;
 	
 	@Autowired
 	private OrgRepository repositoryO;
@@ -118,30 +123,29 @@ public class CustController {
 
 	}
 	
-	// 가망고객(cont에 cust_id가 없는 cust)
+	// 가망고객(temp에 cust_id가 있는 cust)
 	@GetMapping(value = "/presale", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CustDtoToClient>> showPresale() {
 
-		List<Cont> contList = repositoryCont.findByDelYn("N");
-		List<Cust> entityList = repositoryCust.findAll();
-
-		for (int i = 0; i < contList.size(); i++) {
-			Cust contCust = contList.get(i).getCust();
-			if (contCust == null) {
+		List<TempVer> tempList = repositoryT.findAll();
+		List<Cust> entityList = new ArrayList<Cust>();
+		List<CustDtoToClient> list;
+		for (int i = 0; i < tempList.size(); i++) {
+			Cust tempCust = tempList.get(i).getCust();
+			if (tempCust == null || entityList.contains(tempCust)) {
 				continue;
 			}
-			if (entityList.contains(contCust)) {
-				entityList.remove(contCust); // 전체 리스트에서 계약고객을 제거
-			}
+			entityList.add(tempCust); // 가망고객만 리스트에 추가
 		}
 
-		List<CustDtoToClient> list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
+		list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
 		}.getType());
-		
+
 		HashMap<String, String> cmmnDetailCdMap = new HashMap<String, String>();
 		List<CmmnDetailCd> cmmnDetailCdList = repositoryCDC.findByCmmnDetailCdPKCmmnCd("cust_tp_cd");
-		for(int i = 0; i < cmmnDetailCdList.size(); i++) {
-			cmmnDetailCdMap.put(cmmnDetailCdList.get(i).getCmmnDetailCdPK().getCmmnDetailCd(), cmmnDetailCdList.get(i).getCmmnDetailCdNm());
+		for (int i = 0; i < cmmnDetailCdList.size(); i++) {
+			cmmnDetailCdMap.put(cmmnDetailCdList.get(i).getCmmnDetailCdPK().getCmmnDetailCd(),
+					cmmnDetailCdList.get(i).getCmmnDetailCdNm());
 		}
 
 		for (int i = 0; i < entityList.size(); i++) {
@@ -153,6 +157,7 @@ public class CustController {
 		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
 
 	}
+	
 	
 	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CustACInterface>> acList() {
