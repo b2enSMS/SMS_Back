@@ -65,4 +65,8 @@ public class Lcns extends TimeEntity implements Serializable{
 	// 스캔본
 	@Column(name="scan")
 	private String scan;
+	
+	// 삭제여부
+	@Column(name="del_yn")
+	private String delYn;
 }

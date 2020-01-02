@@ -517,6 +517,8 @@ public class ContController {
 				contDetailHist.setContDetail(contDetail);
 				contDetailHist.setContAmt(contDetail.getContAmt());
 				contDetailHist.setLcns(contDetail.getLcns());
+				contDetailHist.setPrdt(contDetail.getLcns().getPrdt());
+				contDetailHist.setContNote(contDetail.getContNote());
 				repositoryCDH.save(contDetailHist);
 				
 				cdList.remove(contDetail);
@@ -531,6 +533,7 @@ public class ContController {
 				lcnsChngHistPK.setLcnsId(lcns.getLcnsId());
 				lcnsChngHist.setLcnsChngHistPK(lcnsChngHistPK);
 				lcnsChngHist.setLcns(lcns);
+				lcnsChngHist.setPrdt(lcns.getPrdt());
 				repositoryLCH.save(lcnsChngHist);
 				
 				// 3. Lcns 수정
@@ -559,7 +562,8 @@ public class ContController {
 		for (int i = 0; i < cdList.size(); i++) { // 있다가 없어짐
 			cdList.get(i).setDelYn("Y");
 			repositoryCD.save(cdList.get(i));
-			repositoryL.deleteById(cdList.get(i).getLcns().getLcnsId());
+			cdList.get(i).getLcns().setDelYn("Y");
+			repositoryL.save(cdList.get(i).getLcns());
 		}
 		
 		res.add(new ResponseInfo("수정에 성공했습니다."));
