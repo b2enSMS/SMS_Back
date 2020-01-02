@@ -50,4 +50,13 @@ public class ContDetailHist extends TimeEntity implements Serializable {
 	@JoinColumn(name = "lcns_id")
 	private Lcns lcns;
 	
+	// 제품ID (FK)
+	@ManyToOne(cascade = CascadeType.DETACH)
+	@JoinColumn(name = "prdt_id")
+	private Prdt prdt;
+	
+	// 비고
+	@Column(name = "cont_note")
+	private String contNote;
+	
 }
