@@ -1,11 +1,9 @@
-package com.b2en.sms.service.file;
+package com.b2en.sms.dto.file;
 
 import lombok.Data;
 
 @Data
-public class FileList {
-	
-	private String uid;
+public class Response {
 	
 	private String name;
 	
@@ -14,4 +12,5 @@ public class FileList {
 	private String url;
 	
 	private String thumbUrl;
+
 }

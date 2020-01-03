@@ -1,6 +1,6 @@
 package com.b2en.sms.dto;
 
-import com.b2en.sms.service.file.FileList;
+import com.b2en.sms.dto.file.FileList;
 
 import lombok.Data;
 
