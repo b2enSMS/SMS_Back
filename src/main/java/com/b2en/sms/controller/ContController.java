@@ -38,6 +38,8 @@ import com.b2en.sms.dto.LcnsDtoForUpdate;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.ContAC;
 import com.b2en.sms.dto.autocompleteinfo.ContACInterface;
+import com.b2en.sms.dto.file.FileList;
+import com.b2en.sms.dto.file.Response;
 import com.b2en.sms.dto.toclient.ContAndLcnsDtoToClient;
 import com.b2en.sms.dto.toclient.ContChngHistDtoToClient;
 import com.b2en.sms.dto.toclient.ContDtoToClient;
@@ -70,7 +72,6 @@ import com.b2en.sms.repo.LcnsRepository;
 import com.b2en.sms.repo.OrgRepository;
 import com.b2en.sms.repo.PrdtRepository;
 import com.b2en.sms.repo.file.ScanRepository;
-import com.b2en.sms.service.file.FileList;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -238,11 +239,13 @@ public class ContController {
 				.toUriString();
 		
 		FileList fileList = new FileList();
+		Response response = new Response();
 		fileList.setUid("-1");
-		fileList.setStatus("done");
-		fileList.setName(scan.getFileName());
-		fileList.setUrl(url);
-		fileList.setThumbUrl(url);	
+		response.setStatus("done");
+		response.setName(scan.getFileName());
+		response.setUrl(url);
+		response.setThumbUrl(url);	
+		fileList.setResponse(response);
 		
 		FileList[] result = {fileList};
 		
@@ -314,7 +317,7 @@ public class ContController {
 			String scanId;
 			try {
 				fileList = lcnsDto[i].getFileList();
-				scanId = getScanIdFromUrl(fileList[0].getUrl());
+				scanId = getScanIdFromUrl(fileList[0].getResponse().getUrl());
 				lcnsEntity[i].setScan(scanId);
 			} catch(Exception e) {
 				lcnsEntity[i].setScan("");
@@ -487,7 +490,7 @@ public class ContController {
 				Lcns lcns = modelMapper.map(lcnsDto[i], Lcns.class);
 				int prdtId = lcnsDto[i].getPrdtId();
 				lcns.setPrdt(prdtMap.get(prdtId));
-				String scanId = getScanIdFromUrl(lcnsDto[i].getFileList()[0].getUrl());
+				String scanId = getScanIdFromUrl(lcnsDto[i].getFileList()[0].getResponse().getUrl());
 				lcns.setScan(scanId);
 				lcns.setDelYn("N");
 				lcns = repositoryL.save(lcns);
@@ -552,7 +555,7 @@ public class ContController {
 				String scanId;
 				try {
 					fileList = lcnsDto[i].getFileList();
-					scanId = getScanIdFromUrl(fileList[0].getUrl());
+					scanId = getScanIdFromUrl(fileList[0].getResponse().getUrl());
 					lcns.setScan(scanId);
 				} catch(Exception e) {
 					lcns.setScan("");

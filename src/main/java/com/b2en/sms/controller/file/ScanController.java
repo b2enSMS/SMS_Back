@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.b2en.sms.dto.file.FileDto;
-import com.b2en.sms.dto.file.ScanResponse;
+import com.b2en.sms.dto.file.Response;
 import com.b2en.sms.entity.file.Scan;
 import com.b2en.sms.repo.file.ScanRepository;
 import com.b2en.sms.service.file.ScanStorageService;
@@ -41,7 +41,7 @@ public class ScanController {
     private ScanRepository repository;
     
     @PostMapping("/upload")
-    public ScanResponse uploadFile(@RequestParam("file") MultipartFile file) {
+    public Response uploadFile(@RequestParam("file") MultipartFile file) {
     
     	log.info("file:{}", file);
     	String fileName = file.getOriginalFilename();
@@ -57,7 +57,13 @@ public class ScanController {
 		String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/scan/download/").path(scanId)
 				.toUriString();
 		
-        return new ScanResponse(fileName, "done", url, url);
+		Response response = new Response();
+		response.setName(fileName);
+		response.setStatus("done");
+		response.setUrl(url);
+		response.setThumbUrl(url);
+		
+        return response;
     }
     
     @GetMapping("/download/{fileId}")
