@@ -8,8 +8,12 @@ public class TempVerAndLcnsDtoToClient {
 	private int tempVerId;
 	
 	private int custId;
+	
+	private String custNm;
 
 	private int empId;
+	
+	private String empNm;
 	
 	private String macAddr;
 	
