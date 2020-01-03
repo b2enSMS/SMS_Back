@@ -1,11 +1,9 @@
-package com.b2en.sms.dto.toclient;
+package com.b2en.sms.dto;
 
 import lombok.Data;
 
 @Data
-public class TempVerAndLcnsDtoToClient {
-	
-	private int tempVerId;
+public class TempVerAndLcnsDtoForUpdate {
 	
 	private int custId;
 
@@ -17,5 +15,5 @@ public class TempVerAndLcnsDtoToClient {
 	
 	private String issueReason;
 	
-	private LcnsDtoToClientTempVer[] lcns;
+	private LcnsDtoTempVerForUpdate[] lcns;
 }

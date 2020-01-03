@@ -7,17 +7,16 @@ public class TempVerDtoToClient {
 	
 	private int tempVerId;
 	
-	private int custId;
+	private String orgNm;
 	
 	private String CustNm;
-
-	private int lcnsId;
-	
-	private String lcnsNo;
-
-	private int empId;
 	
 	private String empNm;
 	
 	private String macAddr;
+	
+	private String requestDate;
+	
+	private String issueReason;
+	
 }
