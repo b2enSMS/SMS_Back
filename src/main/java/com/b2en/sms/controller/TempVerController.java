@@ -192,7 +192,10 @@ public class TempVerController {
 		// ================= tempVerHist 생성 =================
 		TempVerHist tempVerHist = new TempVerHist();
 		TempVerHistPK tempVerHistPK = new TempVerHistPK();
+		Integer findMaxTempVerHistSeq = repositoryTempHist.findMaxTempVerHistSeq();
+		int maxTempVerHistSeq = (findMaxTempVerHistSeq==null) ? 0 : findMaxTempVerHistSeq;// histSeq를 현존하는 가장 큰 histSeq값+1로 직접 할당하기 위한 변수
 		tempVerHistPK.setTempVerId(toUpdate.getTempVerId());
+		tempVerHistPK.setTempVerHistSeq(maxTempVerHistSeq+1);
 		tempVerHist.setTempVerHistPK(tempVerHistPK);
 		tempVerHist.setTempVer(toUpdate);
 		tempVerHist.setCust(toUpdate.getCust());
