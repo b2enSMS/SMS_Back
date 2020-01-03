@@ -5,11 +5,17 @@ import lombok.Data;
 @Data
 public class TempVerHistDtoToClient {
 	
-	private String custNm;
+	private int tempVerHistSeq;
 	
-	private String lcnsNo;
+	private String orgNm;
+	
+	private String custNm;
 	
 	private String empNm;
 	
 	private String macAddr;
+	
+	private String requestDate;
+	
+	private String issueReason;
 }
