@@ -7,6 +7,6 @@ public class CustAC {
 	
 	private int custId;
 	
-	private String custInfo;
+	private String custNm;
 
 }
