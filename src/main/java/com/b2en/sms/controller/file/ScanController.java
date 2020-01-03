@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.b2en.sms.dto.file.FileDto;
+import com.b2en.sms.dto.file.DeleteFileDto;
 import com.b2en.sms.dto.file.Response;
 import com.b2en.sms.entity.file.Scan;
 import com.b2en.sms.repo.file.ScanRepository;
@@ -128,10 +128,10 @@ public class ScanController {
 	 */
     
     @DeleteMapping(value = "")
-	public ResponseEntity<Void> delete(@RequestBody FileDto dto) {
+	public ResponseEntity<Void> delete(@RequestBody DeleteFileDto dto) {
 		String[] idx = new String[dto.getIdx().length];
 		for(int i = 0; i < idx.length; i++) {
-			idx[i] = dto.getIdx()[i].getResponse().getUrl();
+			idx[i] = dto.getIdx()[i].getUrl();
 			System.out.println("[" + idx[i] + "]");
 			String[] splitted1 = idx[i].split("/");
 			String fn = splitted1[splitted1.length - 1];
