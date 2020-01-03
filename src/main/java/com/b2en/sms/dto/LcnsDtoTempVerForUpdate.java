@@ -1,7 +1,5 @@
 package com.b2en.sms.dto;
 
-import java.sql.Date;
-
 import lombok.Data;
 
 @Data
@@ -13,11 +11,11 @@ public class LcnsDtoTempVerForUpdate {
 	
 	private String prdtNm;
 	
-	private Date lcnsIssuDt;
+	private String lcnsIssuDt;
 	
 	private String lcnsTpCd;
 	
-	private Date lcnsStartDt;
+	private String lcnsStartDt;
 	
-	private Date lcnsEndDt;
+	private String lcnsEndDt;
 }
