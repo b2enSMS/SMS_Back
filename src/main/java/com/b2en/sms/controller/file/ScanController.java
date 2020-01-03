@@ -125,16 +125,20 @@ public class ScanController {
 	public ResponseEntity<Void> delete(@RequestBody FileDto dto) {
 		String[] idx = new String[dto.getIdx().length];
 		for(int i = 0; i < idx.length; i++) {
-			idx[i] = dto.getIdx()[i].getResponse().getUrl();
-			String[] splitted1 = idx[i].split("/");
-			String fn = splitted1[splitted1.length-1];
-			String[] splitted2 = fn.split("\\.");
-			String scanId = splitted2[0];
-			
-			String type = repository.findById(scanId).orElse(null).getFileType();
-			scanStorageService.deleteFile(scanId, type);
-			
-			repository.deleteById(scanId);
+			try {
+				idx[i] = dto.getIdx()[i].getResponse().getUrl();
+				String[] splitted1 = idx[i].split("/");
+				String fn = splitted1[splitted1.length-1];
+				String[] splitted2 = fn.split("\\.");
+				String scanId = splitted2[0];
+				
+				String type = repository.getOne(scanId).getFileType();
+				scanStorageService.deleteFile(scanId, type);
+				
+				repository.deleteById(scanId);
+			} catch(Exception e) {
+				continue;
+			}
 		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
