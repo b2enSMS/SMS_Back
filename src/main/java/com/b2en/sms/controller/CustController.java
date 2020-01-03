@@ -168,7 +168,7 @@ public class CustController {
 		for(int i = 0; i < list.size(); i++) {
 			CustAC custAC = new CustAC();
 			custAC.setCustId(list.get(i).getCustId());
-			custAC.setCustInfo(list.get(i).getOrg().getOrgNm()+" "+list.get(i).getCustNm());
+			custAC.setCustNm(list.get(i).getOrg().getOrgNm()+" "+list.get(i).getCustNm());
 			acList.add(custAC);
 		}
 		
