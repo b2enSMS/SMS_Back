@@ -284,14 +284,18 @@ public class TempVerController {
 		
 		List<TempVerHist> tempVerHistList = repositoryTempHist.findByTempVerHistPKTempVerId(id);
 		List<TempVerHistDtoToClient> list = new ArrayList<TempVerHistDtoToClient>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		for(int i = 0; i < tempVerHistList.size(); i++) {
 			TempVerHistDtoToClient tempVerHistDtoToClient = new TempVerHistDtoToClient();
 			TempVerHist tempVerHist = tempVerHistList.get(i);
+			tempVerHistDtoToClient.setTempVerHistSeq(tempVerHist.getTempVerHistPK().getTempVerHistSeq());
+			tempVerHistDtoToClient.setOrgNm(tempVerHist.getCust().getOrg().getOrgNm());
 			tempVerHistDtoToClient.setCustNm(tempVerHist.getCust().getCustNm());
-			tempVerHistDtoToClient.setLcnsNo(tempVerHist.getLcns().getLcnsNo());
 			tempVerHistDtoToClient.setEmpNm(tempVerHist.getB2en().getEmpNm());
 			tempVerHistDtoToClient.setMacAddr(tempVerHist.getMacAddr());
+			tempVerHistDtoToClient.setRequestDate(sdf.format(tempVerHist.getRequestDate()));
+			tempVerHistDtoToClient.setIssueReason(tempVerHist.getIssueReason());
 			
 			list.add(tempVerHistDtoToClient);
 		}

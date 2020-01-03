@@ -1,6 +1,7 @@
 package com.b2en.sms.entity;
 
 import java.io.Serializable;
+import java.sql.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -52,4 +53,12 @@ public class TempVerHist extends TimeEntity implements Serializable  {
 	// MAC주소
 	@Column(name = "mac_addr")
 	private String macAddr;
+	
+	// 비고
+	@Column(name = "issue_reason")
+	private String issueReason;
+	
+	// 요청일
+	@Column(name = "request_date")
+	private Date requestDate;
 }
