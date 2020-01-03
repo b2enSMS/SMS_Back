@@ -244,10 +244,10 @@ public class TempVerController {
 				int prdtId = lcnsDto[i].getPrdtId();
 				Prdt prdt = repositoryPrdt.getOne(prdtId);
 				lcns[i].setPrdt(prdt);
-				lcns[i].setLcnsIssuDt(lcnsDto[i].getLcnsIssuDt());
+				lcns[i].setLcnsIssuDt(Date.valueOf(lcnsDto[i].getLcnsIssuDt()));
 				lcns[i].setLcnsTpCd(lcnsDto[i].getLcnsTpCd());
-				lcns[i].setLcnsStartDt(lcnsDto[i].getLcnsStartDt());
-				lcns[i].setLcnsEndDt(lcnsDto[i].getLcnsEndDt());
+				lcns[i].setLcnsStartDt(Date.valueOf(lcnsDto[i].getLcnsStartDt()));
+				lcns[i].setLcnsEndDt(Date.valueOf(lcnsDto[i].getLcnsEndDt()));
 				lcns[i] = repositoryLcns.save(lcns[i]);
 			}
 		}
