@@ -106,7 +106,9 @@ public class TempVerController {
 		TempVerAndLcnsDtoToClient tempVerAndLcnsDtoToClient = new TempVerAndLcnsDtoToClient();
 		tempVerAndLcnsDtoToClient.setTempVerId(tempVer.getTempVerId());
 		tempVerAndLcnsDtoToClient.setCustId(tempVer.getCust().getCustId());
+		tempVerAndLcnsDtoToClient.setCustNm(tempVer.getCust().getCustNm());
 		tempVerAndLcnsDtoToClient.setEmpId(tempVer.getB2en().getEmpId());
+		tempVerAndLcnsDtoToClient.setEmpNm(tempVer.getB2en().getEmpNm());
 		LcnsDtoToClientTempVer[] lcns = {modelMapper.map(tempVer.getLcns(), LcnsDtoToClientTempVer.class)};
 		lcns[0].setLcnsTpNm(repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(lcns[0].getLcnsTpCd()).getCmmnDetailCdNm());
 		tempVerAndLcnsDtoToClient.setLcns(lcns);
