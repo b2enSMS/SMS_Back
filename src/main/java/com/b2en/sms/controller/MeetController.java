@@ -1,6 +1,7 @@
 package com.b2en.sms.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -29,6 +30,7 @@ import com.b2en.sms.dto.toclient.MeetAttendCustDtoToClient;
 import com.b2en.sms.dto.toclient.MeetAttendEmpDtoToClient;
 import com.b2en.sms.dto.toclient.MeetDtoToClient;
 import com.b2en.sms.entity.B2en;
+import com.b2en.sms.entity.CmmnDetailCd;
 import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Meet;
 import com.b2en.sms.entity.MeetAttendCust;
@@ -37,6 +39,7 @@ import com.b2en.sms.entity.Org;
 import com.b2en.sms.entity.pk.MeetAttendCustPK;
 import com.b2en.sms.entity.pk.MeetAttendEmpPK;
 import com.b2en.sms.repo.B2enRepository;
+import com.b2en.sms.repo.CmmnDetailCdRepository;
 import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.MeetAttendCustRepository;
 import com.b2en.sms.repo.MeetAttendEmpRepository;
@@ -49,22 +52,18 @@ public class MeetController {
 	
 	@Autowired
 	private MeetRepository repositoryM;
-	
 	@Autowired
 	private MeetAttendCustRepository repositoryMAC;
-	
 	@Autowired
 	private MeetAttendEmpRepository repositoryMAE;
-	
 	@Autowired
 	private OrgRepository repositoryO;
-	
 	@Autowired
 	private CustRepository repositoryC;
-	
 	@Autowired
 	private B2enRepository repositoryB;
-	
+	@Autowired
+	private CmmnDetailCdRepository repositoryCDC;
 	@Autowired
 	private ModelMapper modelMapper;
 	
@@ -78,12 +77,19 @@ public class MeetController {
 
 		list = modelMapper.map(entityList, new TypeToken<List<MeetDtoToClient>>() {
 		}.getType());
+		
+		HashMap<String, String> cmmnDetailCdMap = new HashMap<String, String>();
+		List<CmmnDetailCd> cmmnDetailCdList = repositoryCDC.findByCmmnDetailCdPKCmmnCd("meet_tp_cd");
+		for(int i = 0; i < cmmnDetailCdList.size(); i++) {
+			cmmnDetailCdMap.put(cmmnDetailCdList.get(i).getCmmnDetailCdPK().getCmmnDetailCd(), cmmnDetailCdList.get(i).getCmmnDetailCdNm());
+		}
 
 		for(int i = 0; i < entityList.size(); i++) {
 			orgId = entityList.get(i).getOrg().getOrgId();
 			orgNm = entityList.get(i).getOrg().getOrgNm();
 			list.get(i).setOrgId(orgId);
 			list.get(i).setOrgNm(orgNm);
+			list.get(i).setMeetTpCdNm(cmmnDetailCdMap.get(entityList.get(i).getMeetTpCd()));
 		}
 		
 		return new ResponseEntity<List<MeetDtoToClient>>(list, HttpStatus.OK);
@@ -98,6 +104,8 @@ public class MeetController {
 		MeetDtoToClient meetDtoToClient = modelMapper.map(meet, MeetDtoToClient.class);
 		meetDtoToClient.setOrgId(meet.getOrg().getOrgId());
 		meetDtoToClient.setOrgNm(meet.getOrg().getOrgNm());
+		String meetTpCdNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(meet.getMeetTpCd()).getCmmnDetailCdNm();
+		meetDtoToClient.setMeetTpCdNm(meetTpCdNm);
 		List<MeetAttendCust> meetAttendCust = repositoryMAC.findByMeetAttendCustPKMeetId(id);
 		List<MeetAttendEmp> meetAttendEmp = repositoryMAE.findByMeetAttendEmpPKMeetId(id);
 		MeetAttendCustDtoToClient[] meetAttendCustDtoToClientList = new MeetAttendCustDtoToClient[meetAttendCust.size()];
@@ -106,7 +114,7 @@ public class MeetController {
 		for(int i = 0; i < meetAttendCust.size(); i++) {
 			MeetAttendCustDtoToClient meetAttendCustDtoToClient = new MeetAttendCustDtoToClient();
 			meetAttendCustDtoToClient.setCustId(meetAttendCust.get(i).getCust().getCustId());
-			meetAttendCustDtoToClient.setCustInfo(meetAttendCust.get(i).getCust().getOrg().getOrgNm()+" "+meetAttendCust.get(i).getCust().getCustNm());
+			meetAttendCustDtoToClient.setCustNm(meetAttendCust.get(i).getCust().getCustNm());
 			meetAttendCustDtoToClientList[i] = meetAttendCustDtoToClient;
 		}
 		for(int i = 0; i < meetAttendEmp.size(); i++) {

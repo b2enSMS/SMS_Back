@@ -21,6 +21,8 @@ public class MeetDtoToClient {
 	
 	private String meetTpCd;
 	
+	private String meetTpCdNm;
+	
 	private MeetAttendCustDtoToClient[] meetAttendCust;
 	
 	private MeetAttendEmpDtoToClient[] meetAttendEmp;
