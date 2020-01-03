@@ -30,6 +30,7 @@ import com.b2en.sms.dto.LcnsDtoTempVerForUpdate;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.TempVerAndLcnsDto;
 import com.b2en.sms.dto.TempVerAndLcnsDtoForUpdate;
+import com.b2en.sms.dto.toclient.LcnsDtoToClientTempVer;
 import com.b2en.sms.dto.toclient.TempVerAndLcnsDtoToClient;
 import com.b2en.sms.dto.toclient.TempVerDtoToClient;
 import com.b2en.sms.dto.toclient.TempVerHistDtoToClient;
@@ -41,6 +42,7 @@ import com.b2en.sms.entity.TempVerHist;
 import com.b2en.sms.entity.pk.LcnsChngHistPK;
 import com.b2en.sms.entity.pk.TempVerHistPK;
 import com.b2en.sms.repo.B2enRepository;
+import com.b2en.sms.repo.CmmnDetailCdRepository;
 import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.LcnsChngHistRepository;
 import com.b2en.sms.repo.LcnsRepository;
@@ -66,6 +68,8 @@ public class TempVerController {
 	private B2enRepository repositoryB2en;
 	@Autowired
 	private PrdtRepository repositoryPrdt;
+	@Autowired
+	private CmmnDetailCdRepository repositoryCDC;
 	@Autowired
 	private ModelMapper modelMapper;
 	
@@ -103,6 +107,9 @@ public class TempVerController {
 		tempVerAndLcnsDtoToClient.setTempVerId(tempVer.getTempVerId());
 		tempVerAndLcnsDtoToClient.setCustId(tempVer.getCust().getCustId());
 		tempVerAndLcnsDtoToClient.setEmpId(tempVer.getB2en().getEmpId());
+		LcnsDtoToClientTempVer[] lcns = {modelMapper.map(tempVer.getLcns(), LcnsDtoToClientTempVer.class)};
+		lcns[0].setLcnsTpNm(repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(lcns[0].getLcnsTpCd()).getCmmnDetailCdNm());
+		tempVerAndLcnsDtoToClient.setLcns(lcns);
 		tempVerAndLcnsDtoToClient.setMacAddr(tempVer.getMacAddr());
 		tempVerAndLcnsDtoToClient.setRequestDate(sdf.format(tempVer.getRequestDate()));
 		tempVerAndLcnsDtoToClient.setIssueReason(tempVer.getIssueReason());
@@ -162,6 +169,7 @@ public class TempVerController {
 	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
+			repositoryTempHist.deleteByTempVerHistPKTempVerId(idx[i]);
 			repositoryTemp.deleteById(idx[i]);
 		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
