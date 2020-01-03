@@ -39,7 +39,7 @@ import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.ContAC;
 import com.b2en.sms.dto.autocompleteinfo.ContACInterface;
 import com.b2en.sms.dto.file.FileList;
-import com.b2en.sms.dto.file.Response;
+import com.b2en.sms.dto.file.FileListToClient;
 import com.b2en.sms.dto.toclient.ContAndLcnsDtoToClient;
 import com.b2en.sms.dto.toclient.ContChngHistDtoToClient;
 import com.b2en.sms.dto.toclient.ContDtoToClient;
@@ -211,7 +211,7 @@ public class ContController {
 			lcnsDtoToClient[i].setPrdtNm(contDetail.get(i).getLcns().getPrdt().getPrdtNm());
 			lcnsDtoToClient[i].setContAmt(contDetail.get(i).getContAmt());
 			lcnsDtoToClient[i].setLcnsTpNm(cmmnDetailCdMap.get(contDetail.get(i).getLcns().getLcnsTpCd()));
-			lcnsDtoToClient[i].setFileList(getFileList(contDetail.get(i).getLcns().getScan()));
+			lcnsDtoToClient[i].setFileList(getFileListToClient(contDetail.get(i).getLcns().getScan()));
 			lcnsDtoToClient[i].setContNote(contDetail.get(i).getContNote());
 		}
 		contAndLcnsDtoToClient.setLcns(lcnsDtoToClient);
@@ -219,10 +219,10 @@ public class ContController {
 		return new ResponseEntity<ContAndLcnsDtoToClient>(contAndLcnsDtoToClient, HttpStatus.OK);
 	}
 	
-	private FileList[] getFileList(String id) {
+	private FileListToClient[] getFileListToClient(String id) {
 		
 		if(id.equals("")) {
-			FileList[] fileList = new FileList[0];
+			FileListToClient[] fileList = new FileListToClient[0];
 			return fileList;
 		}
 		
@@ -231,23 +231,21 @@ public class ContController {
 		try {
 			scan = repositoryS.getOne(id);
 		} catch(Exception e) {
-			FileList[] fileList = new FileList[0];
+			FileListToClient[] fileList = new FileListToClient[0];
 			return fileList;
 		}
 		
 		String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/scan/download/").path(id)
 				.toUriString();
 		
-		FileList fileList = new FileList();
-		Response response = new Response();
+		FileListToClient fileList = new FileListToClient();
 		fileList.setUid("-1");
-		response.setStatus("done");
-		response.setName(scan.getFileName());
-		response.setUrl(url);
-		response.setThumbUrl(url);	
-		fileList.setResponse(response);
+		fileList.setStatus("done");
+		fileList.setName(scan.getFileName());
+		fileList.setUrl(url);
+		fileList.setThumbUrl(url);	
 		
-		FileList[] result = {fileList};
+		FileListToClient[] result = {fileList};
 		
 		return result;
 	}

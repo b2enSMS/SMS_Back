@@ -2,7 +2,7 @@ package com.b2en.sms.dto.toclient;
 
 import java.sql.Date;
 
-import com.b2en.sms.dto.file.FileList;
+import com.b2en.sms.dto.file.FileListToClient;
 
 import lombok.Data;
 
@@ -31,7 +31,7 @@ public class LcnsDtoToClient {
 
 	private Date lcnsEndDt;
 	
-	private FileList[] fileList;
+	private FileListToClient[] fileList;
 	
 	private String contAmt;
 	
