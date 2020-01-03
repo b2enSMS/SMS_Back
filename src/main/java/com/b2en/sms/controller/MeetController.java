@@ -106,7 +106,7 @@ public class MeetController {
 		for(int i = 0; i < meetAttendCust.size(); i++) {
 			MeetAttendCustDtoToClient meetAttendCustDtoToClient = new MeetAttendCustDtoToClient();
 			meetAttendCustDtoToClient.setCustId(meetAttendCust.get(i).getCust().getCustId());
-			meetAttendCustDtoToClient.setCustNm(meetAttendCust.get(i).getCust().getCustNm());
+			meetAttendCustDtoToClient.setCustInfo(meetAttendCust.get(i).getCust().getOrg().getOrgNm()+" "+meetAttendCust.get(i).getCust().getCustNm());
 			meetAttendCustDtoToClientList[i] = meetAttendCustDtoToClient;
 		}
 		for(int i = 0; i < meetAttendEmp.size(); i++) {
