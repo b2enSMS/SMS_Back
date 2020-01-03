@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class DeleteFileDto {
-	private Response response;
+	private Response[] idx;
 }
