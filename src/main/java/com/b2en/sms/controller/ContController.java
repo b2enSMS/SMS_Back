@@ -241,9 +241,7 @@ public class ContController {
 		fileList.setStatus("done");
 		fileList.setName(scan.getFileName());
 		fileList.setUrl(url);
-		fileList.setThumbUrl(url);
-		
-		
+		fileList.setThumbUrl(url);	
 		
 		FileList[] result = {fileList};
 		
@@ -310,8 +308,15 @@ public class ContController {
 			lcnsEntity[i] = modelMapper.map(lcnsDto[i], Lcns.class);
 			int prdtId = lcnsDto[i].getPrdtId();
 			lcnsEntity[i].setPrdt(prdtMap.get(prdtId));
-			String scanId = getScanIdFromUrl(lcnsDto[i].getFileList()[0].getUrl());
-			lcnsEntity[i].setScan(scanId);
+			FileList[] fileList = null;
+			String scanId;
+			try {
+				fileList = lcnsDto[i].getFileList();
+				scanId = getScanIdFromUrl(fileList[0].getUrl());
+				lcnsEntity[i].setScan(scanId);
+			} catch(Exception e) {
+				lcnsEntity[i].setScan("");
+			}
 			
 			lcnsEntity[i] = repositoryL.save(lcnsEntity[i]);
 		}
@@ -342,13 +347,10 @@ public class ContController {
 		contEntity.setHeadContId(headContId);
 		
 		String[] contAmt = new String[lcnsDto.length];
+		int tot = 0;
 		
 		for(int i = 0; i < lcnsDto.length; i++) {
 			contAmt[i] = lcnsDto[i].getContAmt();
-		}
-		
-		int tot = 0;
-		for (int i = 0; i < contAmt.length; i++) {
 			tot += Integer.parseInt(contAmt[i]);
 		}
 		
@@ -457,13 +459,10 @@ public class ContController {
 		toUpdate.setMtncEndDt(java.sql.Date.valueOf(contAndLcnsDto.getMtncEndDt()));
 
 		String[] contAmt = new String[lcnsDto.length];
-
+		int tot = 0;
+		
 		for (int i = 0; i < lcnsDto.length; i++) {
 			contAmt[i] = lcnsDto[i].getContAmt();
-		}
-
-		int tot = 0;
-		for (int i = 0; i < contAmt.length; i++) {
 			tot += Integer.parseInt(contAmt[i]);
 		}
 
@@ -488,6 +487,7 @@ public class ContController {
 				lcns.setPrdt(prdtMap.get(prdtId));
 				String scanId = getScanIdFromUrl(lcnsDto[i].getFileList()[0].getUrl());
 				lcns.setScan(scanId);
+				lcns.setDelYn("N");
 				lcns = repositoryL.save(lcns);
 				
 				contDetail = new ContDetail();
@@ -527,7 +527,7 @@ public class ContController {
 				Lcns lcns = repositoryCD.findByContDetailPKContSeq(lcnsDto[i].getContSeq()).getLcns();
 				LcnsChngHist lcnsChngHist = modelMapper.map(lcns, LcnsChngHist.class);
 				LcnsChngHistPK lcnsChngHistPK = new LcnsChngHistPK();
-				Integer findMaxHistSeq = repositoryCD.findMaxContSeq();
+				Integer findMaxHistSeq = repositoryLCH.findMaxHistSeq();
 				int maxHistSeq = (findMaxHistSeq==null) ? 0 : findMaxHistSeq;// histSeq를 현존하는 가장 큰 histSeq값+1로 직접 할당하기 위한 변수
 				lcnsChngHistPK.setHistSeq(maxHistSeq+1);
 				lcnsChngHistPK.setLcnsId(lcns.getLcnsId());
@@ -546,8 +546,15 @@ public class ContController {
 				lcns.setCertNo(lcnsDto[i].getCertNo());
 				lcns.setLcnsStartDt(java.sql.Date.valueOf(lcnsDto[i].getLcnsStartDt()));
 				lcns.setLcnsEndDt(java.sql.Date.valueOf(lcnsDto[i].getLcnsEndDt()));
-				String scanId = getScanIdFromUrl(lcnsDto[i].getFileList()[0].getUrl());
-				lcns.setScan(scanId);
+				FileList[] fileList = null;
+				String scanId;
+				try {
+					fileList = lcnsDto[i].getFileList();
+					scanId = getScanIdFromUrl(fileList[0].getUrl());
+					lcns.setScan(scanId);
+				} catch(Exception e) {
+					lcns.setScan("");
+				}
 				lcns = repositoryL.save(lcns);
 				
 				// 4. ContDetail 수정
