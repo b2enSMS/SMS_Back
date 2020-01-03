@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.CustDto;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.ResponseInfo;
-import com.b2en.sms.dto.autocompleteinfo.CustACInterface;
+import com.b2en.sms.dto.autocompleteinfo.CustAC;
 import com.b2en.sms.dto.toclient.CustDtoToClient;
 import com.b2en.sms.entity.CmmnDetailCd;
 import com.b2en.sms.entity.Cont;
@@ -160,11 +160,19 @@ public class CustController {
 	
 	
 	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<CustACInterface>> acList() {
+	public ResponseEntity<List<CustAC>> acList() {
 
-		List<CustACInterface> list = repositoryCust.findAllBy();
+		List<Cust> list = repositoryCust.findAll();
+		List<CustAC> acList = new ArrayList<CustAC>();
 		
-		return new ResponseEntity<List<CustACInterface>>(list, HttpStatus.OK);
+		for(int i = 0; i < list.size(); i++) {
+			CustAC custAC = new CustAC();
+			custAC.setCustId(list.get(i).getCustId());
+			custAC.setCustInfo(list.get(i).getOrg().getOrgNm()+" "+list.get(i).getCustNm());
+			acList.add(custAC);
+		}
+		
+		return new ResponseEntity<List<CustAC>>(acList, HttpStatus.OK);
 
 	}
 	 

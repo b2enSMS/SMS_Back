@@ -211,6 +211,7 @@ public class ContController {
 			lcnsDtoToClient[i].setContAmt(contDetail.get(i).getContAmt());
 			lcnsDtoToClient[i].setLcnsTpNm(cmmnDetailCdMap.get(contDetail.get(i).getLcns().getLcnsTpCd()));
 			lcnsDtoToClient[i].setFileList(getFileList(contDetail.get(i).getLcns().getScan()));
+			lcnsDtoToClient[i].setContNote(contDetail.get(i).getContNote());
 		}
 		contAndLcnsDtoToClient.setLcns(lcnsDtoToClient);
 		
@@ -308,6 +309,7 @@ public class ContController {
 			lcnsEntity[i] = modelMapper.map(lcnsDto[i], Lcns.class);
 			int prdtId = lcnsDto[i].getPrdtId();
 			lcnsEntity[i].setPrdt(prdtMap.get(prdtId));
+			lcnsEntity[i].setDelYn("N");
 			FileList[] fileList = null;
 			String scanId;
 			try {
