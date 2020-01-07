@@ -282,8 +282,6 @@ public class ContController {
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody ContAndLcnsDto contAndLcnsDto, BindingResult result) {
 		
-		log.debug("cont:{}", contAndLcnsDto);
-		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
 		if (result.hasErrors()) {
@@ -357,6 +355,8 @@ public class ContController {
 		}
 		
 		contEntity.setContTotAmt(Integer.toString(tot));
+		
+		log.info("contEntity: {}", contEntity);
 		
 		contEntity = repositoryC.save(contEntity);
 		
