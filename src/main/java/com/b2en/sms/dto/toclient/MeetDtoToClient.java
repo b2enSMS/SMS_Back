@@ -19,6 +19,8 @@ public class MeetDtoToClient {
 	
 	private String meetTpCdNm;
 	
+	private String OrgNm;
+	
 	private String custNm;
 	
 	private String empNm;
