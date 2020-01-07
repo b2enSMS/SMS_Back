@@ -3,8 +3,8 @@ package com.b2en.sms.dto.toclient;
 import lombok.Data;
 
 @Data
-public class MeetDtoToClient {
-
+public class MeetAndAttendDtoToClient {
+	
 	private int meetId;
 
 	private String meetDt;
@@ -19,8 +19,8 @@ public class MeetDtoToClient {
 	
 	private String meetTpCdNm;
 	
-	private String custNm;
+	private MeetAttendCustDtoToClient[] meetAttendCust;
 	
-	private String empNm;
+	private MeetAttendEmpDtoToClient[] meetAttendEmp;
 	
 }

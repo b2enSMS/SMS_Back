@@ -4,14 +4,11 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,11 +30,6 @@ public class Meet extends TimeEntity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="meet_id")
 	private int meetId;
-	
-	// 고객사ID (FK)
-	@ManyToOne(cascade=CascadeType.DETACH)
-	@JoinColumn(name="org_id")
-	private Org org;
 	
 	// 미팅일시
 	@Column(name="meet_dt")

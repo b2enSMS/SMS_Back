@@ -328,11 +328,11 @@ public class ContController {
 		Cont contEntity = modelMapper.map(contAndLcnsDto, Cont.class);
 		
 		int custId = contAndLcnsDto.getCustId();
-		Cust cust = null;
 		try {
-			cust = repositoryCust.getOne(custId);
+			Cust cust = repositoryCust.getOne(custId);
+			contEntity.setCust(cust);
 		} catch(Exception e) {
-			cust = null;
+			contEntity.setCust(null);
 		}
 		
 		int orgId = contAndLcnsDto.getOrgId();
@@ -340,7 +340,6 @@ public class ContController {
 		int empId = contAndLcnsDto.getEmpId();
 		B2en b2en = repositoryB.getOne(empId);
 		
-		contEntity.setCust(cust);
 		contEntity.setOrg(org);
 		contEntity.setB2en(b2en);
 		contEntity.setDelYn("N");

@@ -8,4 +8,6 @@ public class MeetAttendCustDtoToClient {
 	private int custId;
 	
 	private String custNm;
+	
+	private String orgNm;
 }
