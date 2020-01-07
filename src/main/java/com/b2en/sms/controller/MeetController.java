@@ -73,6 +73,10 @@ public class MeetController {
 		list = modelMapper.map(entityList, new TypeToken<List<MeetDtoToClient>>() {
 		}.getType());
 		
+		for(int i = 0; i < list.size(); i++) {
+			list.get(i).setMeetStartTime(getTimeString(list.get(i).getMeetStartTime()));
+		}
+		
 		HashMap<String, String> cmmnDetailCdMap = new HashMap<String, String>();
 		List<CmmnDetailCd> cmmnDetailCdList = repositoryCDC.findByCmmnDetailCdPKCmmnCd("meet_tp_cd");
 		for(int i = 0; i < cmmnDetailCdList.size(); i++) {
@@ -94,6 +98,37 @@ public class MeetController {
 		
 		return new ResponseEntity<List<MeetDtoToClient>>(list, HttpStatus.OK);
 
+	}
+	
+	private String getTimeString(String time) {
+		
+		String[] split = time.split(":");
+		String hour = split[0];
+		String minute = split[1];
+		String ampm = "";
+		int hourInt;
+		
+		if(hour.charAt(0)=='0') {
+			hourInt = hour.charAt(1) - '0';
+		} else {
+			hourInt = Integer.parseInt(hour);
+		}
+		
+		if(hourInt<12) {
+			ampm = "오전";
+		} else if(hourInt==12) {
+			ampm = "오후";
+		} else if(hourInt==24) {
+			hourInt -= 12;
+			ampm = "오전";
+		} else {
+			hourInt -= 12;
+			ampm = "오후";
+		}
+		
+		hour = Integer.toString(hourInt);
+		
+		return ampm + " " + hour + "시 " + minute + "분";
 	}
 	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -143,7 +178,7 @@ public class MeetController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		 
-		
+		meetDto.setMeetStartTime(meetDto.getMeetStartTime()+":00");
 		Meet meetEntity = modelMapper.map(meetDto, Meet.class);
 		
 		meetEntity = repositoryM.save(meetEntity);
@@ -217,7 +252,7 @@ public class MeetController {
 		
 		toUpdate.setMeetDt(java.sql.Date.valueOf(meetDto.getMeetDt()));
 		toUpdate.setMeetCnt(meetDto.getMeetCnt());
-		toUpdate.setMeetStartTime(java.sql.Time.valueOf(meetDto.getMeetStartTime()));
+		toUpdate.setMeetStartTime(java.sql.Time.valueOf(meetDto.getMeetStartTime()+":00"));
 		toUpdate.setMeetTotTime(meetDto.getMeetTotTime());
 		toUpdate.setMeetTpCd(meetDto.getMeetTpCd());
 
