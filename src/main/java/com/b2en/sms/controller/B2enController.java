@@ -43,7 +43,7 @@ public class B2enController {
 	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<B2enDtoToClient>> showAll() {
 
-		List<B2en> entityList = repository.findAll();
+		List<B2en> entityList = repository.findAllOrderByName();
 		List<B2enDtoToClient> list;
 
 		list = modelMapper.map(entityList, new TypeToken<List<B2enDtoToClient>>() {

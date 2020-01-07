@@ -28,6 +28,7 @@ import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.OrgACInterface;
 import com.b2en.sms.dto.toclient.OrgDtoToClient;
 import com.b2en.sms.entity.Org;
+import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.OrgRepository;
 
 @RestController
@@ -35,7 +36,9 @@ import com.b2en.sms.repo.OrgRepository;
 public class OrgController {
 
 	@Autowired
-	private OrgRepository repository;
+	private OrgRepository repositoryOrg;
+	@Autowired
+	private CustRepository repositoryCust;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -43,7 +46,7 @@ public class OrgController {
 	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<OrgDtoToClient>> showAll() {
 
-		List<Org> entityList = repository.findAll();
+		List<Org> entityList = repositoryOrg.findAllOrderByName();
 		List<OrgDtoToClient> list;
 		
 		list = modelMapper.map(entityList, new TypeToken<List<OrgDtoToClient>>() {
@@ -56,7 +59,7 @@ public class OrgController {
 	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<OrgACInterface>> acList() {
 
-		List<OrgACInterface> list = repository.findAllBy();
+		List<OrgACInterface> list = repositoryOrg.findAllBy();
 
 		return new ResponseEntity<List<OrgACInterface>>(list, HttpStatus.OK);
 	}
@@ -64,7 +67,7 @@ public class OrgController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<OrgDtoToClient> findById(@PathVariable("id") int id) {
 		
-		Org org = repository.getOne(id);
+		Org org = repositoryOrg.getOne(id);
 		
 		OrgDtoToClient orgDtoToClient = modelMapper.map(org, OrgDtoToClient.class);
 		
@@ -87,7 +90,7 @@ public class OrgController {
 		
 		Org orgEntity = modelMapper.map(org, Org.class);
 		
-		repository.save(orgEntity);
+		repositoryOrg.save(orgEntity);
 		
 		res.add(new ResponseInfo("등록에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
@@ -97,7 +100,7 @@ public class OrgController {
 	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
-			repository.deleteById(idx[i]);
+			repositoryOrg.deleteById(idx[i]);
 		}
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
@@ -118,7 +121,7 @@ public class OrgController {
 		}
 		 
 		
-		Org toUpdate = repository.getOne(id);
+		Org toUpdate = repositoryOrg.getOne(id);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
@@ -132,7 +135,7 @@ public class OrgController {
 		toUpdate.setOrgNm(orgNm);
 		toUpdate.setOrgAddr(orgAddr);
 
-		repository.save(toUpdate);
+		repositoryOrg.save(toUpdate);
 		
 		res.add(new ResponseInfo("수정에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);

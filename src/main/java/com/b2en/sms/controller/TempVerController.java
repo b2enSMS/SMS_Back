@@ -50,8 +50,11 @@ import com.b2en.sms.repo.PrdtRepository;
 import com.b2en.sms.repo.TempVerHistRepository;
 import com.b2en.sms.repo.TempVerRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/temp")
+@Slf4j
 public class TempVerController {
 
 	@Autowired
@@ -76,7 +79,7 @@ public class TempVerController {
 	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<TempVerDtoToClient>> showAll() {
 
-		List<TempVer> entityList = repositoryTemp.findAll();
+		List<TempVer> entityList = repositoryTemp.findAllByOrderByTempVerIdDesc();
 		List<TempVerDtoToClient> list = new ArrayList<TempVerDtoToClient>();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		
@@ -124,6 +127,8 @@ public class TempVerController {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
+		log.info("tempVerDto: {}", tempVerDto);
+		
 		if(result.hasErrors()) {
 			res.add(new ResponseInfo("다음의 문제로 등록에 실패했습니다: "));
 			List<FieldError> errors = result.getFieldErrors();
@@ -162,6 +167,8 @@ public class TempVerController {
 		tempEntity.setIssueReason(tempVerDto.getIssueReason());
 		
 		repositoryTemp.save(tempEntity);
+		
+		log.info("tempEntity: {}", tempEntity);
 		
 		res.add(new ResponseInfo("등록에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);

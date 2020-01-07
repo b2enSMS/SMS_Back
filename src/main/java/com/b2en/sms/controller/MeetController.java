@@ -70,7 +70,7 @@ public class MeetController {
 	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<MeetDtoToClient>> showAll() {
 
-		List<Meet> entityList = repositoryM.findAll();
+		List<Meet> entityList = repositoryM.findAllByOrderByMeetIdDesc();
 		List<MeetDtoToClient> list;
 		int orgId;
 		String orgNm;
