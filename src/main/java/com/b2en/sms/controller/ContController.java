@@ -202,7 +202,7 @@ public class ContController {
 			cmmnDetailCdMap.put(cmmnDetailCdList.get(i).getCmmnDetailCdPK().getCmmnDetailCd(), cmmnDetailCdList.get(i).getCmmnDetailCdNm());
 		}
 		
-		List<ContDetail> contDetail = repositoryCD.findByContDetailPKContId(id);
+		List<ContDetail> contDetail = repositoryCD.findByContIdWhereDelYnIsN(id);
 		LcnsDtoToClient[] lcnsDtoToClient = new LcnsDtoToClient[contDetail.size()];
 		for(int i = 0; i < lcnsDtoToClient.length; i++) {
 			lcnsDtoToClient[i] = modelMapper.map(contDetail.get(i).getLcns(), LcnsDtoToClient.class);
