@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.MeetDto;
 import com.b2en.sms.dto.ResponseInfo;
+import com.b2en.sms.dto.toclient.MeetAndAttendDtoToClient;
 import com.b2en.sms.dto.toclient.MeetAttendCustDtoToClient;
 import com.b2en.sms.dto.toclient.MeetAttendEmpDtoToClient;
 import com.b2en.sms.dto.toclient.MeetDtoToClient;
@@ -35,7 +36,6 @@ import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Meet;
 import com.b2en.sms.entity.MeetAttendCust;
 import com.b2en.sms.entity.MeetAttendEmp;
-import com.b2en.sms.entity.Org;
 import com.b2en.sms.entity.pk.MeetAttendCustPK;
 import com.b2en.sms.entity.pk.MeetAttendEmpPK;
 import com.b2en.sms.repo.B2enRepository;
@@ -44,7 +44,6 @@ import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.MeetAttendCustRepository;
 import com.b2en.sms.repo.MeetAttendEmpRepository;
 import com.b2en.sms.repo.MeetRepository;
-import com.b2en.sms.repo.OrgRepository;
 
 @RestController
 @RequestMapping("/api/meet")
@@ -56,8 +55,6 @@ public class MeetController {
 	private MeetAttendCustRepository repositoryMAC;
 	@Autowired
 	private MeetAttendEmpRepository repositoryMAE;
-	@Autowired
-	private OrgRepository repositoryO;
 	@Autowired
 	private CustRepository repositoryC;
 	@Autowired
@@ -72,8 +69,6 @@ public class MeetController {
 
 		List<Meet> entityList = repositoryM.findAllByOrderByMeetIdDesc();
 		List<MeetDtoToClient> list;
-		int orgId;
-		String orgNm;
 
 		list = modelMapper.map(entityList, new TypeToken<List<MeetDtoToClient>>() {
 		}.getType());
@@ -83,12 +78,17 @@ public class MeetController {
 		for(int i = 0; i < cmmnDetailCdList.size(); i++) {
 			cmmnDetailCdMap.put(cmmnDetailCdList.get(i).getCmmnDetailCdPK().getCmmnDetailCd(), cmmnDetailCdList.get(i).getCmmnDetailCdNm());
 		}
-
+		
+		List<List<MeetAttendCust>> meetAttendCustList = new ArrayList<List<MeetAttendCust>>();
+		List<List<MeetAttendEmp>> meetAttendEmpList = new ArrayList<List<MeetAttendEmp>>();
 		for(int i = 0; i < entityList.size(); i++) {
-			orgId = entityList.get(i).getOrg().getOrgId();
-			orgNm = entityList.get(i).getOrg().getOrgNm();
-			list.get(i).setOrgId(orgId);
-			list.get(i).setOrgNm(orgNm);
+			meetAttendCustList.add(repositoryMAC.findByMeetAttendCustPKMeetId(entityList.get(i).getMeetId()));
+			meetAttendEmpList.add(repositoryMAE.findByMeetAttendEmpPKMeetId(entityList.get(i).getMeetId()));
+		}
+		
+		for(int i = 0; i < entityList.size(); i++) {
+			list.get(i).setCustNm(meetAttendCustList.get(i).get(0).getCust().getCustNm()+ " 외 " + (meetAttendCustList.get(i).size()-1) + "명");
+			list.get(i).setEmpNm(meetAttendEmpList.get(i).get(0).getB2en().getEmpNm()+ " 외 " + (meetAttendEmpList.get(i).size()-1) + "명");
 			list.get(i).setMeetTpCdNm(cmmnDetailCdMap.get(entityList.get(i).getMeetTpCd()));
 		}
 		
@@ -97,15 +97,13 @@ public class MeetController {
 	}
 	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<MeetDtoToClient> findById(@PathVariable("id") int id) {
+	public ResponseEntity<MeetAndAttendDtoToClient> findById(@PathVariable("id") int id) {
 		
 		Meet meet = repositoryM.getOne(id);
 		
-		MeetDtoToClient meetDtoToClient = modelMapper.map(meet, MeetDtoToClient.class);
-		meetDtoToClient.setOrgId(meet.getOrg().getOrgId());
-		meetDtoToClient.setOrgNm(meet.getOrg().getOrgNm());
+		MeetAndAttendDtoToClient meetAndAttendDtoToClient = modelMapper.map(meet, MeetAndAttendDtoToClient.class);
 		String meetTpCdNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(meet.getMeetTpCd()).getCmmnDetailCdNm();
-		meetDtoToClient.setMeetTpCdNm(meetTpCdNm);
+		meetAndAttendDtoToClient.setMeetTpCdNm(meetTpCdNm);
 		List<MeetAttendCust> meetAttendCust = repositoryMAC.findByMeetAttendCustPKMeetId(id);
 		List<MeetAttendEmp> meetAttendEmp = repositoryMAE.findByMeetAttendEmpPKMeetId(id);
 		MeetAttendCustDtoToClient[] meetAttendCustDtoToClientList = new MeetAttendCustDtoToClient[meetAttendCust.size()];
@@ -115,6 +113,7 @@ public class MeetController {
 			MeetAttendCustDtoToClient meetAttendCustDtoToClient = new MeetAttendCustDtoToClient();
 			meetAttendCustDtoToClient.setCustId(meetAttendCust.get(i).getCust().getCustId());
 			meetAttendCustDtoToClient.setCustNm(meetAttendCust.get(i).getCust().getCustNm());
+			meetAttendCustDtoToClient.setOrgNm(meetAttendCust.get(i).getCust().getOrg().getOrgNm());
 			meetAttendCustDtoToClientList[i] = meetAttendCustDtoToClient;
 		}
 		for(int i = 0; i < meetAttendEmp.size(); i++) {
@@ -124,10 +123,10 @@ public class MeetController {
 			meetAttendEmpDtoToClientList[i] = meetAttendEmpDtoToClient;
 		}
 		
-		meetDtoToClient.setMeetAttendCust(meetAttendCustDtoToClientList);
-		meetDtoToClient.setMeetAttendEmp(meetAttendEmpDtoToClientList);
+		meetAndAttendDtoToClient.setMeetAttendCust(meetAttendCustDtoToClientList);
+		meetAndAttendDtoToClient.setMeetAttendEmp(meetAttendEmpDtoToClientList);
 		
-		return new ResponseEntity<MeetDtoToClient>(meetDtoToClient, HttpStatus.OK);
+		return new ResponseEntity<MeetAndAttendDtoToClient>(meetAndAttendDtoToClient, HttpStatus.OK);
 	}
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -146,11 +145,6 @@ public class MeetController {
 		 
 		
 		Meet meetEntity = modelMapper.map(meetDto, Meet.class);
-		
-		int orgId = meetDto.getOrgId();
-		Org org = repositoryO.getOne(orgId);
-		
-		meetEntity.setOrg(org);
 		
 		meetEntity = repositoryM.save(meetEntity);
 		
@@ -221,7 +215,6 @@ public class MeetController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		toUpdate.setOrg(repositoryO.getOne(meetDto.getOrgId()));
 		toUpdate.setMeetDt(java.sql.Date.valueOf(meetDto.getMeetDt()));
 		toUpdate.setMeetCnt(meetDto.getMeetCnt());
 		toUpdate.setMeetStartTime(java.sql.Time.valueOf(meetDto.getMeetStartTime()));
