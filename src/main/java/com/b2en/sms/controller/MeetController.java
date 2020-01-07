@@ -85,12 +85,15 @@ public class MeetController {
 		
 		List<List<MeetAttendCust>> meetAttendCustList = new ArrayList<List<MeetAttendCust>>();
 		List<List<MeetAttendEmp>> meetAttendEmpList = new ArrayList<List<MeetAttendEmp>>();
+		List<List<String>> orgList = new ArrayList<List<String>>();
 		for(int i = 0; i < entityList.size(); i++) {
+			orgList.add(repositoryMAC.findOrg(entityList.get(i).getMeetId()));
 			meetAttendCustList.add(repositoryMAC.findByMeetAttendCustPKMeetId(entityList.get(i).getMeetId()));
 			meetAttendEmpList.add(repositoryMAE.findByMeetAttendEmpPKMeetId(entityList.get(i).getMeetId()));
 		}
 		
 		for(int i = 0; i < entityList.size(); i++) {
+			list.get(i).setOrgNm(orgList.get(i).get(0)+" 외 "+(orgList.get(i).size()-1)+"개 기관");
 			list.get(i).setCustNm(meetAttendCustList.get(i).get(0).getCust().getCustNm()+ " 외 " + (meetAttendCustList.get(i).size()-1) + "명");
 			list.get(i).setEmpNm(meetAttendEmpList.get(i).get(0).getB2en().getEmpNm()+ " 외 " + (meetAttendEmpList.get(i).size()-1) + "명");
 			list.get(i).setMeetTpCdNm(cmmnDetailCdMap.get(entityList.get(i).getMeetTpCd()));
