@@ -73,11 +73,8 @@ import com.b2en.sms.repo.OrgRepository;
 import com.b2en.sms.repo.PrdtRepository;
 import com.b2en.sms.repo.file.ScanRepository;
 
-import lombok.extern.slf4j.Slf4j;
-
 @RestController
 @RequestMapping("/api/cont")
-@Slf4j
 public class ContController {
 	
 	@Autowired
@@ -349,8 +346,6 @@ public class ContController {
 		}
 		
 		contEntity.setContTotAmt(Long.toString(tot));
-		
-		log.info("contEntity: {}", contEntity);
 
 		try {
 			Cust cust = repositoryCust.getOne(custId);
@@ -385,7 +380,6 @@ public class ContController {
 			contDetail.setDelYn("N");
 			contDetail.setContNote(lcnsDto[i].getContNote());
 
-			System.out.println();
 			repositoryCD.save(contDetail);
 		}
 		
