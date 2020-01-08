@@ -148,15 +148,6 @@ public class MeetController {
 		if(meetAndAttendDtoToClient.getMeetCnt()==null) {
 			meetAndAttendDtoToClient.setMeetCnt("");
 		}
-		/*
-		 * List<Integer> custIdList = repositoryMAC.findCustIdByMeetId(id); int[] custId
-		 * = new int[custIdList.size()]; for(int i = 0; i < custId.length; i++) {
-		 * custId[i] = custIdList.get(i); } meetAndAttendDtoToClient.setCustId(custId);
-		 * 
-		 * List<Integer> empIdList = repositoryMAE.findEmpIdByMeetId(id); int[] empId =
-		 * new int[empIdList.size()]; for(int i = 0; i < empId.length; i++) { empId[i] =
-		 * empIdList.get(i); } meetAndAttendDtoToClient.setEmpId(empId);
-		 */
 		
 		List<MeetAttendCust> meetAttendCust = repositoryMAC.findByMeetAttendCustPKMeetId(id);
 		List<MeetAttendEmp> meetAttendEmp = repositoryMAE.findByMeetAttendEmpPKMeetId(id);

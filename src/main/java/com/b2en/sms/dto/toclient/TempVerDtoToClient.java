@@ -9,13 +9,17 @@ public class TempVerDtoToClient {
 	
 	private String orgNm;
 	
-	private String CustNm;
+	private String custNm;
+	
+	private String user;
 	
 	private String empNm;
 	
 	private String macAddr;
 	
 	private String requestDate;
+	
+	private String lcnsEndDate;
 	
 	private String issueReason;
 	

@@ -9,6 +9,8 @@ public class TempVerAndLcnsDtoForUpdate {
 
 	private int empId;
 	
+	private String user;
+	
 	private String macAddr;
 	
 	private String requestDate;

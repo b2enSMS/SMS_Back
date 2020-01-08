@@ -10,6 +10,8 @@ public class TempVerAndLcnsDtoToClient {
 	private int custId;
 	
 	private String custNm;
+	
+	private String user;
 
 	private int empId;
 	

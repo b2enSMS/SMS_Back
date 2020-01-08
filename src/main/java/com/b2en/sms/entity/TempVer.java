@@ -48,6 +48,10 @@ public class TempVer extends TimeEntity implements Serializable {
 	@JoinColumn(name = "emp_id")
 	private B2en b2en;
 	
+	// 사용자
+	@Column(name="user")
+	private String user;
+	
 	// MAC주소
 	@Column(name="mac_addr")
 	private String macAddr;
