@@ -96,6 +96,40 @@ public class OrgController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
+	@PutMapping(value = "/test/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ResponseInfo>> test(@PathVariable("id") int id, @Valid @RequestBody OrgDto org, BindingResult result) {
+		
+		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
+		
+		if (result.hasErrors()) {
+			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
+			List<FieldError> errors = result.getFieldErrors();
+			for (int i = 0; i < errors.size(); i++) {
+				res.add(new ResponseInfo(errors.get(i).getDefaultMessage()));
+			}
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+		}
+		
+		Org toUpdate = repositoryOrg.getOne(id);
+
+		if (toUpdate == null) {
+			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
+			res.add(new ResponseInfo("해당 id를 가진 row가 없습니다."));
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+		}
+		
+		String orgNm = org.getOrgNm();
+		String orgAddr = org.getOrgAddr();
+
+		toUpdate.setOrgNm(orgNm);
+		toUpdate.setOrgAddr(orgAddr);
+
+		repositoryOrg.forceUpdate(toUpdate);
+		
+		res.add(new ResponseInfo("수정에 성공했습니다."));
+		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
+	}
+	
 	@DeleteMapping(value = "")
 	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
 		int[] idx = id.getIdx();

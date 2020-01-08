@@ -357,7 +357,7 @@ public class ContController {
 			contEntity.setCust(cust);
 			contEntity = repositoryC.save(contEntity);
 		} catch(Exception e) {
-			repositoryC.forceInsert(contEntity, orgId, empId);
+			repositoryC.forceInsert(contEntity);
 			contEntity = repositoryC.findRecentCont();
 		}
 		
@@ -471,7 +471,7 @@ public class ContController {
 			toUpdate.setCust(cust);
 			toUpdate = repositoryC.save(toUpdate);
 		} catch(Exception e) {
-			repositoryC.forceInsert(toUpdate, orgId, empId);
+			repositoryC.forceUpdate(toUpdate);
 			toUpdate = repositoryC.getOne(custId);
 		}
 		
@@ -504,6 +504,7 @@ public class ContController {
 				Integer findMaxSeq = repositoryCD.findMaxContSeq();
 				int maxSeq = (findMaxSeq==null) ? 0 : findMaxSeq;// contSeq를 현존하는 가장 큰 contSeq값+1로 직접 할당하기 위한 변수
 				contDetailPK.setContSeq(maxSeq+1);
+				contDetailPK.setContId(id);
 				contDetail.setContDetailPK(contDetailPK);
 				contDetail.setCont(toUpdate);
 				contDetail.setLcns(lcns);
