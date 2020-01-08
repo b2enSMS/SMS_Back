@@ -93,6 +93,7 @@ public class TempVerController {
 			tempVerDtoToClient.setEmpNm(tempVer.getB2en().getEmpNm());
 			tempVerDtoToClient.setMacAddr(tempVer.getMacAddr());
 			tempVerDtoToClient.setRequestDate(sdf.format(tempVer.getRequestDate()));
+			tempVerDtoToClient.setLcnsEndDate(sdf.format(tempVer.getLcns().getLcnsEndDt()));
 			tempVerDtoToClient.setIssueReason(tempVer.getIssueReason());
 			list.add(tempVerDtoToClient);
 		}

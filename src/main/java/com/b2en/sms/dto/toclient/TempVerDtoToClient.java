@@ -19,6 +19,8 @@ public class TempVerDtoToClient {
 	
 	private String requestDate;
 	
+	private String lcnsEndDate;
+	
 	private String issueReason;
 	
 }
