@@ -17,6 +17,9 @@ public interface MeetAttendCustRepository extends JpaRepository<MeetAttendCust, 
 	
 	List<MeetAttendCust> findByMeetAttendCustPKMeetId(int meetId);
 	
+	@Query(value="SELECT cust_id FROM meet_attend_cust WHERE meet_id = :meetId", nativeQuery = true)
+	List<Integer> findCustIdByMeetId(@Param("meetId") int meetId);
+	
 	@Transactional
 	void deleteByMeetAttendCustPKCustSeq(int custSeq);
 	

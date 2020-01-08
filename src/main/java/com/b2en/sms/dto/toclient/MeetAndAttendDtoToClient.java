@@ -19,8 +19,8 @@ public class MeetAndAttendDtoToClient {
 	
 	private String meetTpCdNm;
 	
-	private MeetAttendCustDtoToClient[] meetAttendCust;
+	private int[] custId;
 	
-	private MeetAttendEmpDtoToClient[] meetAttendEmp;
+	private int[] empId;
 	
 }
