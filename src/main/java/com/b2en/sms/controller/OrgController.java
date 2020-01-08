@@ -28,7 +28,6 @@ import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.OrgACInterface;
 import com.b2en.sms.dto.toclient.OrgDtoToClient;
 import com.b2en.sms.entity.Org;
-import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.OrgRepository;
 
 @RestController
@@ -37,8 +36,6 @@ public class OrgController {
 
 	@Autowired
 	private OrgRepository repositoryOrg;
-	@Autowired
-	private CustRepository repositoryCust;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -93,40 +90,6 @@ public class OrgController {
 		repositoryOrg.save(orgEntity);
 		
 		res.add(new ResponseInfo("등록에 성공했습니다."));
-		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
-	}
-	
-	@PutMapping(value = "/test/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> test(@PathVariable("id") int id, @Valid @RequestBody OrgDto org, BindingResult result) {
-		
-		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
-		
-		if (result.hasErrors()) {
-			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
-			List<FieldError> errors = result.getFieldErrors();
-			for (int i = 0; i < errors.size(); i++) {
-				res.add(new ResponseInfo(errors.get(i).getDefaultMessage()));
-			}
-			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
-		}
-		
-		Org toUpdate = repositoryOrg.getOne(id);
-
-		if (toUpdate == null) {
-			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
-			res.add(new ResponseInfo("해당 id를 가진 row가 없습니다."));
-			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
-		}
-		
-		String orgNm = org.getOrgNm();
-		String orgAddr = org.getOrgAddr();
-
-		toUpdate.setOrgNm(orgNm);
-		toUpdate.setOrgAddr(orgAddr);
-
-		repositoryOrg.forceUpdate(toUpdate);
-		
-		res.add(new ResponseInfo("수정에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
