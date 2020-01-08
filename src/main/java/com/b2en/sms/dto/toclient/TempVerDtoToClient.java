@@ -9,7 +9,9 @@ public class TempVerDtoToClient {
 	
 	private String orgNm;
 	
-	private String CustNm;
+	private String custNm;
+	
+	private String user;
 	
 	private String empNm;
 	

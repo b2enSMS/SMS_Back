@@ -89,6 +89,7 @@ public class TempVerController {
 			tempVerDtoToClient.setTempVerId(tempVer.getTempVerId());
 			tempVerDtoToClient.setOrgNm(tempVer.getCust().getOrg().getOrgNm());
 			tempVerDtoToClient.setCustNm(tempVer.getCust().getCustNm());
+			tempVerDtoToClient.setUser(tempVer.getUser());
 			tempVerDtoToClient.setEmpNm(tempVer.getB2en().getEmpNm());
 			tempVerDtoToClient.setMacAddr(tempVer.getMacAddr());
 			tempVerDtoToClient.setRequestDate(sdf.format(tempVer.getRequestDate()));
@@ -110,6 +111,7 @@ public class TempVerController {
 		tempVerAndLcnsDtoToClient.setTempVerId(tempVer.getTempVerId());
 		tempVerAndLcnsDtoToClient.setCustId(tempVer.getCust().getCustId());
 		tempVerAndLcnsDtoToClient.setCustNm(tempVer.getCust().getCustNm());
+		tempVerAndLcnsDtoToClient.setUser(tempVer.getUser());
 		tempVerAndLcnsDtoToClient.setEmpId(tempVer.getB2en().getEmpId());
 		tempVerAndLcnsDtoToClient.setEmpNm(tempVer.getB2en().getEmpNm());
 		LcnsDtoToClientTempVer[] lcns = {modelMapper.map(tempVer.getLcns(), LcnsDtoToClientTempVer.class)};
@@ -160,6 +162,7 @@ public class TempVerController {
 		// ========================== temp 생성 ========================
 		TempVer tempEntity = new TempVer();
 		tempEntity.setCust(repositoryCust.getOne(tempVerDto.getCustId()));
+		tempEntity.setUser(tempVerDto.getUser());
 		tempEntity.setB2en(repositoryB2en.getOne(tempVerDto.getEmpId()));
 		tempEntity.setLcns(lcnsEntity[0]);
 		tempEntity.setMacAddr(tempVerDto.getMacAddr());
@@ -216,6 +219,7 @@ public class TempVerController {
 		tempVerHist.setTempVerHistPK(tempVerHistPK);
 		tempVerHist.setTempVer(toUpdate);
 		tempVerHist.setCust(toUpdate.getCust());
+		tempVerHist.setUser(toUpdate.getUser());
 		tempVerHist.setLcns(toUpdate.getLcns());
 		tempVerHist.setB2en(toUpdate.getB2en());
 		tempVerHist.setMacAddr(toUpdate.getMacAddr());
@@ -274,6 +278,7 @@ public class TempVerController {
 		
 		// ================== temp 수정 ====================
 		toUpdate.setCust(repositoryCust.getOne(tempVerDto.getCustId()));
+		toUpdate.setUser(tempVerDto.getUser());
 		toUpdate.setB2en(repositoryB2en.getOne(tempVerDto.getEmpId()));
 		toUpdate.setLcns(lcns[0]);
 		toUpdate.setMacAddr(tempVerDto.getMacAddr());
