@@ -14,5 +14,4 @@ public interface CustRepository extends JpaRepository<Cust, Integer>{
 	
 	@Query(value="SELECT * FROM cust ORDER BY binary(cust_nm)", nativeQuery = true)
 	List<Cust> findAllOrderByName();
-
 }
