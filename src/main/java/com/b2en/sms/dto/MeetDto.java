@@ -1,5 +1,8 @@
 package com.b2en.sms.dto;
 
+import com.b2en.sms.dto.toclient.MeetAttendCustDto;
+import com.b2en.sms.dto.toclient.MeetAttendEmpDto;
+
 import lombok.Data;
 
 @Data
@@ -22,7 +25,7 @@ public class MeetDto {
 	//@NotBlank(message="meetTpCd가 빈칸입니다.")
 	private String meetTpCd;
 	
-	private int[] custId;
+	private MeetAttendCustDto[] custs;
 	
-	private int[] empId;
+	private MeetAttendEmpDto[] emps;
 }
