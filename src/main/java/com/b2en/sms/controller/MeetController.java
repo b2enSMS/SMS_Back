@@ -165,13 +165,13 @@ public class MeetController {
 		
 		for(int i = 0; i < meetAttendCust.size(); i++) {
 			MeetAttendCustDto meetAttendCustDtoToClient = new MeetAttendCustDto();
-			meetAttendCustDtoToClient.setKey(meetAttendCust.get(i).getCust().getCustId());
+			meetAttendCustDtoToClient.setKey(Integer.toString(meetAttendCust.get(i).getCust().getCustId()));
 			meetAttendCustDtoToClient.setLabel(meetAttendCust.get(i).getCust().getCustNm());
 			meetAttendCustDtoToClientList[i] = meetAttendCustDtoToClient;
 		}
 		for(int i = 0; i < meetAttendEmp.size(); i++) {
 			MeetAttendEmpDto meetAttendEmpDtoToClient = new MeetAttendEmpDto();
-			meetAttendEmpDtoToClient.setKey(meetAttendEmp.get(i).getB2en().getEmpId());
+			meetAttendEmpDtoToClient.setKey(Integer.toString(meetAttendEmp.get(i).getB2en().getEmpId()));
 			meetAttendEmpDtoToClient.setLabel(meetAttendEmp.get(i).getB2en().getEmpNm());
 			meetAttendEmpDtoToClientList[i] = meetAttendEmpDtoToClient;
 		}
@@ -208,7 +208,7 @@ public class MeetController {
 		for(int i = 0; i < custs.length; i++) {
 			MeetAttendCust meetAttendCust = new MeetAttendCust();
 			MeetAttendCustPK meetAttendCustPK = new MeetAttendCustPK();
-			Cust cust = repositoryC.getOne(custs[i].getKey());
+			Cust cust = repositoryC.getOne(Integer.parseInt(custs[i].getKey()));
 			meetAttendCustPK.setCustSeq(custSeq+i+1);
 			meetAttendCustPK.setMeetId(meetEntity.getMeetId());
 			meetAttendCust.setMeetAttendCustPK(meetAttendCustPK);
@@ -221,7 +221,7 @@ public class MeetController {
 		for(int i = 0; i < emps.length; i++) {
 			MeetAttendEmp meetAttendEmp = new MeetAttendEmp();
 			MeetAttendEmpPK meetAttendEmpPK = new MeetAttendEmpPK();
-			B2en b2en = repositoryB.getOne(emps[i].getKey());
+			B2en b2en = repositoryB.getOne(Integer.parseInt(emps[i].getKey()));
 			meetAttendEmpPK.setEmpSeq(empSeq+i+1);
 			meetAttendEmpPK.setMeetId(meetEntity.getMeetId());
 			meetAttendEmp.setMeetAttendEmpPK(meetAttendEmpPK);
@@ -286,7 +286,7 @@ public class MeetController {
 		for(int i = 0; i < custs.length; i++) {
 			MeetAttendCust meetAttendCust = new MeetAttendCust();
 			MeetAttendCustPK meetAttendCustPK = new MeetAttendCustPK();
-			Cust cust = repositoryC.getOne(custs[i].getKey());
+			Cust cust = repositoryC.getOne(Integer.parseInt(custs[i].getKey()));
 			meetAttendCustPK.setCustSeq(custSeq+i+1);
 			meetAttendCustPK.setMeetId(id);
 			meetAttendCust.setMeetAttendCustPK(meetAttendCustPK);
@@ -299,7 +299,7 @@ public class MeetController {
 		for(int i = 0; i < emps.length; i++) {
 			MeetAttendEmp meetAttendEmp = new MeetAttendEmp();
 			MeetAttendEmpPK meetAttendEmpPK = new MeetAttendEmpPK();
-			B2en b2en = repositoryB.getOne(emps[i].getKey());
+			B2en b2en = repositoryB.getOne(Integer.parseInt(emps[i].getKey()));
 			meetAttendEmpPK.setEmpSeq(empSeq+i+1);
 			meetAttendEmpPK.setMeetId(id);
 			meetAttendEmp.setMeetAttendEmpPK(meetAttendEmpPK);
