@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class MeetAttendEmpDto {
 	
-	private int key;
+	private String key;
 	
 	private String label;
 	
