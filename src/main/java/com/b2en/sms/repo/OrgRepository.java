@@ -14,5 +14,4 @@ public interface OrgRepository extends JpaRepository<Org, Integer> {
 	
 	@Query(value="SELECT * FROM org ORDER BY binary(org_nm)", nativeQuery = true)
 	List<Org> findAllOrderByName();
-	
 }

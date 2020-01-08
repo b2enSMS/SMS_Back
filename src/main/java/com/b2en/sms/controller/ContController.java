@@ -325,18 +325,12 @@ public class ContController {
 		// ======================= Cont 생성 ==========================
 		Cont contEntity = modelMapper.map(contAndLcnsDto, Cont.class);
 		
-		int custId = contAndLcnsDto.getCustId();
-		try {
-			Cust cust = repositoryCust.getOne(custId);
-			contEntity.setCust(cust);
-		} catch(Exception e) {
-			contEntity.setCust(null);
-		}
-		
 		int orgId = contAndLcnsDto.getOrgId();
 		Org org = repositoryO.getOne(orgId);
 		int empId = contAndLcnsDto.getEmpId();
 		B2en b2en = repositoryB.getOne(empId);
+		
+		int custId = contAndLcnsDto.getCustId();
 		
 		contEntity.setOrg(org);
 		contEntity.setB2en(b2en);
@@ -347,18 +341,25 @@ public class ContController {
 		contEntity.setHeadContId(headContId);
 		
 		String[] contAmt = new String[lcnsDto.length];
-		int tot = 0;
+		long tot = 0;
 		
 		for(int i = 0; i < lcnsDto.length; i++) {
 			contAmt[i] = lcnsDto[i].getContAmt();
-			tot += Integer.parseInt(contAmt[i]);
+			tot += Long.parseLong(contAmt[i]);
 		}
 		
-		contEntity.setContTotAmt(Integer.toString(tot));
+		contEntity.setContTotAmt(Long.toString(tot));
 		
 		log.info("contEntity: {}", contEntity);
-		
-		contEntity = repositoryC.save(contEntity);
+
+		try {
+			Cust cust = repositoryCust.getOne(custId);
+			contEntity.setCust(cust);
+			contEntity = repositoryC.save(contEntity);
+		} catch(Exception e) {
+			repositoryC.forceInsert(contEntity, orgId, empId);
+			contEntity = repositoryC.findRecentCont();
+		}
 		
 		// ======================= ContDetail 생성 ==========================
 		int contId = contEntity.getContId();
@@ -384,6 +385,7 @@ public class ContController {
 			contDetail.setDelYn("N");
 			contDetail.setContNote(lcnsDto[i].getContNote());
 
+			System.out.println();
 			repositoryCD.save(contDetail);
 		}
 		
@@ -435,19 +437,13 @@ public class ContController {
 		
 		// ======================= Cont 수정 ==========================
 		int custId = contAndLcnsDto.getCustId();
-		Cust cust = null;
-		try {
-			cust = repositoryCust.getOne(custId);
-		} catch(Exception e) {
-			cust = null;
-		}
+		
 		int orgId = contAndLcnsDto.getOrgId();
 		Org org = repositoryO.getOne(orgId);
 		int empId = contAndLcnsDto.getEmpId();
 		B2en b2en = repositoryB.getOne(empId);
 		LcnsDtoForUpdate[] lcnsDto = contAndLcnsDto.getLcns();
 
-		toUpdate.setCust(cust);
 		toUpdate.setOrg(org);
 		toUpdate.setB2en(b2en);
 		toUpdate.setHeadContId(contAndLcnsDto.getHeadContId());
@@ -470,6 +466,15 @@ public class ContController {
 
 		toUpdate.setContTotAmt(Integer.toString(tot));
 
+		try {
+			Cust cust = repositoryCust.getOne(custId);
+			toUpdate.setCust(cust);
+			toUpdate = repositoryC.save(toUpdate);
+		} catch(Exception e) {
+			repositoryC.forceInsert(toUpdate, orgId, empId);
+			toUpdate = repositoryC.getOne(custId);
+		}
+		
 		repositoryC.save(toUpdate);
 		
 		// ======================= contDetail, Lcns 탐색(생성/수정/삭제) ==========================
