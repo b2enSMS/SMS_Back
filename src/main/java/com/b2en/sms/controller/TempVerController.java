@@ -89,7 +89,11 @@ public class TempVerController {
 			tempVerDtoToClient.setTempVerId(tempVer.getTempVerId());
 			tempVerDtoToClient.setOrgNm(tempVer.getCust().getOrg().getOrgNm());
 			tempVerDtoToClient.setCustNm(tempVer.getCust().getCustNm());
-			tempVerDtoToClient.setUser(tempVer.getUser());
+			String user = tempVer.getUser();
+			if(user==null) {
+				user = "";
+			}
+			tempVerDtoToClient.setUser(user);
 			tempVerDtoToClient.setEmpNm(tempVer.getB2en().getEmpNm());
 			tempVerDtoToClient.setMacAddr(tempVer.getMacAddr());
 			tempVerDtoToClient.setRequestDate(sdf.format(tempVer.getRequestDate()));
@@ -112,7 +116,11 @@ public class TempVerController {
 		tempVerAndLcnsDtoToClient.setTempVerId(tempVer.getTempVerId());
 		tempVerAndLcnsDtoToClient.setCustId(tempVer.getCust().getCustId());
 		tempVerAndLcnsDtoToClient.setCustNm(tempVer.getCust().getCustNm());
-		tempVerAndLcnsDtoToClient.setUser(tempVer.getUser());
+		String user = tempVer.getUser();
+		if(user==null) {
+			user = "";
+		}
+		tempVerAndLcnsDtoToClient.setUser(user);
 		tempVerAndLcnsDtoToClient.setEmpId(tempVer.getB2en().getEmpId());
 		tempVerAndLcnsDtoToClient.setEmpNm(tempVer.getB2en().getEmpNm());
 		LcnsDtoToClientTempVer[] lcns = {modelMapper.map(tempVer.getLcns(), LcnsDtoToClientTempVer.class)};
