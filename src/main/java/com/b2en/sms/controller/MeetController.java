@@ -27,6 +27,8 @@ import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.MeetDto;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.toclient.MeetAndAttendDtoToClient;
+import com.b2en.sms.dto.toclient.MeetAttendCustDtoToClient;
+import com.b2en.sms.dto.toclient.MeetAttendEmpDtoToClient;
 import com.b2en.sms.dto.toclient.MeetDtoToClient;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.entity.CmmnDetailCd;
@@ -146,21 +148,16 @@ public class MeetController {
 		if(meetAndAttendDtoToClient.getMeetCnt()==null) {
 			meetAndAttendDtoToClient.setMeetCnt("");
 		}
-		List<Integer> custIdList = repositoryMAC.findCustIdByMeetId(id);
-		int[] custId = new int[custIdList.size()];
-		for(int i = 0; i < custId.length; i++) {
-			custId[i] = custIdList.get(i);
-		}
-		meetAndAttendDtoToClient.setCustId(custId);
-		
-		List<Integer> empIdList = repositoryMAE.findEmpIdByMeetId(id);
-		int[] empId = new int[empIdList.size()];
-		for(int i = 0; i < empId.length; i++) {
-			empId[i] = empIdList.get(i);
-		}
-		meetAndAttendDtoToClient.setEmpId(empId);
-		
 		/*
+		 * List<Integer> custIdList = repositoryMAC.findCustIdByMeetId(id); int[] custId
+		 * = new int[custIdList.size()]; for(int i = 0; i < custId.length; i++) {
+		 * custId[i] = custIdList.get(i); } meetAndAttendDtoToClient.setCustId(custId);
+		 * 
+		 * List<Integer> empIdList = repositoryMAE.findEmpIdByMeetId(id); int[] empId =
+		 * new int[empIdList.size()]; for(int i = 0; i < empId.length; i++) { empId[i] =
+		 * empIdList.get(i); } meetAndAttendDtoToClient.setEmpId(empId);
+		 */
+		
 		List<MeetAttendCust> meetAttendCust = repositoryMAC.findByMeetAttendCustPKMeetId(id);
 		List<MeetAttendEmp> meetAttendEmp = repositoryMAE.findByMeetAttendEmpPKMeetId(id);
 		MeetAttendCustDtoToClient[] meetAttendCustDtoToClientList = new MeetAttendCustDtoToClient[meetAttendCust.size()];
@@ -170,7 +167,6 @@ public class MeetController {
 			MeetAttendCustDtoToClient meetAttendCustDtoToClient = new MeetAttendCustDtoToClient();
 			meetAttendCustDtoToClient.setCustId(meetAttendCust.get(i).getCust().getCustId());
 			meetAttendCustDtoToClient.setCustNm(meetAttendCust.get(i).getCust().getCustNm());
-			meetAttendCustDtoToClient.setOrgNm(meetAttendCust.get(i).getCust().getOrg().getOrgNm());
 			meetAttendCustDtoToClientList[i] = meetAttendCustDtoToClient;
 		}
 		for(int i = 0; i < meetAttendEmp.size(); i++) {
@@ -180,9 +176,8 @@ public class MeetController {
 			meetAttendEmpDtoToClientList[i] = meetAttendEmpDtoToClient;
 		}
 		
-		meetAndAttendDtoToClient.setMeetAttendCust(meetAttendCustDtoToClientList);
-		meetAndAttendDtoToClient.setMeetAttendEmp(meetAttendEmpDtoToClientList);
-		*/
+		meetAndAttendDtoToClient.setCusts(meetAttendCustDtoToClientList);
+		meetAndAttendDtoToClient.setEmps(meetAttendEmpDtoToClientList);
 		
 		return new ResponseEntity<MeetAndAttendDtoToClient>(meetAndAttendDtoToClient, HttpStatus.OK);
 	}
