@@ -96,6 +96,9 @@ public class MeetController {
 			list.get(i).setOrgNm(orgList.get(i).get(0)+" 외 "+(orgList.get(i).size()-1)+"개 기관");
 			list.get(i).setCustNm(meetAttendCustList.get(i).get(0).getCust().getCustNm()+ " 외 " + (meetAttendCustList.get(i).size()-1) + "명");
 			list.get(i).setEmpNm(meetAttendEmpList.get(i).get(0).getB2en().getEmpNm()+ " 외 " + (meetAttendEmpList.get(i).size()-1) + "명");
+			if(list.get(i).getMeetCnt()==null) {
+				list.get(i).setMeetCnt("");
+			}
 			list.get(i).setMeetTpCdNm(cmmnDetailCdMap.get(entityList.get(i).getMeetTpCd()));
 		}
 		
@@ -142,6 +145,9 @@ public class MeetController {
 		MeetAndAttendDtoToClient meetAndAttendDtoToClient = modelMapper.map(meet, MeetAndAttendDtoToClient.class);
 		String meetTpCdNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(meet.getMeetTpCd()).getCmmnDetailCdNm();
 		meetAndAttendDtoToClient.setMeetTpCdNm(meetTpCdNm);
+		if(meetAndAttendDtoToClient.getMeetCnt()==null) {
+			meetAndAttendDtoToClient.setMeetCnt("");
+		}
 		List<MeetAttendCust> meetAttendCust = repositoryMAC.findByMeetAttendCustPKMeetId(id);
 		List<MeetAttendEmp> meetAttendEmp = repositoryMAE.findByMeetAttendEmpPKMeetId(id);
 		MeetAttendCustDtoToClient[] meetAttendCustDtoToClientList = new MeetAttendCustDtoToClient[meetAttendCust.size()];
