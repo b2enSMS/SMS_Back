@@ -159,6 +159,7 @@ public class TempVerController {
 			lcnsEntity[i] = modelMapper.map(lcnsDto[i], Lcns.class);
 			int prdtId = lcnsDto[i].getPrdtId();
 			lcnsEntity[i].setPrdt(prdtMap.get(prdtId));
+			lcnsEntity[i].setDelYn("N");
 			
 			lcnsEntity[i] = repositoryLcns.save(lcnsEntity[i]);
 		}
@@ -183,6 +184,9 @@ public class TempVerController {
 	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
+			Lcns lcns = repositoryTemp.getOne(idx[i]).getLcns();
+			lcns.setDelYn("Y");
+			repositoryLcns.save(lcns);
 			repositoryTempHist.deleteByTempVerHistPKTempVerId(idx[i]);
 			repositoryTemp.deleteById(idx[i]);
 		}
