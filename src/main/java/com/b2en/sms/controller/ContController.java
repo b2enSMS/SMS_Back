@@ -267,8 +267,11 @@ public class ContController {
 		List<ContAC> list = new ArrayList<ContAC>();
 		
 		for(int i = 0; i < entityList.size(); i++) {
+			if(entityList.get(i).getContId()!=0) {
+				continue;
+			}
 			ContAC contAC = new ContAC();
-			contAC.setHeadContId(entityList.get(i).getHeadContId());
+			contAC.setHeadContId(entityList.get(i).getContId());
 			contAC.setHeadContNm(entityList.get(i).getContNm());
 			list.add(contAC);
 		}
