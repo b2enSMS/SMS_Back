@@ -184,6 +184,9 @@ public class TempVerController {
 	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
+			Lcns lcns = repositoryTemp.getOne(idx[i]).getLcns();
+			lcns.setDelYn("Y");
+			repositoryLcns.save(lcns);
 			repositoryTempHist.deleteByTempVerHistPKTempVerId(idx[i]);
 			repositoryTemp.deleteById(idx[i]);
 		}
