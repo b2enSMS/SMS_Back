@@ -159,6 +159,7 @@ public class TempVerController {
 			lcnsEntity[i] = modelMapper.map(lcnsDto[i], Lcns.class);
 			int prdtId = lcnsDto[i].getPrdtId();
 			lcnsEntity[i].setPrdt(prdtMap.get(prdtId));
+			lcnsEntity[i].setDelYn("N");
 			
 			lcnsEntity[i] = repositoryLcns.save(lcnsEntity[i]);
 		}
