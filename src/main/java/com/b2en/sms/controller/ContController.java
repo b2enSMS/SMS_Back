@@ -267,7 +267,7 @@ public class ContController {
 		List<ContAC> list = new ArrayList<ContAC>();
 		
 		for(int i = 0; i < entityList.size(); i++) {
-			if(entityList.get(i).getContId()!=0) {
+			if(entityList.get(i).getHeadContId()!=0) {
 				continue;
 			}
 			ContAC contAC = new ContAC();

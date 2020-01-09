@@ -4,5 +4,7 @@ public interface ContACInterface {
 	
 	int getContId();
 	
+	int getHeadContId();
+	
 	String getContNm();
 }
