@@ -128,34 +128,36 @@ public class ContController {
 
 	}
 	
+	/*
+	 * @GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
+	 * public ResponseEntity<List<ContDtoToClient>> getAllNotDeleted() { // delYn의
+	 * 값이 "N"인 경우(삭제된걸로 처리되지 않은 경우)만 불러옴 List<Cont> entityList =
+	 * repositoryC.findByDelYnOrderByContIdDesc("N");
+	 * 
+	 * List<ContDtoToClient> list;
+	 * 
+	 * list = modelMapper.map(entityList, new TypeToken<List<ContDtoToClient>>() {
+	 * }.getType());
+	 * 
+	 * for(int i = 0; i < entityList.size(); i++) { int custId =
+	 * (entityList.get(i).getCust()==null) ? 0 :
+	 * entityList.get(i).getCust().getCustId(); String custNm =
+	 * (entityList.get(i).getCust()==null) ? "" :
+	 * entityList.get(i).getCust().getCustNm(); list.get(i).setCustId(custId);
+	 * list.get(i).setCustNm(custNm);
+	 * list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
+	 * list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
+	 * list.get(i).setEmpId(entityList.get(i).getB2en().getEmpId());
+	 * list.get(i).setEmpNm(entityList.get(i).getB2en().getEmpNm());
+	 * list.get(i).setTight(calculateIsTight(list.get(i).getMtncEndDt())); }
+	 * 
+	 * return new ResponseEntity<List<ContDtoToClient>>(list, HttpStatus.OK);
+	 * 
+	 * }
+	 */
+	
 	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContDtoToClient>> getAllNotDeleted() {
-		// delYn의 값이 "N"인 경우(삭제된걸로 처리되지 않은 경우)만 불러옴
-		List<Cont> entityList = repositoryC.findByDelYnOrderByContIdDesc("N");
-		
-		List<ContDtoToClient> list;
-
-		list = modelMapper.map(entityList, new TypeToken<List<ContDtoToClient>>() {
-		}.getType());
-		
-		for(int i = 0; i < entityList.size(); i++) {
-			int custId = (entityList.get(i).getCust()==null) ? 0 : entityList.get(i).getCust().getCustId();
-			String custNm = (entityList.get(i).getCust()==null) ? "" : entityList.get(i).getCust().getCustNm();
-			list.get(i).setCustId(custId);
-			list.get(i).setCustNm(custNm);
-			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
-			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
-			list.get(i).setEmpId(entityList.get(i).getB2en().getEmpId());
-			list.get(i).setEmpNm(entityList.get(i).getB2en().getEmpNm());
-			list.get(i).setTight(calculateIsTight(list.get(i).getMtncEndDt()));
-		}
-		
-		return new ResponseEntity<List<ContDtoToClient>>(list, HttpStatus.OK);
-
-	}
-	
-	@GetMapping(value = "/showalltest", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ContDtoToClient>> getAllNotDeletedTest() {
 		// delYn의 값이 "N"인 경우(삭제된걸로 처리되지 않은 경우)만 불러옴
 		HashMap<Integer, List<ContDtoToClient>> mtncContMap = new HashMap<Integer, List<ContDtoToClient>>();
 		List<Cont> mtncContList = repositoryC.findByHeadContIdNot(0);
