@@ -19,6 +19,8 @@ public class ContDtoToClient {
 	
 	private String empNm;
 	
+	private String prdtNm;
+	
 	private int headContId;
 	
 	private String contNm;

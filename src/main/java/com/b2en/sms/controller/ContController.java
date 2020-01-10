@@ -159,18 +159,32 @@ public class ContController {
 	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContDtoToClient>> getAllNotDeleted() {
 		// delYn의 값이 "N"인 경우(삭제된걸로 처리되지 않은 경우)만 불러옴
+		List<ContDetail> contDetailList = repositoryCD.findByDelYn("N");
+		
 		HashMap<Integer, List<ContDtoToClient>> mtncContMap = new HashMap<Integer, List<ContDtoToClient>>();
 		List<Cont> mtncContList = repositoryC.findByHeadContIdNot(0);
-		System.out.println("**** ["+mtncContList.size()+"] ****");
 		List<ContDtoToClient> mtncList = modelMapper.map(mtncContList, new TypeToken<List<ContDtoToClient>>() { }.getType());
 		List<ContDtoToClient> tempList = new ArrayList<ContDtoToClient>();
 		int currentHeadContId = (mtncList != null) ? mtncList.get(0).getHeadContId() : 0;
 		for(int i = 0; i < mtncList.size(); i++) {
+			int custId = (mtncContList.get(i).getCust()==null) ? 0 : mtncContList.get(i).getCust().getCustId();
+			String custNm = (mtncContList.get(i).getCust()==null) ? "" : mtncContList.get(i).getCust().getCustNm();
+			mtncList.get(i).setCustId(custId);
+			mtncList.get(i).setCustNm(custNm);
+			mtncList.get(i).setOrgId(mtncContList.get(i).getOrg().getOrgId());
+			mtncList.get(i).setOrgNm(mtncContList.get(i).getOrg().getOrgNm());
+			mtncList.get(i).setEmpId(mtncContList.get(i).getB2en().getEmpId());
+			mtncList.get(i).setEmpNm(mtncContList.get(i).getB2en().getEmpNm());
+			mtncList.get(i).setPrdtNm(getAllPrdtNmInLcns(contDetailList, mtncList.get(i).getContId()));
+			mtncList.get(i).setTight(calculateIsTight(mtncList.get(i).getMtncEndDt()));
+			mtncList.get(i).setPrdtNm(getAllPrdtNmInLcns(contDetailList, mtncList.get(i).getContId()));
+			mtncList.get(i).setChildren(new ContDtoToClient[0]);
 			if(currentHeadContId != mtncList.get(i).getHeadContId()) {
 				mtncContMap.put(currentHeadContId, tempList);
 				currentHeadContId = mtncList.get(i).getHeadContId();
 				tempList = new ArrayList<ContDtoToClient>();
 			}
+			
 			tempList.add(mtncList.get(i));
 			if(i == mtncList.size()-1) {
 				mtncContMap.put(currentHeadContId, tempList);
@@ -179,6 +193,7 @@ public class ContController {
 		
 		List<Cont> headContList = repositoryC.findByHeadContIdAndDelYnOrderByContIdDesc(0, "N");
 		List<ContDtoToClient> headList = modelMapper.map(headContList, new TypeToken<List<ContDtoToClient>>() { }.getType());
+		
 		for(int i = 0; i < headContList.size(); i++) {
 			int custId = (headContList.get(i).getCust()==null) ? 0 : headContList.get(i).getCust().getCustId();
 			String custNm = (headContList.get(i).getCust()==null) ? "" : headContList.get(i).getCust().getCustNm();
@@ -188,6 +203,7 @@ public class ContController {
 			headList.get(i).setOrgNm(headContList.get(i).getOrg().getOrgNm());
 			headList.get(i).setEmpId(headContList.get(i).getB2en().getEmpId());
 			headList.get(i).setEmpNm(headContList.get(i).getB2en().getEmpNm());
+			headList.get(i).setPrdtNm(getAllPrdtNmInLcns(contDetailList, headList.get(i).getContId()));
 			headList.get(i).setTight(calculateIsTight(headList.get(i).getMtncEndDt()));
 			List<ContDtoToClient> childrenList = mtncContMap.get((Integer)headContList.get(i).getContId());
 			ContDtoToClient[] children = (childrenList != null) ? contListToArray(childrenList) : new ContDtoToClient[0];
@@ -226,6 +242,19 @@ public class ContController {
 		}
 		
 		return contArray;
+	}
+	
+	private String getAllPrdtNmInLcns(List<ContDetail> contDetailList, int contId) {
+		String prdtNm = "";
+		for(int i = 0; i < contDetailList.size(); i++) {
+			if(contDetailList.get(i).getContDetailPK().getContId()==contId) {
+				prdtNm +=("/"+contDetailList.get(i).getLcns().getPrdt().getPrdtNm());
+			}
+		}
+		if(prdtNm.length()>0) {
+			prdtNm = prdtNm.substring(1);
+		}
+		return prdtNm;
 	}
 	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

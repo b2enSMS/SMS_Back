@@ -17,6 +17,8 @@ public interface ContDetailRepository extends JpaRepository<ContDetail, ContDeta
 	
 	public List<ContDetail> findByContDetailPKContId(int contId);
 	
+	public List<ContDetail> findByDelYn(String yn);
+	
 	@Query(value="SELECT * FROM cont_detail WHERE cont_id = :contId AND del_yn = 'N'", nativeQuery = true)
 	public List<ContDetail> findByContIdWhereDelYnIsN(@Param("contId") int contId);
 	
