@@ -178,7 +178,7 @@ public class ContController {
 			mtncList.get(i).setPrdtNm(getAllPrdtNmInLcns(contDetailList, mtncList.get(i).getContId()));
 			mtncList.get(i).setTight(calculateIsTight(mtncList.get(i).getMtncEndDt()));
 			mtncList.get(i).setPrdtNm(getAllPrdtNmInLcns(contDetailList, mtncList.get(i).getContId()));
-			mtncList.get(i).setChildren(new ContDtoToClient[0]);
+			mtncList.get(i).setChildren(null);
 			if(currentHeadContId != mtncList.get(i).getHeadContId()) {
 				mtncContMap.put(currentHeadContId, tempList);
 				currentHeadContId = mtncList.get(i).getHeadContId();
