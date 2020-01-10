@@ -154,6 +154,48 @@ public class ContController {
 
 	}
 	
+	@GetMapping(value = "/showalltest", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ContDtoToClient>> getAllNotDeletedTest() {
+		// delYn의 값이 "N"인 경우(삭제된걸로 처리되지 않은 경우)만 불러옴
+		HashMap<Integer, List<ContDtoToClient>> mtncContMap = new HashMap<Integer, List<ContDtoToClient>>();
+		List<Cont> mtncContList = repositoryC.findByHeadContIdNot(0);
+		System.out.println("**** ["+mtncContList.size()+"] ****");
+		List<ContDtoToClient> mtncList = modelMapper.map(mtncContList, new TypeToken<List<ContDtoToClient>>() { }.getType());
+		List<ContDtoToClient> tempList = new ArrayList<ContDtoToClient>();
+		int currentHeadContId = (mtncList != null) ? mtncList.get(0).getHeadContId() : 0;
+		for(int i = 0; i < mtncList.size(); i++) {
+			if(currentHeadContId != mtncList.get(i).getHeadContId()) {
+				mtncContMap.put(currentHeadContId, tempList);
+				currentHeadContId = mtncList.get(i).getHeadContId();
+				tempList = new ArrayList<ContDtoToClient>();
+			}
+			tempList.add(mtncList.get(i));
+			if(i == mtncList.size()-1) {
+				mtncContMap.put(currentHeadContId, tempList);
+			}
+		}
+		
+		List<Cont> headContList = repositoryC.findByHeadContIdAndDelYnOrderByContIdDesc(0, "N");
+		List<ContDtoToClient> headList = modelMapper.map(headContList, new TypeToken<List<ContDtoToClient>>() { }.getType());
+		for(int i = 0; i < headContList.size(); i++) {
+			int custId = (headContList.get(i).getCust()==null) ? 0 : headContList.get(i).getCust().getCustId();
+			String custNm = (headContList.get(i).getCust()==null) ? "" : headContList.get(i).getCust().getCustNm();
+			headList.get(i).setCustId(custId);
+			headList.get(i).setCustNm(custNm);
+			headList.get(i).setOrgId(headContList.get(i).getOrg().getOrgId());
+			headList.get(i).setOrgNm(headContList.get(i).getOrg().getOrgNm());
+			headList.get(i).setEmpId(headContList.get(i).getB2en().getEmpId());
+			headList.get(i).setEmpNm(headContList.get(i).getB2en().getEmpNm());
+			headList.get(i).setTight(calculateIsTight(headList.get(i).getMtncEndDt()));
+			List<ContDtoToClient> childrenList = mtncContMap.get((Integer)headContList.get(i).getContId());
+			ContDtoToClient[] children = (childrenList != null) ? contListToArray(childrenList) : new ContDtoToClient[0];
+			headList.get(i).setChildren(children);
+		}
+		
+		return new ResponseEntity<List<ContDtoToClient>>(headList, HttpStatus.OK);
+
+	}
+	
 	private boolean calculateIsTight(String strEnd) {
 		long alertRange = 90; // 남은 날짜가 이것 이하면 경고
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -171,6 +213,17 @@ public class ContController {
 		} catch (ParseException e) {
 			return false;
 		}
+	}
+	
+	private ContDtoToClient[] contListToArray(List<ContDtoToClient> cont) {
+		
+		ContDtoToClient[] contArray = new ContDtoToClient[cont.size()];
+		
+		for(int i = 0; i < cont.size(); i++) {
+			contArray[i] = cont.get(i);
+		}
+		
+		return contArray;
 	}
 	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
