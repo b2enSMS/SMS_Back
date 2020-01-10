@@ -39,6 +39,8 @@ public class ContDtoToClient {
 	
 	private String mtncEndDt;
 	
+	private ContDtoToClient[] children;
+	
 	// 유지보수종료일까지 30일 이내일 경우 true, 아니면 false
 	private boolean tight;
 

@@ -14,13 +14,17 @@ import com.b2en.sms.entity.Cont;
 
 public interface ContRepository extends JpaRepository<Cont, Integer>{
 	
-	Cont findByHeadContId(int headContId);
+	List<Cont> findByHeadContId(int headContId);
 	
 	List<Cont> findByDelYn(String yn);
 	
 	List<Cont> findByDelYnOrderByContIdDesc(String yn);
 	
+	List<Cont> findByHeadContIdAndDelYnOrderByContIdDesc(int headContId, String yn);
+	
 	List<ContACInterface> findAllBy();
+	
+	List<Cont> findByHeadContIdNot(int headContId);
 	
 	// cust가 null일 경우의 insert
 	@Transactional
@@ -34,6 +38,7 @@ public interface ContRepository extends JpaRepository<Cont, Integer>{
 	@Query(value="UPDATE cont SET cust_id = null, org_id = :#{#paramCont.org.orgId}, emp_id = :#{#paramCont.b2en.empId}, head_cont_id = :#{#paramCont.headContId}, cont_nm = :#{#paramCont.contNm}, cont_dt = :#{#paramCont.contDt}, cont_tot_amt = :#{#paramCont.contTotAmt}, cont_report_no = :#{#paramCont.contReportNo}, cont_tp_cd = :#{#paramCont.contTpCd}, install_dt = :#{#paramCont.installDt}, check_dt = :#{#paramCont.checkDt}, mtnc_start_dt = :#{#paramCont.mtncStartDt}, mtnc_end_dt = :#{#paramCont.mtncEndDt} WHERE cont_id = :#{#paramCont.contId}", nativeQuery = true)
 	int forceUpdate(@Param("paramCont") Cont cont);
 	
+	// cust가 null일 경우의 과정에 필요함
 	@Query(value="SELECT * FROM cont WHERE cont_id = (SELECT max(cont_id) FROM cont)", nativeQuery = true)
 	Cont findRecentCont();
 }
