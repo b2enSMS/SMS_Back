@@ -188,6 +188,7 @@ public class ContController {
 			
 			tempList.add(mtncList.get(i));
 			if(i == mtncList.size()-1) {
+				mtncList.get(i).setTight(calculateIsTight(mtncList.get(i).getMtncEndDt()));
 				mtncContMap.put(currentHeadContId, tempList);
 			}
 		}
@@ -211,7 +212,7 @@ public class ContController {
 				headList.get(i).setChildren(contListToArray(childrenList));
 			} else {
 				headList.get(i).setTight(calculateIsTight(headList.get(i).getMtncEndDt()));
-				headList.get(i).setChildren(new ContDtoToClient[0]);
+				headList.get(i).setChildren(null);
 			}
 			
 		}
