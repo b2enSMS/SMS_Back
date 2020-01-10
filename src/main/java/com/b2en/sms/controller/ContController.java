@@ -176,10 +176,11 @@ public class ContController {
 			mtncList.get(i).setEmpId(mtncContList.get(i).getB2en().getEmpId());
 			mtncList.get(i).setEmpNm(mtncContList.get(i).getB2en().getEmpNm());
 			mtncList.get(i).setPrdtNm(getAllPrdtNmInLcns(contDetailList, mtncList.get(i).getContId()));
-			mtncList.get(i).setTight(calculateIsTight(mtncList.get(i).getMtncEndDt()));
+			mtncList.get(i).setTight(false);
 			mtncList.get(i).setPrdtNm(getAllPrdtNmInLcns(contDetailList, mtncList.get(i).getContId()));
 			mtncList.get(i).setChildren(null);
 			if(currentHeadContId != mtncList.get(i).getHeadContId()) {
+				tempList.get(tempList.size()-1).setTight(calculateIsTight(mtncList.get(i).getMtncEndDt()));
 				mtncContMap.put(currentHeadContId, tempList);
 				currentHeadContId = mtncList.get(i).getHeadContId();
 				tempList = new ArrayList<ContDtoToClient>();
@@ -204,10 +205,15 @@ public class ContController {
 			headList.get(i).setEmpId(headContList.get(i).getB2en().getEmpId());
 			headList.get(i).setEmpNm(headContList.get(i).getB2en().getEmpNm());
 			headList.get(i).setPrdtNm(getAllPrdtNmInLcns(contDetailList, headList.get(i).getContId()));
-			headList.get(i).setTight(calculateIsTight(headList.get(i).getMtncEndDt()));
 			List<ContDtoToClient> childrenList = mtncContMap.get((Integer)headContList.get(i).getContId());
-			ContDtoToClient[] children = (childrenList != null) ? contListToArray(childrenList) : new ContDtoToClient[0];
-			headList.get(i).setChildren(children);
+			if(childrenList != null) {
+				headList.get(i).setTight(false);
+				headList.get(i).setChildren(contListToArray(childrenList));
+			} else {
+				headList.get(i).setTight(calculateIsTight(headList.get(i).getMtncEndDt()));
+				headList.get(i).setChildren(new ContDtoToClient[0]);
+			}
+			
 		}
 		
 		return new ResponseEntity<List<ContDtoToClient>>(headList, HttpStatus.OK);
