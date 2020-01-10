@@ -180,7 +180,7 @@ public class ContController {
 			mtncList.get(i).setPrdtNm(getAllPrdtNmInLcns(contDetailList, mtncList.get(i).getContId()));
 			mtncList.get(i).setChildren(null);
 			if(currentHeadContId != mtncList.get(i).getHeadContId()) {
-				tempList.get(tempList.size()-1).setTight(calculateIsTight(mtncList.get(i).getMtncEndDt()));
+				tempList.get(tempList.size()-1).setTight(calculateIsTight(tempList.get(tempList.size()-1).getMtncEndDt()));
 				mtncContMap.put(currentHeadContId, tempList);
 				currentHeadContId = mtncList.get(i).getHeadContId();
 				tempList = new ArrayList<ContDtoToClient>();
@@ -207,7 +207,7 @@ public class ContController {
 			headList.get(i).setPrdtNm(getAllPrdtNmInLcns(contDetailList, headList.get(i).getContId()));
 			List<ContDtoToClient> childrenList = mtncContMap.get((Integer)headContList.get(i).getContId());
 			if(childrenList != null) {
-				headList.get(i).setTight(false);
+				headList.get(i).setTight(calculateIsTight(childrenList.get(childrenList.size()-1).getMtncEndDt()));
 				headList.get(i).setChildren(contListToArray(childrenList));
 			} else {
 				headList.get(i).setTight(calculateIsTight(headList.get(i).getMtncEndDt()));
