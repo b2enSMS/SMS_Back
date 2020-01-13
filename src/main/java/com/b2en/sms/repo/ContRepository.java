@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.b2en.sms.dto.autocompleteinfo.ContACInterface;
+import com.b2en.sms.entity.B2en;
 import com.b2en.sms.entity.Cont;
 
 public interface ContRepository extends JpaRepository<Cont, Integer>{
@@ -23,6 +24,9 @@ public interface ContRepository extends JpaRepository<Cont, Integer>{
 	List<Cont> findByHeadContIdAndDelYnOrderByContIdDesc(int headContId, String yn);
 	
 	List<ContACInterface> findAllBy();
+	
+	@Query(value="SELECT * FROM cont ORDER BY binary(cont_nm)", nativeQuery = true)
+	List<Cont> findAllOrderByContNm();
 	
 	List<Cont> findByHeadContIdNot(int headContId);
 	
