@@ -675,7 +675,8 @@ public class ContController {
 			ContChngHistDtoToClient contChngHistDtoToClient = new ContChngHistDtoToClient();
 			ContChngHist contChngHist = contChngHistList.get(i);
 			contChngHistDtoToClient.setHistSeq(contChngHist.getContChngHistPK().getHistSeq());
-			contChngHistDtoToClient.setCustNm(contChngHist.getCust().getCustNm());
+			String custNm = (contChngHist.getCust()==null) ? "" : contChngHist.getCust().getCustNm();
+			contChngHistDtoToClient.setCustNm(custNm);
 			contChngHistDtoToClient.setOrgNm(contChngHist.getOrg().getOrgNm());
 			contChngHistDtoToClient.setEmpNm(contChngHist.getB2en().getEmpNm());
 			contChngHistDtoToClient.setContDt(sdf.format(contChngHist.getContDt()));

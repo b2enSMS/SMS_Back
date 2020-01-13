@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.B2enDto;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.ResponseInfo;
-import com.b2en.sms.dto.autocompleteinfo.B2enACInterface;
+import com.b2en.sms.dto.autocompleteinfo.B2enAC;
 import com.b2en.sms.dto.toclient.B2enDtoToClient;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.repo.B2enRepository;
@@ -57,11 +57,19 @@ public class B2enController {
 	}
 	
 	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<B2enACInterface>> acList() {
+	public ResponseEntity<List<B2enAC>> acList() {
 
-		List<B2enACInterface> list = repository.findAllBy();
-
-		return new ResponseEntity<List<B2enACInterface>>(list, HttpStatus.OK);
+		List<B2en> list = repository.findAllOrderByName();
+		List<B2enAC> acList = new ArrayList<B2enAC>();
+		
+		for(int i = 0; i < list.size(); i++) {
+			B2enAC b2enAC = new B2enAC();
+			b2enAC.setEmpId(list.get(i).getEmpId());
+			b2enAC.setEmpNm(list.get(i).getEmpNm());
+			acList.add(b2enAC);
+		}
+		
+		return new ResponseEntity<List<B2enAC>>(acList, HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

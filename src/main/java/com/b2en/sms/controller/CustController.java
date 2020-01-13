@@ -171,7 +171,7 @@ public class CustController {
 	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CustAC>> acList() {
 
-		List<Cust> list = repositoryCust.findAll();
+		List<Cust> list = repositoryCust.findAllOrderByName();
 		List<CustAC> acList = new ArrayList<CustAC>();
 		
 		for(int i = 0; i < list.size(); i++) {
