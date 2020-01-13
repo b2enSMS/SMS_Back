@@ -175,7 +175,6 @@ public class ContController {
 			mtncList.get(i).setOrgNm(mtncContList.get(i).getOrg().getOrgNm());
 			mtncList.get(i).setEmpId(mtncContList.get(i).getB2en().getEmpId());
 			mtncList.get(i).setEmpNm(mtncContList.get(i).getB2en().getEmpNm());
-			mtncList.get(i).setPrdtNm(getAllPrdtNmInLcns(contDetailList, mtncList.get(i).getContId()));
 			mtncList.get(i).setTight(false);
 			mtncList.get(i).setPrdtNm(getAllPrdtNmInLcns(contDetailList, mtncList.get(i).getContId()));
 			mtncList.get(i).setChildren(null);
