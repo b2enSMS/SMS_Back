@@ -44,6 +44,9 @@ public class B2enController {
 	public ResponseEntity<List<B2enDtoToClient>> showAll() {
 
 		List<B2en> entityList = repository.findAllOrderByName();
+		if(entityList.size()==0) {
+			return new ResponseEntity<List<B2enDtoToClient>>(new ArrayList<B2enDtoToClient>(), HttpStatus.OK);
+		}
 		List<B2enDtoToClient> list;
 
 		list = modelMapper.map(entityList, new TypeToken<List<B2enDtoToClient>>() {
@@ -64,7 +67,11 @@ public class B2enController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<B2enDtoToClient> findById(@PathVariable("id") int id) {
 		
-		B2en b2en = repository.getOne(id);
+		B2en b2en = repository.findById(id).orElse(null);
+		if(b2en==null) {
+			B2enDtoToClient nothing = null;
+			return new ResponseEntity<B2enDtoToClient>(nothing, HttpStatus.OK);
+		}
 		
 		B2enDtoToClient b2enDtoToClient = modelMapper.map(b2en, B2enDtoToClient.class);
 		
@@ -116,7 +123,7 @@ public class B2enController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		B2en toUpdate = repository.getOne(id);
+		B2en toUpdate = repository.findById(id).orElse(null);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));

@@ -68,6 +68,11 @@ public class MeetController {
 	public ResponseEntity<List<MeetDtoToClient>> showAll() {
 
 		List<Meet> entityList = repositoryM.findAllByOrderByMeetIdDesc();
+		
+		if(entityList.size()==0) { // 결과가 없을 경우의 문제 예방
+			return new ResponseEntity<List<MeetDtoToClient>>(new ArrayList<MeetDtoToClient>(), HttpStatus.OK);
+		}
+		
 		List<MeetDtoToClient> list;
 
 		list = modelMapper.map(entityList, new TypeToken<List<MeetDtoToClient>>() {
@@ -140,7 +145,11 @@ public class MeetController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<MeetAndAttendDtoToClient> findById(@PathVariable("id") int id) {
 		
-		Meet meet = repositoryM.getOne(id);
+		Meet meet = repositoryM.findById(id).orElse(null);
+		if(meet==null) {
+			MeetAndAttendDtoToClient nothing = null;
+			return new ResponseEntity<MeetAndAttendDtoToClient>(nothing, HttpStatus.OK);
+		}
 		
 		MeetAndAttendDtoToClient meetAndAttendDtoToClient = modelMapper.map(meet, MeetAndAttendDtoToClient.class);
 		String meetTpCdNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(meet.getMeetTpCd()).getCmmnDetailCdNm();
@@ -251,7 +260,7 @@ public class MeetController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		Meet toUpdate = repositoryM.getOne(id);
+		Meet toUpdate = repositoryM.findById(id).orElse(null);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
