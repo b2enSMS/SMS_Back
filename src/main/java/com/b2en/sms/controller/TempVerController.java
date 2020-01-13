@@ -106,7 +106,12 @@ public class TempVerController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<TempVerAndLcnsDtoToClient> findById(@PathVariable("id") int id) {
 		
-		TempVer tempVer = repositoryTemp.getOne(id);
+		TempVer tempVer = repositoryTemp.findById(id).orElse(null);
+		if(tempVer==null) {
+			TempVerAndLcnsDtoToClient nothing = null;
+			return new ResponseEntity<TempVerAndLcnsDtoToClient>(nothing, HttpStatus.OK);
+		}
+		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		
 		TempVerAndLcnsDtoToClient tempVerAndLcnsDtoToClient = new TempVerAndLcnsDtoToClient();
@@ -207,7 +212,7 @@ public class TempVerController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		TempVer toUpdate = repositoryTemp.getOne(id);
+		TempVer toUpdate = repositoryTemp.findById(id).orElse(null);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
@@ -303,6 +308,11 @@ public class TempVerController {
 		List<TempVerHist> tempVerHistList = repositoryTempHist.findByTempVerHistPKTempVerId(id);
 		List<TempVerHistDtoToClient> list = new ArrayList<TempVerHistDtoToClient>();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		if(tempVerHistList.size()==0) {
+			list = null;
+			return new ResponseEntity<List<TempVerHistDtoToClient>>(list, HttpStatus.OK);
+		}
 
 		for(int i = 0; i < tempVerHistList.size(); i++) {
 			TempVerHistDtoToClient tempVerHistDtoToClient = new TempVerHistDtoToClient();

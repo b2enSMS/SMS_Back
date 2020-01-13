@@ -44,6 +44,9 @@ public class PrdtController {
 	public ResponseEntity<List<PrdtDtoToClient>> showAll() {
 
 		List<Prdt> entityList = repository.findAll();
+		if(entityList.size()==0) {
+			return new ResponseEntity<List<PrdtDtoToClient>>(new ArrayList<PrdtDtoToClient>(), HttpStatus.OK);
+		}
 		List<PrdtDtoToClient> list;
 		
 		list = modelMapper.map(entityList, new TypeToken<List<PrdtDtoToClient>>() {
@@ -64,7 +67,11 @@ public class PrdtController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<PrdtDtoToClient> findById(@PathVariable("id") int id) {
 		
-		Prdt prdt = repository.getOne(id);
+		Prdt prdt = repository.findById(id).orElse(null);
+		if(prdt==null) {
+			PrdtDtoToClient nothing = null;
+			return new ResponseEntity<PrdtDtoToClient>(nothing, HttpStatus.OK);
+		}
 		
 		PrdtDtoToClient prdtDtoToClient = modelMapper.map(prdt, PrdtDtoToClient.class);
 		
@@ -118,7 +125,7 @@ public class PrdtController {
 		}
 		 
 		
-		Prdt toUpdate = repository.getOne(id);
+		Prdt toUpdate = repository.findById(id).orElse(null);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));

@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.LcnsDto;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.LcnsAC;
-import com.b2en.sms.dto.toclient.LcnsChngHistDtoToClient;
 import com.b2en.sms.dto.toclient.LcnsDtoToClient;
 import com.b2en.sms.entity.Lcns;
 import com.b2en.sms.entity.LcnsChngHist;
@@ -56,6 +55,9 @@ public class LcnsController {
 	public ResponseEntity<List<LcnsDtoToClient>> showAll() {
 
 		List<Lcns> entityList = repositoryL.findAll();
+		if(entityList.size()==0) {
+			return new ResponseEntity<List<LcnsDtoToClient>>(new ArrayList<LcnsDtoToClient>(), HttpStatus.OK);
+		}
 		List<LcnsDtoToClient> list;
 		int prdtId;
 		String prdtNm;
@@ -77,6 +79,10 @@ public class LcnsController {
 	@GetMapping(value = "/newest", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LcnsAC> getNewest() {
 		Lcns lcns = repositoryL.findNewest();
+		if(lcns==null) {
+			LcnsAC nothing = null;
+			return new ResponseEntity<LcnsAC>(nothing, HttpStatus.OK);
+		}
 		LcnsAC lcnsAC = new LcnsAC();
 		
 		lcnsAC.setLcnsId(lcns.getLcnsId());
@@ -88,7 +94,11 @@ public class LcnsController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LcnsDtoToClient> findById(@PathVariable("id") int id) {
 		
-		Lcns lcns = repositoryL.getOne(id);
+		Lcns lcns = repositoryL.findById(id).orElse(null);
+		if(lcns==null) {
+			LcnsDtoToClient nothing = null;
+			return new ResponseEntity<LcnsDtoToClient>(nothing, HttpStatus.OK);
+		}
 		
 		LcnsDtoToClient lcnsDtoToClient = modelMapper.map(lcns, LcnsDtoToClient.class);
 		lcnsDtoToClient.setPrdtId(lcns.getPrdt().getPrdtId());
@@ -146,7 +156,7 @@ public class LcnsController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		Lcns toUpdate = repositoryL.getOne(id);
+		Lcns toUpdate = repositoryL.findById(id).orElse(null);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
@@ -171,29 +181,36 @@ public class LcnsController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	@GetMapping(value = "/hist/showall", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<LcnsChngHistDtoToClient>> getAllHist() {
-		List<LcnsChngHist> entityList = repositoryLCH.findAll();
-
-		List<LcnsChngHistDtoToClient> list;
-
-		list = modelMapper.map(entityList, new TypeToken<List<LcnsChngHistDtoToClient>>() {
-		}.getType());
-
-		return new ResponseEntity<List<LcnsChngHistDtoToClient>>(list, HttpStatus.OK);
-
-	}
-	
-	@GetMapping(value = "/hist/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<LcnsChngHistDtoToClient>> getHistByLcnsId(@PathVariable int id) {
-		List<LcnsChngHist> entityList = repositoryLCH.findByLcnsChngHistPKLcnsId(id);
-
-		List<LcnsChngHistDtoToClient> list;
-
-		list = modelMapper.map(entityList, new TypeToken<List<LcnsChngHistDtoToClient>>() {
-		}.getType());
-
-		return new ResponseEntity<List<LcnsChngHistDtoToClient>>(list, HttpStatus.OK);
-
-	}
+	/*
+	 * @GetMapping(value = "/hist/showall", produces =
+	 * MediaType.APPLICATION_JSON_VALUE) public
+	 * ResponseEntity<List<LcnsChngHistDtoToClient>> getAllHist() {
+	 * List<LcnsChngHist> entityList = repositoryLCH.findAll();
+	 * 
+	 * List<LcnsChngHistDtoToClient> list;
+	 * 
+	 * list = modelMapper.map(entityList, new
+	 * TypeToken<List<LcnsChngHistDtoToClient>>() { }.getType());
+	 * 
+	 * return new ResponseEntity<List<LcnsChngHistDtoToClient>>(list,
+	 * HttpStatus.OK);
+	 * 
+	 * }
+	 * 
+	 * @GetMapping(value = "/hist/{id}", produces =
+	 * MediaType.APPLICATION_JSON_VALUE) public
+	 * ResponseEntity<List<LcnsChngHistDtoToClient>> getHistByLcnsId(@PathVariable
+	 * int id) { List<LcnsChngHist> entityList =
+	 * repositoryLCH.findByLcnsChngHistPKLcnsId(id);
+	 * 
+	 * List<LcnsChngHistDtoToClient> list;
+	 * 
+	 * list = modelMapper.map(entityList, new
+	 * TypeToken<List<LcnsChngHistDtoToClient>>() { }.getType());
+	 * 
+	 * return new ResponseEntity<List<LcnsChngHistDtoToClient>>(list,
+	 * HttpStatus.OK);
+	 * 
+	 * }
+	 */
 }

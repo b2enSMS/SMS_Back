@@ -44,6 +44,9 @@ public class OrgController {
 	public ResponseEntity<List<OrgDtoToClient>> showAll() {
 
 		List<Org> entityList = repositoryOrg.findAllOrderByName();
+		if(entityList.size()==0) {
+			return new ResponseEntity<List<OrgDtoToClient>>(new ArrayList<OrgDtoToClient>(), HttpStatus.OK);
+		}
 		List<OrgDtoToClient> list;
 		
 		list = modelMapper.map(entityList, new TypeToken<List<OrgDtoToClient>>() {
@@ -64,7 +67,11 @@ public class OrgController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<OrgDtoToClient> findById(@PathVariable("id") int id) {
 		
-		Org org = repositoryOrg.getOne(id);
+		Org org = repositoryOrg.findById(id).orElse(null);
+		if(org==null) {
+			OrgDtoToClient nothing = null;
+			return new ResponseEntity<OrgDtoToClient>(nothing, HttpStatus.OK);
+		}
 		
 		OrgDtoToClient orgDtoToClient = modelMapper.map(org, OrgDtoToClient.class);
 		
@@ -118,7 +125,7 @@ public class OrgController {
 		}
 		 
 		
-		Org toUpdate = repositoryOrg.getOne(id);
+		Org toUpdate = repositoryOrg.findById(id).orElse(null);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));

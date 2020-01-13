@@ -128,38 +128,14 @@ public class ContController {
 
 	}
 	
-	/*
-	 * @GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
-	 * public ResponseEntity<List<ContDtoToClient>> getAllNotDeleted() { // delYn의
-	 * 값이 "N"인 경우(삭제된걸로 처리되지 않은 경우)만 불러옴 List<Cont> entityList =
-	 * repositoryC.findByDelYnOrderByContIdDesc("N");
-	 * 
-	 * List<ContDtoToClient> list;
-	 * 
-	 * list = modelMapper.map(entityList, new TypeToken<List<ContDtoToClient>>() {
-	 * }.getType());
-	 * 
-	 * for(int i = 0; i < entityList.size(); i++) { int custId =
-	 * (entityList.get(i).getCust()==null) ? 0 :
-	 * entityList.get(i).getCust().getCustId(); String custNm =
-	 * (entityList.get(i).getCust()==null) ? "" :
-	 * entityList.get(i).getCust().getCustNm(); list.get(i).setCustId(custId);
-	 * list.get(i).setCustNm(custNm);
-	 * list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
-	 * list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
-	 * list.get(i).setEmpId(entityList.get(i).getB2en().getEmpId());
-	 * list.get(i).setEmpNm(entityList.get(i).getB2en().getEmpNm());
-	 * list.get(i).setTight(calculateIsTight(list.get(i).getMtncEndDt())); }
-	 * 
-	 * return new ResponseEntity<List<ContDtoToClient>>(list, HttpStatus.OK);
-	 * 
-	 * }
-	 */
-	
 	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContDtoToClient>> getAllNotDeleted() {
 		// delYn의 값이 "N"인 경우(삭제된걸로 처리되지 않은 경우)만 불러옴
 		List<ContDetail> contDetailList = repositoryCD.findByDelYn("N");
+		
+		if(contDetailList.size()==0) { // 결과가 없을 경우의 문제 예방
+			return new ResponseEntity<List<ContDtoToClient>>(new ArrayList<ContDtoToClient>(), HttpStatus.OK);
+		}
 		
 		HashMap<Integer, List<ContDtoToClient>> mtncContMap = new HashMap<Integer, List<ContDtoToClient>>();
 		List<Cont> mtncContList = repositoryC.findByHeadContIdNot(0);
@@ -266,7 +242,11 @@ public class ContController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ContAndLcnsDtoToClient> findContAndLcnsByContId(@PathVariable("id") int id) {
 		
-		Cont cont = repositoryC.getOne(id);
+		Cont cont = repositoryC.findById(id).orElse(null);
+		if(cont == null) {
+			ContAndLcnsDtoToClient nothing = null;
+			return new ResponseEntity<ContAndLcnsDtoToClient>(nothing, HttpStatus.OK);
+		}
 		
 		ContAndLcnsDtoToClient contAndLcnsDtoToClient = modelMapper.map(cont, ContAndLcnsDtoToClient.class);
 		int custId = (cont.getCust()==null) ? 0 : cont.getCust().getCustId();
@@ -505,7 +485,7 @@ public class ContController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		Cont toUpdate = repositoryC.getOne(id);
+		Cont toUpdate = repositoryC.findById(id).orElse(null);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
@@ -677,7 +657,13 @@ public class ContController {
 		
 		List<ContChngHist> contChngHistList = repositoryCCH.findByContChngHistPKContId(id);
 		List<ContChngHistDtoToClient> contChngHistDtoToClientList = new ArrayList<ContChngHistDtoToClient>();
-		String contNm = repositoryC.getOne(id).getContNm();
+		Cont contHist = repositoryC.findById(id).orElse(null);
+		
+		if(contHist==null || contChngHistList.size()==0) {
+			contChngHistDtoToClientList = null;
+			return new ResponseEntity<List<ContChngHistDtoToClient>>(contChngHistDtoToClientList, HttpStatus.OK);
+		}
+		String contNm = contHist.getContNm();
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		for(int i = 0; i < contChngHistList.size(); i++) {
@@ -702,22 +688,23 @@ public class ContController {
 		return new ResponseEntity<List<ContChngHistDtoToClient>>(contChngHistDtoToClientList, HttpStatus.OK);
 	}
 	
-	@GetMapping(value = "/detail/showall", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ContDetail>> getAllDetail() {
-
-		List<ContDetail> entityList = repositoryCD.findAll();
-
-		return new ResponseEntity<List<ContDetail>>(entityList, HttpStatus.OK);
-
-	}
-	
-	@DeleteMapping(value = "/detail/{id}")
-	public ResponseEntity<Void> deleteDetail(@PathVariable("id") int id) {
-		// ContDetail은 delete시 실제로 DB에서 삭제하지 않고 delYn이 "N"에서 "Y"로 변경되게 함
-		ContDetail contDetail = repositoryCD.findByContDetailPKContSeq(id);
-		contDetail.setDelYn("Y");
-		repositoryCD.save(contDetail);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-	}
+	/*
+	 * @GetMapping(value = "/detail/showall", produces =
+	 * MediaType.APPLICATION_JSON_VALUE) public ResponseEntity<List<ContDetail>>
+	 * getAllDetail() {
+	 * 
+	 * List<ContDetail> entityList = repositoryCD.findAll();
+	 * 
+	 * return new ResponseEntity<List<ContDetail>>(entityList, HttpStatus.OK);
+	 * 
+	 * }
+	 * 
+	 * @DeleteMapping(value = "/detail/{id}") public ResponseEntity<Void>
+	 * deleteDetail(@PathVariable("id") int id) { // ContDetail은 delete시 실제로 DB에서
+	 * 삭제하지 않고 delYn이 "N"에서 "Y"로 변경되게 함 ContDetail contDetail =
+	 * repositoryCD.findByContDetailPKContSeq(id); contDetail.setDelYn("Y");
+	 * repositoryCD.save(contDetail); return new
+	 * ResponseEntity<Void>(HttpStatus.NO_CONTENT); }
+	 */
 	
 }

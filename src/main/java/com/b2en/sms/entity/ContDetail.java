@@ -10,6 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
+import org.hibernate.annotations.BatchSize;
+
 import com.b2en.sms.entity.pk.ContDetailPK;
 
 import lombok.Getter;
@@ -22,6 +24,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
+@BatchSize(size=10)
 public class ContDetail extends TimeEntity implements Serializable {
 
 	// 계약상세

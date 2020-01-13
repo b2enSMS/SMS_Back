@@ -65,6 +65,9 @@ public class CustController {
 	public ResponseEntity<List<CustDtoToClient>> showAll() {
 
 		List<Cust> entityList = repositoryCust.findAllOrderByName();
+		if(entityList.size()==0) {
+			return new ResponseEntity<List<CustDtoToClient>>(new ArrayList<CustDtoToClient>(), HttpStatus.OK);
+		}
 		List<CustDtoToClient> list;
 		int orgId;
 		String orgNm;
@@ -94,6 +97,9 @@ public class CustController {
 	public ResponseEntity<List<CustDtoToClient>> showCont() {
 
 		List<Cont> contList = repositoryCont.findByDelYn("N");
+		if(contList.size()==0) {
+			return new ResponseEntity<List<CustDtoToClient>>(new ArrayList<CustDtoToClient>(), HttpStatus.OK);
+		}
 		List<Cust> entityList = new ArrayList<Cust>();
 		List<CustDtoToClient> list;
 		for(int i = 0; i < contList.size(); i++) {
@@ -128,6 +134,9 @@ public class CustController {
 	public ResponseEntity<List<CustDtoToClient>> showPresale() {
 
 		List<TempVer> tempList = repositoryT.findAll();
+		if(tempList.size()==0) {
+			return new ResponseEntity<List<CustDtoToClient>>(new ArrayList<CustDtoToClient>(), HttpStatus.OK);
+		}
 		List<Cust> entityList = new ArrayList<Cust>();
 		List<CustDtoToClient> list;
 		for (int i = 0; i < tempList.size(); i++) {
@@ -180,7 +189,11 @@ public class CustController {
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CustDtoToClient> findById(@PathVariable("id") int id) {
 		
-		Cust cust = repositoryCust.getOne(id);
+		Cust cust = repositoryCust.findById(id).orElse(null);
+		if(cust==null) {
+			CustDtoToClient nothing = null;
+			return new ResponseEntity<CustDtoToClient>(nothing, HttpStatus.OK);
+		}
 		
 		CustDtoToClient custDtoToClient = modelMapper.map(cust, CustDtoToClient.class);
 		custDtoToClient.setOrgId(cust.getOrg().getOrgId());
@@ -241,7 +254,7 @@ public class CustController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		Cust toUpdate = repositoryCust.getOne(id);
+		Cust toUpdate = repositoryCust.findById(id).orElse(null);
 
 		if (toUpdate == null) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
