@@ -148,7 +148,6 @@ public class ContController {
 		List<ContDtoToClient> tempList = new ArrayList<ContDtoToClient>();
 		int currentHeadContId = (mtncList.size()!=0) ? mtncList.get(0).getHeadContId() : 0;
 		for(int i = 0; i < mtncList.size(); i++) {
-			System.out.println("***** [ DB에서 가져온 직후: "+mtncContList.get(i).getContDt()+"] *****");
 			int custId = (mtncContList.get(i).getCust()==null) ? 0 : mtncContList.get(i).getCust().getCustId();
 			String custNm = (mtncContList.get(i).getCust()==null) ? "" : mtncContList.get(i).getCust().getCustNm();
 			mtncList.get(i).setCustId(custId);
@@ -178,6 +177,7 @@ public class ContController {
 		List<ContDtoToClient> headList = modelMapper.map(headContList, new TypeToken<List<ContDtoToClient>>() { }.getType());
 		
 		for(int i = 0; i < headContList.size(); i++) {
+			System.out.println("***** [ DB에서 가져온 직후: "+headContList.get(i).getContDt()+"] *****");
 			int custId = (headContList.get(i).getCust()==null) ? 0 : headContList.get(i).getCust().getCustId();
 			String custNm = (headContList.get(i).getCust()==null) ? "" : headContList.get(i).getCust().getCustNm();
 			headList.get(i).setCustId(custId);
