@@ -15,44 +15,44 @@ import lombok.Data;
 )
 public class LcnsDtoForUpdate {
 	
-	@Min(value = 1, message="lcnsId는 {value}보다 크거나 같아야 합니다.")
+	@Min(value = 1, message="라이센스가 선택되지 않았습니다.")
 	private int lcnsId;
 	
 	private int contSeq;
 
-	@Min(value = 1, message="prdtId는 {value}보다 크거나 같아야 합니다.")
+	@Min(value = 1, message="제품이 선택되지 않았습니다.")
 	private int prdtId;
 	
-	@NotBlank(message="prdtNm이 빈칸입니다.")
+	@NotBlank(message="제품명이 빈칸입니다.")
 	private String prdtNm;
 
-	@NotBlank(message="lcnsNo가 빈칸입니다.")
+	@NotBlank(message="라이센스번호가 빈칸입니다.")
 	private String lcnsNo;
 
-	@NotBlank(message="lcnsIssuDt가 빈칸입니다.")
-	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message="날짜는 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
+	@NotBlank(message="라이센스 발행일이 빈칸입니다.")
+	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2]|[1-9])-(0[1-9]|[12]\\d|3[01]))$", message="라이센스 발행일은 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
 	private String lcnsIssuDt;
 	
-	@NotBlank(message="lcnsTpCd가 빈칸입니다.")
+	@NotBlank(message="라이센스유형코드가 빈칸입니다.")
 	private String lcnsTpCd;
 	
 	private String lcnsTpNm;
 
-	@NotBlank(message="certNo가 빈칸입니다.")
+	@NotBlank(message="증명번호가 빈칸입니다.")
 	private String certNo;
 	
-	@NotBlank(message="lcnsStartDt가 빈칸입니다.")
-	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message="날짜는 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
+	@NotBlank(message="라이센스개시일자가 빈칸입니다.")
+	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2]|[1-9])-(0[1-9]|[12]\\d|3[01]))$", message="라이센스개시일자는 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
 	private String lcnsStartDt;
 	
-	@NotBlank(message="lcnsEndDt가 빈칸입니다.")
-	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message="날짜는 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
+	@NotBlank(message="라이센스종료일자가 빈칸입니다.")
+	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2]|[1-9])-(0[1-9]|[12]\\d|3[01]))$", message="라이센스종료일자는 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
 	private String lcnsEndDt;
 	
 	private FileList[] fileList;
 	
-	@NotBlank(message="contAmt가 빈칸입니다.")
-	@Pattern(regexp="[0-9]+$", message="contAmt는 숫자만 입력되어야 합니다.")
+	@NotBlank(message="납품단가가 빈칸입니다.")
+	@Pattern(regexp="[0-9]+$", message="납품단가는 숫자만 입력되어야 합니다.")
 	private String contAmt;
 	
 	private String contNote;
