@@ -138,6 +138,7 @@ public class ContController {
 		
 		HashMap<Integer, List<ContDtoToClient>> mtncContMap = new HashMap<Integer, List<ContDtoToClient>>();
 		List<Cont> mtncContList = repositoryC.findByHeadContIdNot(0);
+		
 		List<ContDtoToClient> mtncList;
 		if(mtncContList.size()==0) {
 			mtncList = new ArrayList<ContDtoToClient>();
@@ -147,6 +148,7 @@ public class ContController {
 		List<ContDtoToClient> tempList = new ArrayList<ContDtoToClient>();
 		int currentHeadContId = (mtncList.size()!=0) ? mtncList.get(0).getHeadContId() : 0;
 		for(int i = 0; i < mtncList.size(); i++) {
+			System.out.println("***** [ DB에서 가져온 직후: "+mtncContList.get(i).getContDt()+"] *****");
 			int custId = (mtncContList.get(i).getCust()==null) ? 0 : mtncContList.get(i).getCust().getCustId();
 			String custNm = (mtncContList.get(i).getCust()==null) ? "" : mtncContList.get(i).getCust().getCustNm();
 			mtncList.get(i).setCustId(custId);
@@ -193,7 +195,7 @@ public class ContController {
 				headList.get(i).setTight(calculateIsTight(headList.get(i).getMtncEndDt()));
 				headList.get(i).setChildren(null);
 			}
-			System.out.println("***** ["+headList.get(i).getContDt()+"] *****");
+			System.out.println("***** [ Front로 보내기 직전: "+headList.get(i).getContDt()+"] *****");
 		}
 		
 		return new ResponseEntity<List<ContDtoToClient>>(headList, HttpStatus.OK);
