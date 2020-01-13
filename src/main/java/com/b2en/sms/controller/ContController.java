@@ -666,8 +666,7 @@ public class ContController {
 		Cont contHist = repositoryC.findById(id).orElse(null);
 		
 		if(contHist==null || contChngHistList.size()==0) {
-			contChngHistDtoToClientList = null;
-			return new ResponseEntity<List<ContChngHistDtoToClient>>(contChngHistDtoToClientList, HttpStatus.OK);
+			return new ResponseEntity<List<ContChngHistDtoToClient>>(new ArrayList<ContChngHistDtoToClient>(), HttpStatus.OK);
 		}
 		String contNm = contHist.getContNm();
 		
