@@ -37,7 +37,6 @@ import com.b2en.sms.dto.LcnsDto;
 import com.b2en.sms.dto.LcnsDtoForUpdate;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.ContAC;
-import com.b2en.sms.dto.autocompleteinfo.ContACInterface;
 import com.b2en.sms.dto.file.FileList;
 import com.b2en.sms.dto.file.FileListToClient;
 import com.b2en.sms.dto.toclient.ContAndLcnsDtoToClient;
@@ -194,7 +193,7 @@ public class ContController {
 				headList.get(i).setTight(calculateIsTight(headList.get(i).getMtncEndDt()));
 				headList.get(i).setChildren(null);
 			}
-			
+			System.out.println("***** ["+headList.get(i).getContDt()+"] *****");
 		}
 		
 		return new ResponseEntity<List<ContDtoToClient>>(headList, HttpStatus.OK);
@@ -338,7 +337,7 @@ public class ContController {
 	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContAC>> acList() {
 
-		List<ContACInterface> entityList = repositoryC.findAllBy();
+		List<Cont> entityList = repositoryC.findAllOrderByContNm();
 		List<ContAC> list = new ArrayList<ContAC>();
 		
 		for(int i = 0; i < entityList.size(); i++) {
