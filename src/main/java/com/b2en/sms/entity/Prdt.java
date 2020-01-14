@@ -34,8 +34,8 @@ public class Prdt extends TimeEntity implements Serializable {
 	private String prdtNm;
 	
 	// 제품버전
-	@Column(name="prdt_ver")
-	private String prdtVer;
+	//@Column(name="prdt_ver")
+	//private String prdtVer;
 	
 	// 제품설명
 	@Column(name="prdt_desc")
