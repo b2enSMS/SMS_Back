@@ -16,4 +16,6 @@ public class PrdtDtoToClient {
 	private String prdtAmt;
 	
 	private String prdtTpCd;
+	
+	private String prdtTpCdNm;
 }

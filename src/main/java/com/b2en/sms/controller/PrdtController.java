@@ -28,6 +28,7 @@ import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.PrdtACInterface;
 import com.b2en.sms.dto.toclient.PrdtDtoToClient;
 import com.b2en.sms.entity.Prdt;
+import com.b2en.sms.repo.CmmnDetailCdRepository;
 import com.b2en.sms.repo.PrdtRepository;
 
 @RestController
@@ -36,6 +37,9 @@ public class PrdtController {
 	
 	@Autowired
 	private PrdtRepository repository;
+	
+	@Autowired
+	private CmmnDetailCdRepository repositoryCDC;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -74,6 +78,7 @@ public class PrdtController {
 		}
 		
 		PrdtDtoToClient prdtDtoToClient = modelMapper.map(prdt, PrdtDtoToClient.class);
+		prdtDtoToClient.setPrdtTpCdNm(repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(prdtDtoToClient.getPrdtTpCd()).getCmmnDetailCdNm());
 		
 		return new ResponseEntity<PrdtDtoToClient>(prdtDtoToClient, HttpStatus.OK);
 	}
@@ -146,7 +151,6 @@ public class PrdtController {
 		}
 		
 		toUpdate.setPrdtNm(prdtDto.getPrdtNm());
-		toUpdate.setPrdtVer(prdtDto.getPrdtVer());
 		toUpdate.setPrdtDesc(prdtDto.getPrdtDesc());
 		toUpdate.setPrdtAmt(prdtDto.getPrdtAmt().replaceAll(",", ""));
 		toUpdate.setPrdtTpCd(prdtDto.getPrdtTpCd());
