@@ -15,7 +15,7 @@ import lombok.Data;
 )
 public class LcnsDto {
 	
-	@Min(value = 1, message="제품명이 빈칸입니다.")
+	@Min(value = 1, message="제품이 선택되지 않았습니다.")
 	private int prdtId;
 
 	@NotBlank(message="라이센스번호가 빈칸입니다.")

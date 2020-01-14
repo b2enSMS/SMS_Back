@@ -1,6 +1,8 @@
 package com.b2en.sms.controller.file;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.file.FileListToClient;
 import com.b2en.sms.dto.file.Response;
 import com.b2en.sms.entity.file.Scan;
@@ -73,10 +76,8 @@ public class ScanController {
 			return ResponseEntity.noContent().build();
 		}
     	
-    	Scan scan = null;
-    	try {
-    		scan = repository.getOne(fileId);
-    	} catch(Exception e) {
+    	Scan scan = repository.findById(fileId).orElse(null);
+    	if(scan==null) {
     		return ResponseEntity.noContent().build();
     	}
     	
@@ -128,21 +129,35 @@ public class ScanController {
 	 */
     
     @DeleteMapping(value = "")
-	public ResponseEntity<Void> delete(@RequestBody FileListToClient[] dto) {
+	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody FileListToClient[] dto) {
+    	boolean deleteFlag = true;
 		String[] idx = new String[dto.length];
 		for(int i = 0; i < idx.length; i++) {
 			idx[i] = dto[i].getUrl();
+			if(idx[i]==null) {
+				deleteFlag = false;
+				continue;
+			}
 			String[] splitted1 = idx[i].split("/");
 			String fn = splitted1[splitted1.length-1];
 			String[] splitted2 = fn.split("\\.");
 			String scanId = splitted2[0];
-				
+			if(!repository.existsById(scanId)) {
+				deleteFlag = false;
+				continue;
+			}
 			String type = repository.getOne(scanId).getFileType();
 			scanStorageService.deleteFile(scanId, type);
 				
 			repository.deleteById(scanId);
 		}
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
+		if(deleteFlag) {
+			res.add(new ResponseInfo("삭제에 성공했습니다."));
+		} else {
+			res.add(new ResponseInfo("삭제 도중 문제가 발생했습니다."));
+		}
+		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
     
 }
