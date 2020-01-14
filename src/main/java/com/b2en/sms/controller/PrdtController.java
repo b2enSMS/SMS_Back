@@ -93,6 +93,7 @@ public class PrdtController {
 		}
 		
 		Prdt prdtEntity = modelMapper.map(prdt, Prdt.class);
+		prdtEntity.setPrdtAmt(prdtEntity.getPrdtAmt().replaceAll(",", ""));
 		
 		repository.save(prdtEntity);
 		
@@ -147,7 +148,7 @@ public class PrdtController {
 		toUpdate.setPrdtNm(prdtDto.getPrdtNm());
 		toUpdate.setPrdtVer(prdtDto.getPrdtVer());
 		toUpdate.setPrdtDesc(prdtDto.getPrdtDesc());
-		toUpdate.setPrdtAmt(prdtDto.getPrdtAmt());
+		toUpdate.setPrdtAmt(prdtDto.getPrdtAmt().replaceAll(",", ""));
 		toUpdate.setPrdtTpCd(prdtDto.getPrdtTpCd());
 		
 		repository.save(toUpdate);

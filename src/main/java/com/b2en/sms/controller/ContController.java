@@ -426,6 +426,7 @@ public class ContController {
 		
 		for(int i = 0; i < lcnsDto.length; i++) {
 			contAmt[i] = lcnsDto[i].getContAmt();
+			contAmt[i] = contAmt[i].replaceAll(",", "");
 			tot += Long.parseLong(contAmt[i]);
 		}
 		
@@ -460,7 +461,7 @@ public class ContController {
 			contDetail.setContDetailPK(contDetailPK);
 			contDetail.setCont(contEntity);
 			contDetail.setLcns(lcns);
-			contDetail.setContAmt(contAmt[i]);
+			contDetail.setContAmt(contAmt[i].replaceAll(",", ""));
 			contDetail.setDelYn("N");
 			contDetail.setContNote(lcnsDto[i].getContNote());
 
@@ -557,6 +558,7 @@ public class ContController {
 		
 		for (int i = 0; i < lcnsDto.length; i++) {
 			contAmt[i] = lcnsDto[i].getContAmt();
+			contAmt[i] = contAmt[i].replaceAll(",", "");
 			tot += Integer.parseInt(contAmt[i]);
 		}
 
@@ -604,7 +606,7 @@ public class ContController {
 				contDetail.setContDetailPK(contDetailPK);
 				contDetail.setCont(toUpdate);
 				contDetail.setLcns(lcns);
-				contDetail.setContAmt(lcnsDto[i].getContAmt());
+				contDetail.setContAmt(lcnsDto[i].getContAmt().replaceAll(",", ""));
 				contDetail.setDelYn("N");
 				contDetail.setContNote(lcnsDto[i].getContNote());
 				
@@ -664,7 +666,7 @@ public class ContController {
 				// 4. ContDetail 수정
 				contDetail.setCont(toUpdate);
 				contDetail.setLcns(lcns);
-				contDetail.setContAmt(lcnsDto[i].getContAmt());
+				contDetail.setContAmt(lcnsDto[i].getContAmt().replaceAll(",", ""));
 				contDetail.setContNote(lcnsDto[i].getContNote());
 				repositoryCD.save(contDetail);
 			}
