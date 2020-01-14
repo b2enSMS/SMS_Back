@@ -16,10 +16,10 @@ public class TempVerAndLcnsDto {
 	@Min(value = 1, message="담당자가 선택되지 않았습니다.")
 	private int empId;
 	
-	@NotBlank(message="사용자가 빈칸입니다.")
+	//@NotBlank(message="사용자가 빈칸입니다.")
 	private String user;
 	
-	@NotBlank(message="MAC주소가 빈칸입니다.")
+	//@NotBlank(message="MAC주소가 빈칸입니다.")
 	private String macAddr;
 	
 	@NotBlank(message="요청일이 빈칸입니다.")

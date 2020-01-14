@@ -26,6 +26,7 @@ public class ContAndLcnsDtoForUpdate {
 	
 	private int headContId;
 	
+	@NotBlank(message="사업명이 빈칸입니다.")
 	private String contNm;
 
 	@NotBlank(message="계약일자가 빈칸입니다.")
