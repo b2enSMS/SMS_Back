@@ -34,6 +34,7 @@ import com.b2en.sms.dto.toclient.LcnsDtoToClientTempVer;
 import com.b2en.sms.dto.toclient.TempVerAndLcnsDtoToClient;
 import com.b2en.sms.dto.toclient.TempVerDtoToClient;
 import com.b2en.sms.dto.toclient.TempVerHistDtoToClient;
+import com.b2en.sms.entity.AddOneDay;
 import com.b2en.sms.entity.Lcns;
 import com.b2en.sms.entity.LcnsChngHist;
 import com.b2en.sms.entity.Prdt;
@@ -79,6 +80,10 @@ public class TempVerController {
 		List<TempVer> entityList = repositoryTemp.findAllByOrderByTempVerIdDesc();
 		List<TempVerDtoToClient> list = new ArrayList<TempVerDtoToClient>();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		if(entityList.size()==0) { // 결과가 없을 경우의 문제 예방
+			return new ResponseEntity<List<TempVerDtoToClient>>(new ArrayList<TempVerDtoToClient>(), HttpStatus.OK);
+		}
+		entityList = AddOneDay.addOneDayInTempVer(entityList);
 		
 		for(int i = 0; i < entityList.size(); i++) {
 			TempVerDtoToClient tempVerDtoToClient = new TempVerDtoToClient();
@@ -111,6 +116,9 @@ public class TempVerController {
 			TempVerAndLcnsDtoToClient nothing = null;
 			return new ResponseEntity<TempVerAndLcnsDtoToClient>(nothing, HttpStatus.OK);
 		}
+		List<TempVer> tempTemp = new ArrayList<TempVer>();
+		tempTemp.add(tempVer);
+		tempVer = AddOneDay.addOneDayInTempVer(tempTemp).get(0);
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		
@@ -186,16 +194,27 @@ public class TempVerController {
 	}
 	
 	@DeleteMapping(value = "")
-	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
+	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody DeleteDto id) {
+		boolean deleteFlag = true;
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
-			Lcns lcns = repositoryTemp.getOne(idx[i]).getLcns();
+			if(!repositoryTemp.existsById(idx[i])) {
+				deleteFlag = false;
+				continue;
+			}
+			Lcns lcns = repositoryTemp.findById(idx[i]).orElse(null).getLcns();
 			lcns.setDelYn("Y");
 			repositoryLcns.save(lcns);
 			repositoryTempHist.deleteByTempVerHistPKTempVerId(idx[i]);
 			repositoryTemp.deleteById(idx[i]);
 		}
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
+		if(deleteFlag) {
+			res.add(new ResponseInfo("삭제에 성공했습니다."));
+		} else {
+			res.add(new ResponseInfo("삭제 도중 문제가 발생하였습니다."));
+		}
+		return new ResponseEntity<List<ResponseInfo>>(HttpStatus.NO_CONTENT);
 	}
 	
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -234,6 +253,8 @@ public class TempVerController {
 		tempVerHist.setLcns(toUpdate.getLcns());
 		tempVerHist.setB2en(toUpdate.getB2en());
 		tempVerHist.setMacAddr(toUpdate.getMacAddr());
+		tempVerHist.setIssueReason(toUpdate.getIssueReason());
+		tempVerHist.setRequestDate(toUpdate.getRequestDate());
 		
 		repositoryTempHist.save(tempVerHist);
 		
@@ -313,6 +334,8 @@ public class TempVerController {
 			list = null;
 			return new ResponseEntity<List<TempVerHistDtoToClient>>(list, HttpStatus.OK);
 		}
+		
+		tempVerHistList = AddOneDay.addOneDayInTempVerHist(tempVerHistList);
 
 		for(int i = 0; i < tempVerHistList.size(); i++) {
 			TempVerHistDtoToClient tempVerHistDtoToClient = new TempVerHistDtoToClient();

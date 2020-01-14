@@ -109,12 +109,23 @@ public class B2enController {
 	}
 
 	@DeleteMapping(value = "")
-	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
+	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody DeleteDto id) {
+		boolean deleteFlag = true;
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
+			if(!repository.existsById(idx[i])) {
+				deleteFlag = false;
+				continue;
+			}
 			repository.deleteById(idx[i]);
 		}
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
+		if(deleteFlag) {
+			res.add(new ResponseInfo("삭제에 성공했습니다."));
+		} else {
+			res.add(new ResponseInfo("삭제 도중 문제가 발생했습니다."));
+		}
+		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

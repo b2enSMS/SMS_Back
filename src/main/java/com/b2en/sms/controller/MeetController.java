@@ -30,6 +30,7 @@ import com.b2en.sms.dto.toclient.MeetAndAttendDtoToClient;
 import com.b2en.sms.dto.toclient.MeetAttendCustDto;
 import com.b2en.sms.dto.toclient.MeetAttendEmpDto;
 import com.b2en.sms.dto.toclient.MeetDtoToClient;
+import com.b2en.sms.entity.AddOneDay;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.entity.CmmnDetailCd;
 import com.b2en.sms.entity.Cust;
@@ -72,6 +73,7 @@ public class MeetController {
 		if(entityList.size()==0) { // 결과가 없을 경우의 문제 예방
 			return new ResponseEntity<List<MeetDtoToClient>>(new ArrayList<MeetDtoToClient>(), HttpStatus.OK);
 		}
+		entityList = AddOneDay.addOneDayInMeet(entityList);
 		
 		List<MeetDtoToClient> list;
 
@@ -150,6 +152,9 @@ public class MeetController {
 			MeetAndAttendDtoToClient nothing = null;
 			return new ResponseEntity<MeetAndAttendDtoToClient>(nothing, HttpStatus.OK);
 		}
+		List<Meet> meetTemp = new ArrayList<Meet>();
+		meetTemp.add(meet);
+		meet = AddOneDay.addOneDayInMeet(meetTemp).get(0);
 		
 		MeetAndAttendDtoToClient meetAndAttendDtoToClient = modelMapper.map(meet, MeetAndAttendDtoToClient.class);
 		String meetTpCdNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(meet.getMeetTpCd()).getCmmnDetailCdNm();
@@ -236,14 +241,25 @@ public class MeetController {
 	}
 	
 	@DeleteMapping(value = "")
-	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
+	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody DeleteDto id) {
+		boolean deleteFlag = true;
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
+			if(!repositoryM.existsById(idx[i])) {
+				deleteFlag = false;
+				continue;
+			}
 			repositoryMAC.deleteByMeetAttendCustPKMeetId(idx[i]);
 			repositoryMAE.deleteByMeetAttendEmpPKMeetId(idx[i]);
 			repositoryM.deleteById(idx[i]);
 		}
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
+		if(deleteFlag) {
+			res.add(new ResponseInfo("삭제에 성공했습니다."));
+		} else {
+			res.add(new ResponseInfo("삭제 도중 문제가 발생하였습니다."));
+		}
+		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -313,21 +329,27 @@ public class MeetController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	@GetMapping(value = "/attend/cust/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<MeetAttendCust>> showAttendCust(@PathVariable int id) {
-
-		List<MeetAttendCust> entityList = repositoryMAC.findByMeetAttendCustPKMeetId(id);
-		
-		return new ResponseEntity<List<MeetAttendCust>>(entityList, HttpStatus.OK);
-
-	}
-	
-	@GetMapping(value = "/attend/b2en/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<MeetAttendEmp>> showAttendEmp(@PathVariable int id) {
-
-		List<MeetAttendEmp> entityList = repositoryMAE.findByMeetAttendEmpPKMeetId(id);
-		
-		return new ResponseEntity<List<MeetAttendEmp>>(entityList, HttpStatus.OK);
-
-	}
+	/*
+	 * @GetMapping(value = "/attend/cust/{id}", produces =
+	 * MediaType.APPLICATION_JSON_VALUE) public ResponseEntity<List<MeetAttendCust>>
+	 * showAttendCust(@PathVariable int id) {
+	 * 
+	 * List<MeetAttendCust> entityList =
+	 * repositoryMAC.findByMeetAttendCustPKMeetId(id);
+	 * 
+	 * return new ResponseEntity<List<MeetAttendCust>>(entityList, HttpStatus.OK);
+	 * 
+	 * }
+	 * 
+	 * @GetMapping(value = "/attend/b2en/{id}", produces =
+	 * MediaType.APPLICATION_JSON_VALUE) public ResponseEntity<List<MeetAttendEmp>>
+	 * showAttendEmp(@PathVariable int id) {
+	 * 
+	 * List<MeetAttendEmp> entityList =
+	 * repositoryMAE.findByMeetAttendEmpPKMeetId(id);
+	 * 
+	 * return new ResponseEntity<List<MeetAttendEmp>>(entityList, HttpStatus.OK);
+	 * 
+	 * }
+	 */
 }

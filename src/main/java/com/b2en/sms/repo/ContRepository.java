@@ -10,12 +10,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.b2en.sms.dto.autocompleteinfo.ContACInterface;
-import com.b2en.sms.entity.B2en;
 import com.b2en.sms.entity.Cont;
 
 public interface ContRepository extends JpaRepository<Cont, Integer>{
-	
-	List<Cont> findByHeadContId(int headContId);
 	
 	List<Cont> findByDelYn(String yn);
 	
@@ -28,7 +25,8 @@ public interface ContRepository extends JpaRepository<Cont, Integer>{
 	@Query(value="SELECT * FROM cont ORDER BY binary(cont_nm)", nativeQuery = true)
 	List<Cont> findAllOrderByContNm();
 	
-	List<Cont> findByHeadContIdNot(int headContId);
+	@Query(value="SELECT * FROM cont WHERE head_cont_id <> 0 ORDER BY head_cont_id, cont_dt", nativeQuery = true)
+	List<Cont> findMtncCont();
 	
 	// cust가 null일 경우의 insert
 	@Transactional
