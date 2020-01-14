@@ -1,7 +1,6 @@
 package com.b2en.sms.dto;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 
 import lombok.Data;
 
