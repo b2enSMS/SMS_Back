@@ -43,6 +43,7 @@ import com.b2en.sms.dto.toclient.ContAndLcnsDtoToClient;
 import com.b2en.sms.dto.toclient.ContChngHistDtoToClient;
 import com.b2en.sms.dto.toclient.ContDtoToClient;
 import com.b2en.sms.dto.toclient.LcnsDtoToClient;
+import com.b2en.sms.entity.AddOneDay;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.entity.CmmnDetailCd;
 import com.b2en.sms.entity.Cont;
@@ -137,12 +138,13 @@ public class ContController {
 		}
 		
 		HashMap<Integer, List<ContDtoToClient>> mtncContMap = new HashMap<Integer, List<ContDtoToClient>>();
-		List<Cont> mtncContList = repositoryC.findByHeadContIdNot(0);
+		List<Cont> mtncContList = repositoryC.findMtncCont();
 		
 		List<ContDtoToClient> mtncList;
 		if(mtncContList.size()==0) {
 			mtncList = new ArrayList<ContDtoToClient>();
 		} else {
+			mtncContList = AddOneDay.addOneDayInCont(mtncContList);
 			mtncList = modelMapper.map(mtncContList, new TypeToken<List<ContDtoToClient>>() { }.getType());
 		}
 		List<ContDtoToClient> tempList = new ArrayList<ContDtoToClient>();
@@ -174,10 +176,10 @@ public class ContController {
 		}
 		
 		List<Cont> headContList = repositoryC.findByHeadContIdAndDelYnOrderByContIdDesc(0, "N");
+		headContList = AddOneDay.addOneDayInCont(headContList);
 		List<ContDtoToClient> headList = modelMapper.map(headContList, new TypeToken<List<ContDtoToClient>>() { }.getType());
 		
 		for(int i = 0; i < headContList.size(); i++) {
-			System.out.println("***** [ DB에서 가져온 직후: "+headContList.get(i).getContDt()+"] *****");
 			int custId = (headContList.get(i).getCust()==null) ? 0 : headContList.get(i).getCust().getCustId();
 			String custNm = (headContList.get(i).getCust()==null) ? "" : headContList.get(i).getCust().getCustNm();
 			headList.get(i).setCustId(custId);
@@ -195,7 +197,6 @@ public class ContController {
 				headList.get(i).setTight(calculateIsTight(headList.get(i).getMtncEndDt()));
 				headList.get(i).setChildren(null);
 			}
-			System.out.println("***** [ Front로 보내기 직전: "+headList.get(i).getContDt()+"] *****");
 		}
 		
 		return new ResponseEntity<List<ContDtoToClient>>(headList, HttpStatus.OK);
@@ -253,6 +254,9 @@ public class ContController {
 			ContAndLcnsDtoToClient nothing = null;
 			return new ResponseEntity<ContAndLcnsDtoToClient>(nothing, HttpStatus.OK);
 		}
+		List<Cont> contTemp = new ArrayList<Cont>();
+		contTemp.add(cont);
+		cont = AddOneDay.addOneDayInCont(contTemp).get(0);
 		
 		ContAndLcnsDtoToClient contAndLcnsDtoToClient = modelMapper.map(cont, ContAndLcnsDtoToClient.class);
 		int custId = (cont.getCust()==null) ? 0 : cont.getCust().getCustId();
@@ -276,6 +280,7 @@ public class ContController {
 		}
 		
 		List<ContDetail> contDetail = repositoryCD.findByContIdWhereDelYnIsN(id);
+		contDetail = AddOneDay.addOneDayInLcnsInContDetail(contDetail);
 		LcnsDtoToClient[] lcnsDtoToClient = new LcnsDtoToClient[contDetail.size()];
 		for(int i = 0; i < lcnsDtoToClient.length; i++) {
 			lcnsDtoToClient[i] = modelMapper.map(contDetail.get(i).getLcns(), LcnsDtoToClient.class);
@@ -467,14 +472,32 @@ public class ContController {
 	}
 	
 	@DeleteMapping(value = "")
-	public ResponseEntity<Void> delete(@RequestBody DeleteDto id) {
+	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody DeleteDto id) {
+		boolean deleteFlag = true;
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
-			Cont cont = repositoryC.getOne(idx[i]);
+			Cont cont = repositoryC.findById(idx[i]).orElse(null);
+			if(cont==null) {
+				deleteFlag = false;
+				continue;
+			}
+			List<ContDetail> contDetail = repositoryCD.findByContDetailPKContId(idx[i]);
 			cont.setDelYn("Y");
+			for(int j = 0; j < contDetail.size(); j++) {
+				contDetail.get(j).setDelYn("Y");
+				contDetail.get(j).getLcns().setDelYn("Y");
+				repositoryCD.save(contDetail.get(i));
+				repositoryL.save(contDetail.get(i).getLcns());
+			}
 			repositoryC.save(cont);
 		}
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
+		if(deleteFlag) {
+			res.add(new ResponseInfo("삭제에 성공했습니다."));
+		} else {
+			res.add(new ResponseInfo("삭제 도중 문제가 발생하였습니다."));
+		}
+		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -669,6 +692,7 @@ public class ContController {
 			return new ResponseEntity<List<ContChngHistDtoToClient>>(new ArrayList<ContChngHistDtoToClient>(), HttpStatus.OK);
 		}
 		String contNm = contHist.getContNm();
+		contChngHistList = AddOneDay.addOneDayInContHist(contChngHistList);
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		for(int i = 0; i < contChngHistList.size(); i++) {
