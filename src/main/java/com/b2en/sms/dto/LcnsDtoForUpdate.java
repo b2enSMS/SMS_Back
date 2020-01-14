@@ -51,8 +51,8 @@ public class LcnsDtoForUpdate {
 	
 	private FileList[] fileList;
 	
-	@NotBlank(message="납품단가가 빈칸입니다.")
-	@Pattern(regexp="[0-9]+$", message="납품단가는 숫자만 입력되어야 합니다.")
+	//@NotBlank(message="납품단가가 빈칸입니다.")
+	//@Pattern(regexp="[0-9]+$", message="납품단가는 숫자만 입력되어야 합니다.")
 	private String contAmt;
 	
 	private String contNote;
