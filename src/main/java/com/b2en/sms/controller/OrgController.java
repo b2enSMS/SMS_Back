@@ -28,6 +28,7 @@ import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.OrgAC;
 import com.b2en.sms.dto.toclient.OrgDtoToClient;
 import com.b2en.sms.entity.Org;
+import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.OrgRepository;
 
 @RestController
@@ -36,6 +37,9 @@ public class OrgController {
 
 	@Autowired
 	private OrgRepository repositoryOrg;
+	
+	@Autowired
+	private CustRepository repositoryCust;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -114,27 +118,25 @@ public class OrgController {
 	@DeleteMapping(value = "")
 	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody DeleteDto id) {
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
-		boolean deleteFlag = true;
+
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
 			if(!repositoryOrg.existsById(idx[i])) {
-				deleteFlag = false;
-				continue;
+				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
+				res.add(new ResponseInfo(idx[i]+"의 id를 가지는 row가 없습니다."));
+				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 			}
-			try {
-				repositoryOrg.deleteById(idx[i]);
-			} catch(Exception e) {
-				res.add(new ResponseInfo("해당 고객사를 참조하는 고객사담당자가 있습니다. 그 고객사담당자를 먼저 삭제해야 합니다."));
+			if(repositoryCust.countByOrgId(idx[i])>0) {
+				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
+				res.add(new ResponseInfo(idx[i]+"의 id를 가진 고객사를 참조하는 고객사담당자가 있습니다. 그 고객사담당자를 먼저 삭제해야 합니다."));
 				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 			}
 		}
-		if(deleteFlag) {
-			res.add(new ResponseInfo("삭제에 성공했습니다."));
-			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
-		} else {
-			res.add(new ResponseInfo("삭제 도중 문제가 발생했습니다. 삭제가 완벽하게 되지 않았을 수도 있습니다."));
-			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+		for(int i = 0; i < idx.length; i++) {
+			repositoryOrg.deleteById(idx[i]);
 		}
+		res.add(new ResponseInfo("삭제에 성공했습니다."));
+		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

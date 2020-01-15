@@ -119,21 +119,22 @@ public class B2enController {
 
 	@DeleteMapping(value = "")
 	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody DeleteDto id) {
-		boolean deleteFlag = true;
+		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
+
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
 			if(!repository.existsById(idx[i])) {
-				deleteFlag = false;
-				continue;
+				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
+				res.add(new ResponseInfo(idx[i]+"의 id를 가지는 row가 없습니다."));
+				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 			}
+		}
+		
+		for(int i = 0; i < idx.length; i++) {
 			repository.deleteById(idx[i]);
 		}
-		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
-		if(deleteFlag) {
-			res.add(new ResponseInfo("삭제에 성공했습니다."));
-		} else {
-			res.add(new ResponseInfo("삭제 도중 문제가 발생했습니다."));
-		}
+		
+		res.add(new ResponseInfo("삭제에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 
