@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.OrgDto;
 import com.b2en.sms.dto.ResponseInfo;
+import com.b2en.sms.dto.autocompleteinfo.B2enAC;
 import com.b2en.sms.dto.autocompleteinfo.OrgAC;
 import com.b2en.sms.dto.toclient.OrgDtoToClient;
 import com.b2en.sms.entity.Org;
@@ -60,6 +61,9 @@ public class OrgController {
 	public ResponseEntity<List<OrgAC>> acList() {
 
 		List<Org> list = repositoryOrg.findAllOrderByName();
+		if(list == null) {
+			return new ResponseEntity<List<OrgAC>>(new ArrayList<OrgAC>(), HttpStatus.OK);
+		}
 		List<OrgAC> acList = new ArrayList<OrgAC>();
 		
 		for(int i = 0; i < list.size(); i++) {
