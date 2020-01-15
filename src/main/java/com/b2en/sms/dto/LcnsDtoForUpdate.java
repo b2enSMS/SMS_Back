@@ -15,7 +15,6 @@ import lombok.Data;
 )
 public class LcnsDtoForUpdate {
 	
-	@Min(value = 1, message="라이센스가 선택되지 않았습니다.")
 	private int lcnsId;
 	
 	private int contSeq;
