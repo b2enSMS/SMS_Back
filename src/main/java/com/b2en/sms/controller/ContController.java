@@ -1,6 +1,5 @@
 package com.b2en.sms.controller;
 
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
@@ -424,13 +423,10 @@ public class ContController {
 		
 		for(int i = 0; i < lcnsDto.length; i++) {
 			contAmt[i] = lcnsDto[i].getContAmt();
-			contAmt[i] = contAmt[i].replaceAll(",", "");
 			tot += Long.parseLong(contAmt[i]);
 		}
 		
-		DecimalFormat dc = new DecimalFormat("###,###");
-		String totAmt = dc.format(tot);
-		contEntity.setContTotAmt(totAmt);
+		contEntity.setContTotAmt(Long.toString(tot));
 
 		try {
 			Cust cust = repositoryCust.getOne(custId);
@@ -558,13 +554,10 @@ public class ContController {
 		
 		for (int i = 0; i < lcnsDto.length; i++) {
 			contAmt[i] = lcnsDto[i].getContAmt();
-			contAmt[i] = contAmt[i].replaceAll(",", "");
 			tot += Integer.parseInt(contAmt[i]);
 		}
 
-		DecimalFormat dc = new DecimalFormat("###,###");
-		String totAmt = dc.format(tot);
-		toUpdate.setContTotAmt(totAmt);
+		toUpdate.setContTotAmt(Long.toString(tot));
 
 		try {
 			Cust cust = repositoryCust.getOne(custId);
