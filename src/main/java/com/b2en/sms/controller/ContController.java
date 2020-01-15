@@ -305,11 +305,8 @@ public class ContController {
 			return fileList;
 		}
 		
-		Scan scan = null;
-		
-		try {
-			scan = repositoryS.getOne(id);
-		} catch(Exception e) {
+		Scan scan = repositoryS.findById(id).orElse(null);
+		if(scan == null) {
 			FileListToClient[] fileList = new FileListToClient[0];
 			return fileList;
 		}
