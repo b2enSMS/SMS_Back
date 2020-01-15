@@ -17,4 +17,6 @@ public class B2enDtoToClient {
 	
 	private String empTpCd;
 	
+	private String empTpCdNm;
+	
 }
