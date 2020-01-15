@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.OrgDto;
 import com.b2en.sms.dto.ResponseInfo;
-import com.b2en.sms.dto.autocompleteinfo.B2enAC;
 import com.b2en.sms.dto.autocompleteinfo.OrgAC;
 import com.b2en.sms.dto.toclient.OrgDtoToClient;
 import com.b2en.sms.entity.Org;
@@ -114,6 +113,7 @@ public class OrgController {
 	
 	@DeleteMapping(value = "")
 	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody DeleteDto id) {
+		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		boolean deleteFlag = true;
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
@@ -121,15 +121,20 @@ public class OrgController {
 				deleteFlag = false;
 				continue;
 			}
-			repositoryOrg.deleteById(idx[i]);
+			try {
+				repositoryOrg.deleteById(idx[i]);
+			} catch(Exception e) {
+				res.add(new ResponseInfo("해당 고객사를 참조하는 고객사담당자가 있습니다. 그 고객사담당자를 먼저 삭제해야 합니다."));
+				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+			}
 		}
-		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		if(deleteFlag) {
 			res.add(new ResponseInfo("삭제에 성공했습니다."));
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 		} else {
-			res.add(new ResponseInfo("삭제 도중 문제가 발생했습니다."));
+			res.add(new ResponseInfo("삭제 도중 문제가 발생했습니다. 삭제가 완벽하게 되지 않았을 수도 있습니다."));
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
-		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
