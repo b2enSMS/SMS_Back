@@ -342,6 +342,9 @@ public class ContController {
 	public ResponseEntity<List<ContAC>> acList() {
 
 		List<Cont> entityList = repositoryC.findAllOrderByContNm();
+		if(entityList == null) {
+			return new ResponseEntity<List<ContAC>>(new ArrayList<ContAC>(), HttpStatus.OK);
+		}
 		List<ContAC> list = new ArrayList<ContAC>();
 		
 		for(int i = 0; i < entityList.size(); i++) {

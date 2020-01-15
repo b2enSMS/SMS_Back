@@ -64,6 +64,9 @@ public class B2enController {
 	public ResponseEntity<List<B2enAC>> acList() {
 
 		List<B2en> list = repository.findAllOrderByName();
+		if(list == null) {
+			return new ResponseEntity<List<B2enAC>>(new ArrayList<B2enAC>(), HttpStatus.OK);
+		}
 		List<B2enAC> acList = new ArrayList<B2enAC>();
 		
 		for(int i = 0; i < list.size(); i++) {
@@ -86,7 +89,8 @@ public class B2enController {
 		}
 		
 		B2enDtoToClient b2enDtoToClient = modelMapper.map(b2en, B2enDtoToClient.class);
-		b2enDtoToClient.setEmpTpCdNm(repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(b2enDtoToClient.getEmpTpCd()).getCmmnDetailCdNm());
+		String empTpCdNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(b2enDtoToClient.getEmpTpCd()).getCmmnDetailCdNm();
+		b2enDtoToClient.setEmpTpCdNm(empTpCdNm);
 		
 		return new ResponseEntity<B2enDtoToClient>(b2enDtoToClient, HttpStatus.OK);
 	}

@@ -172,6 +172,9 @@ public class CustController {
 	public ResponseEntity<List<CustAC>> acList() {
 
 		List<Cust> list = repositoryCust.findAllOrderByName();
+		if(list == null) {
+			return new ResponseEntity<List<CustAC>>(new ArrayList<CustAC>(), HttpStatus.OK);
+		}
 		List<CustAC> acList = new ArrayList<CustAC>();
 		
 		for(int i = 0; i < list.size(); i++) {

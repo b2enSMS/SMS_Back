@@ -64,6 +64,9 @@ public class PrdtController {
 	public ResponseEntity<List<PrdtACInterface>> acList() {
 
 		List<PrdtACInterface> list = repository.findAllBy();
+		if(list == null) {
+			return new ResponseEntity<List<PrdtACInterface>>(new ArrayList<PrdtACInterface>(), HttpStatus.OK);
+		}
 
 		return new ResponseEntity<List<PrdtACInterface>>(list, HttpStatus.OK);
 	}
