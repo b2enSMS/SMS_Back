@@ -29,6 +29,7 @@ import com.b2en.sms.dto.autocompleteinfo.B2enAC;
 import com.b2en.sms.dto.toclient.B2enDtoToClient;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.repo.B2enRepository;
+import com.b2en.sms.repo.CmmnDetailCdRepository;
 
 @RestController
 @RequestMapping("/api/b2en")
@@ -36,6 +37,9 @@ public class B2enController {
 	
 	@Autowired
 	private B2enRepository repository;
+	
+	@Autowired
+	private CmmnDetailCdRepository repositoryCDC;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -82,6 +86,7 @@ public class B2enController {
 		}
 		
 		B2enDtoToClient b2enDtoToClient = modelMapper.map(b2en, B2enDtoToClient.class);
+		b2enDtoToClient.setEmpTpCdNm(repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(b2enDtoToClient.getEmpTpCd()).getCmmnDetailCdNm());
 		
 		return new ResponseEntity<B2enDtoToClient>(b2enDtoToClient, HttpStatus.OK);
 	}
