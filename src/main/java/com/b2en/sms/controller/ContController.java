@@ -1,5 +1,6 @@
 package com.b2en.sms.controller;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
@@ -430,7 +431,9 @@ public class ContController {
 			tot += Long.parseLong(contAmt[i]);
 		}
 		
-		contEntity.setContTotAmt(Long.toString(tot));
+		DecimalFormat dc = new DecimalFormat("###,###");
+		String totAmt = dc.format(tot);
+		contEntity.setContTotAmt(totAmt);
 
 		try {
 			Cust cust = repositoryCust.getOne(custId);
@@ -461,7 +464,7 @@ public class ContController {
 			contDetail.setContDetailPK(contDetailPK);
 			contDetail.setCont(contEntity);
 			contDetail.setLcns(lcns);
-			contDetail.setContAmt(contAmt[i].replaceAll(",", ""));
+			contDetail.setContAmt(contAmt[i]);
 			contDetail.setDelYn("N");
 			contDetail.setContNote(lcnsDto[i].getContNote());
 
@@ -562,7 +565,9 @@ public class ContController {
 			tot += Integer.parseInt(contAmt[i]);
 		}
 
-		toUpdate.setContTotAmt(Integer.toString(tot));
+		DecimalFormat dc = new DecimalFormat("###,###");
+		String totAmt = dc.format(tot);
+		toUpdate.setContTotAmt(totAmt);
 
 		try {
 			Cust cust = repositoryCust.getOne(custId);
@@ -606,7 +611,7 @@ public class ContController {
 				contDetail.setContDetailPK(contDetailPK);
 				contDetail.setCont(toUpdate);
 				contDetail.setLcns(lcns);
-				contDetail.setContAmt(lcnsDto[i].getContAmt().replaceAll(",", ""));
+				contDetail.setContAmt(lcnsDto[i].getContAmt());
 				contDetail.setDelYn("N");
 				contDetail.setContNote(lcnsDto[i].getContNote());
 				
@@ -666,7 +671,7 @@ public class ContController {
 				// 4. ContDetail 수정
 				contDetail.setCont(toUpdate);
 				contDetail.setLcns(lcns);
-				contDetail.setContAmt(lcnsDto[i].getContAmt().replaceAll(",", ""));
+				contDetail.setContAmt(lcnsDto[i].getContAmt());
 				contDetail.setContNote(lcnsDto[i].getContNote());
 				repositoryCD.save(contDetail);
 			}
