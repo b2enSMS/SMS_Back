@@ -1,5 +1,6 @@
 package com.b2en.sms.dto;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
@@ -18,10 +19,11 @@ public class MeetDto {
 	private String meetCnt;
 
 	@NotBlank(message="미팅시작시간이 빈칸입니다.")
-	@Pattern(regexp="^\\d{2}:\\d{2}$", message="미팅시작시간은 hh:mm의 형식으로 값이 입력되어야 합니다")
+	//@Pattern(regexp="^\\d{2}:\\d{2}$", message="미팅시작시간은 hh:mm의 형식으로 값이 입력되어야 합니다")
 	private String meetStartTime;
 	
 	@NotBlank(message="미팅전체시간이 빈칸입니다.")
+	@Min(value = 0, message="{value} 이상의 값이 입력되어야 합니다.")
 	private String meetTotTime;
 	
 	@NotBlank(message="미팅유형코드가 빈칸입니다.")

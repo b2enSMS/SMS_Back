@@ -45,6 +45,7 @@ public class LcnsDto {
 	// 납품단가, contDetail 생성에 필요
 	//@NotBlank(message="납품단가가 빈칸입니다.")
 	//@Pattern(regexp="[0-9]+$", message="납품단가는 숫자만 입력되어야 합니다.")
+	@Min(value = 0, message="{value} 이상의 값이 입력되어야 합니다.")
 	private String contAmt;
 	
 	// 비고, contDetail 생성에 필요
