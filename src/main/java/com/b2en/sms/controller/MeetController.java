@@ -157,6 +157,9 @@ public class MeetController {
 		meet = AddOneDay.addOneDayInMeet(meetTemp).get(0);
 		
 		MeetAndAttendDtoToClient meetAndAttendDtoToClient = modelMapper.map(meet, MeetAndAttendDtoToClient.class);
+		
+		meetAndAttendDtoToClient.setMeetStartTime(meetAndAttendDtoToClient.getMeetStartTime().substring(0, 5));
+		
 		String meetTpCdNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(meet.getMeetTpCd()).getCmmnDetailCdNm();
 		meetAndAttendDtoToClient.setMeetTpCdNm(meetTpCdNm);
 		if(meetAndAttendDtoToClient.getMeetCnt()==null) {
