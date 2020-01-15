@@ -14,7 +14,6 @@ import lombok.Data;
 )
 public class LcnsDtoTempVerForUpdate {
 	
-	@Min(value = 1, message="라이센스가 선택되지 않았습니다.")
 	private int lcnsId;
 	
 	@Min(value = 1, message="제품이 선택되지 않았습니다.")

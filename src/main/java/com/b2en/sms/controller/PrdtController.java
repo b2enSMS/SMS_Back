@@ -29,6 +29,7 @@ import com.b2en.sms.dto.autocompleteinfo.PrdtACInterface;
 import com.b2en.sms.dto.toclient.PrdtDtoToClient;
 import com.b2en.sms.entity.Prdt;
 import com.b2en.sms.repo.CmmnDetailCdRepository;
+import com.b2en.sms.repo.LcnsRepository;
 import com.b2en.sms.repo.PrdtRepository;
 
 @RestController
@@ -37,6 +38,9 @@ public class PrdtController {
 	
 	@Autowired
 	private PrdtRepository repository;
+	
+	@Autowired
+	private LcnsRepository repositoryL;
 	
 	@Autowired
 	private CmmnDetailCdRepository repositoryCDC;
@@ -111,28 +115,25 @@ public class PrdtController {
 	@DeleteMapping(value = "")
 	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody DeleteDto id) {
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
-		boolean deleteFlag = true;
 		int[] idx = id.getIdx();
 		for(int i = 0; i < idx.length; i++) {
 			if(!repository.existsById(idx[i])) {
-				deleteFlag = false;
-				continue;
+				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
+				res.add(new ResponseInfo(idx[i]+"의 id를 가지는 row가 없습니다."));
+				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 			}
-			try {
-				repository.deleteById(idx[i]);
-			} catch(Exception e) {
-				res.add(new ResponseInfo("해당 제품을 참조하는 라이센스가 있습니다. 그 라이센스를 먼저 삭제해야 합니다."));
+			if(repositoryL.countByPrdtId(idx[i])>0) {
+				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
+				res.add(new ResponseInfo(idx[i]+"의 id를 가진 제품을 참조하는 라이센스가 있습니다. 그 라이센스를 먼저 삭제해야 합니다."));
 				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 			}
 		}
 		
-		if(deleteFlag) {
-			res.add(new ResponseInfo("삭제에 성공했습니다."));
-			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
-		} else {
-			res.add(new ResponseInfo("삭제 도중 문제가 발생했습니다. 삭제가 완벽하게 되지 않았을 수도 있습니다."));
-			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+		for(int i = 0; i < idx.length; i++) {
+			repository.deleteById(idx[i]);
 		}
+		res.add(new ResponseInfo("삭제에 성공했습니다."));
+		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
