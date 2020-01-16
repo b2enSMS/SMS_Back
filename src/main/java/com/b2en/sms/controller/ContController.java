@@ -389,11 +389,9 @@ public class ContController {
 			int prdtId = lcnsDto[i].getPrdtId();
 			lcnsEntity[i].setPrdt(prdtMap.get(prdtId));
 			lcnsEntity[i].setDelYn("N");
-			FileList[] fileList = null;
-			String scanId;
 			try {
-				fileList = lcnsDto[i].getFileList();
-				scanId = getScanIdFromUrl(fileList[0].getResponse().getUrl());
+				FileList[] fileList = lcnsDto[i].getFileList();
+				String scanId = getScanIdFromUrl(fileList[0].getResponse().getUrl());
 				lcnsEntity[i].setScan(scanId);
 			} catch(Exception e) {
 				lcnsEntity[i].setScan("");
@@ -589,8 +587,15 @@ public class ContController {
 				Lcns lcns = modelMapper.map(lcnsDto[i], Lcns.class);
 				int prdtId = lcnsDto[i].getPrdtId();
 				lcns.setPrdt(prdtMap.get(prdtId));
-				String scanId = getScanIdFromUrl(lcnsDto[i].getFileList()[0].getResponse().getUrl());
-				lcns.setScan(scanId);
+				
+				try {
+					FileList[] fileList = lcnsDto[i].getFileList();
+					String scanId = getScanIdFromUrl(fileList[0].getResponse().getUrl());
+					lcns.setScan(scanId);
+				} catch(Exception e) {
+					lcns.setScan("");
+				}
+				
 				lcns.setDelYn("N");
 				lcns = repositoryL.save(lcns);
 				
