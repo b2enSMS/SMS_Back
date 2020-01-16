@@ -570,8 +570,6 @@ public class ContController {
 			toUpdate = repositoryC.getOne(custId);
 		}
 		
-		repositoryC.save(toUpdate);
-		
 		// ======================= contDetail, Lcns 탐색(생성/수정/삭제) ==========================
 		List<ContDetail> cdList = repositoryCD.findByContDetailPKContId(id); // 기존의 contDetail
 		
