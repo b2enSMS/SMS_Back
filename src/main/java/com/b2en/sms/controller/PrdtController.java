@@ -123,8 +123,9 @@ public class PrdtController {
 				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 			}
 			if(repositoryL.countByPrdtId(idx[i])>0) {
+				String prdtNm = repository.findById(idx[i]).orElse(null).getPrdtNm();
 				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
-				res.add(new ResponseInfo(idx[i]+"의 id를 가진 제품을 참조하는 라이센스가 있습니다. 그 라이센스를 먼저 삭제해야 합니다."));
+				res.add(new ResponseInfo(prdtNm+"을(를) 참조하는 라이센스가 있습니다. 그 라이센스를 먼저 삭제해야 합니다."));
 				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 			}
 		}
