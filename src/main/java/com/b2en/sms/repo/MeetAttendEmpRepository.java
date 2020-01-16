@@ -29,5 +29,6 @@ public interface MeetAttendEmpRepository extends JpaRepository<MeetAttendEmp, Me
 	@Query(value="SELECT max(emp_seq) FROM meet_attend_emp", nativeQuery = true)
 	Integer findMaxEmpSeq();
 	
-	
+	@Query(value="SELECT count(*) FROM meet_attend_emp WHERE emp_id = :empId", nativeQuery = true)
+	Integer countByEmpId(@Param("empId") int empId);
 }

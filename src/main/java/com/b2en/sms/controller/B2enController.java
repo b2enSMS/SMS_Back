@@ -30,6 +30,9 @@ import com.b2en.sms.dto.toclient.B2enDtoToClient;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.repo.B2enRepository;
 import com.b2en.sms.repo.CmmnDetailCdRepository;
+import com.b2en.sms.repo.ContRepository;
+import com.b2en.sms.repo.MeetAttendEmpRepository;
+import com.b2en.sms.repo.TempVerRepository;
 
 @RestController
 @RequestMapping("/api/b2en")
@@ -37,7 +40,12 @@ public class B2enController {
 	
 	@Autowired
 	private B2enRepository repository;
-	
+	@Autowired
+	private ContRepository repositoryC;
+	@Autowired
+	private TempVerRepository repositoryT;
+	@Autowired
+	private MeetAttendEmpRepository repositoryMAE;
 	@Autowired
 	private CmmnDetailCdRepository repositoryCDC;
 	
@@ -126,6 +134,24 @@ public class B2enController {
 			if(!repository.existsById(idx[i])) {
 				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
 				res.add(new ResponseInfo(idx[i]+"의 id를 가지는 row가 없습니다."));
+				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+			}
+			if(repositoryC.countByEmpId(idx[i])>0) {
+				String empNm = repository.findById(idx[i]).orElse(null).getEmpNm();
+				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
+				res.add(new ResponseInfo(empNm+"을(를) 참조하는 계약이 있어 삭제할 수 없습니다."));
+				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+			}
+			if(repositoryT.countByEmpId(idx[i])>0) {
+				String empNm = repository.findById(idx[i]).orElse(null).getEmpNm();
+				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
+				res.add(new ResponseInfo(empNm+"을(를) 참조하는 임시계약이 있어 삭제할 수 없습니다."));
+				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+			}
+			if(repositoryMAE.countByEmpId(idx[i])>0) {
+				String empNm = repository.findById(idx[i]).orElse(null).getEmpNm();
+				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
+				res.add(new ResponseInfo(empNm+"을(를) 참조하는 미팅참가자목록이 있어 삭제할 수 없습니다."));
 				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 			}
 		}

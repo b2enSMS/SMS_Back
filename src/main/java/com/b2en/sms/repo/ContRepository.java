@@ -22,6 +22,12 @@ public interface ContRepository extends JpaRepository<Cont, Integer>{
 	
 	List<ContACInterface> findAllBy();
 	
+	@Query(value="SELECT count(*) FROM cont WHERE cust_id = :custId", nativeQuery = true)
+	Integer countByCustId(@Param("custId") int custId);
+	
+	@Query(value="SELECT count(*) FROM cont WHERE emp_id = :empId", nativeQuery = true)
+	Integer countByEmpId(@Param("empId") int empId);
+	
 	@Query(value="SELECT * FROM cont ORDER BY binary(cont_nm)", nativeQuery = true)
 	List<Cont> findAllOrderByContNm();
 	

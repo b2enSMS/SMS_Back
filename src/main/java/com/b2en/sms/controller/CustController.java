@@ -36,6 +36,7 @@ import com.b2en.sms.entity.TempVer;
 import com.b2en.sms.repo.CmmnDetailCdRepository;
 import com.b2en.sms.repo.ContRepository;
 import com.b2en.sms.repo.CustRepository;
+import com.b2en.sms.repo.MeetAttendCustRepository;
 import com.b2en.sms.repo.OrgRepository;
 import com.b2en.sms.repo.TempVerRepository;
 
@@ -45,18 +46,16 @@ public class CustController {
 
 	@Autowired
 	private CustRepository repositoryCust;
-	
 	@Autowired
 	private ContRepository repositoryCont;
-	
 	@Autowired
 	private TempVerRepository repositoryT;
-	
 	@Autowired
 	private OrgRepository repositoryO;
-
 	@Autowired
 	private CmmnDetailCdRepository repositoryCDC;
+	@Autowired
+	private MeetAttendCustRepository repositoryMAC;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -243,6 +242,24 @@ public class CustController {
 			if(!repositoryCust.existsById(idx[i])) {
 				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
 				res.add(new ResponseInfo(idx[i]+"의 id를 가지는 row가 없습니다."));
+				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+			}
+			if(repositoryCont.countByCustId(idx[i])>0) {
+				String custNm = repositoryCust.findById(idx[i]).orElse(null).getCustNm();
+				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
+				res.add(new ResponseInfo(custNm+"을(를) 참조하는 계약이 있어 삭제할 수 없습니다."));
+				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+			}
+			if(repositoryT.countByCustId(idx[i])>0) {
+				String custNm = repositoryCust.findById(idx[i]).orElse(null).getCustNm();
+				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
+				res.add(new ResponseInfo(custNm+"을(를) 참조하는 임시계약이 있어 삭제할 수 없습니다."));
+				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+			}
+			if(repositoryMAC.countByCustId(idx[i])>0) {
+				String custNm = repositoryCust.findById(idx[i]).orElse(null).getCustNm();
+				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
+				res.add(new ResponseInfo(custNm+"을(를) 참조하는 미팅참가자목록이 있어 삭제할 수 없습니다."));
 				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 			}
 		}
