@@ -50,8 +50,11 @@ import com.b2en.sms.repo.PrdtRepository;
 import com.b2en.sms.repo.TempVerHistRepository;
 import com.b2en.sms.repo.TempVerRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/temp")
+@Slf4j
 public class TempVerController {
 
 	@Autowired
@@ -268,18 +271,15 @@ public class TempVerController {
 		Lcns lcnsCheck = null;
 		Lcns[] lcns = new Lcns[lcnsDto.length];
 		for(int i = 0; i < lcnsDto.length; i++) {
-			try {
-				lcnsCheck = repositoryLcns.getOne(lcnsDto[i].getLcnsId());
-			} catch(Exception e) {
-				lcnsCheck = null;
-			}
+			lcnsCheck = repositoryLcns.findById(lcnsDto[i].getLcnsId()).orElse(null);
+			log.info("lcnsCheck: {}", lcnsCheck);
+			
 			if(lcnsCheck == null) { // 새로 생김
 				lcns[i] = modelMapper.map(lcnsDto[i], Lcns.class);
 				int prdtId = lcnsDto[i].getPrdtId();
 				lcns[i].setPrdt(prdtMap.get(prdtId));
 				lcns[i].setDelYn("N");
 				lcns[i] = repositoryLcns.save(lcns[i]);
-				
 			} else { // 기존에 있던거 수정
 				// 1. LcnsChngHist 생성
 				lcns[i] = lcnsCheck;
