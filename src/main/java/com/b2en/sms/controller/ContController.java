@@ -43,7 +43,6 @@ import com.b2en.sms.dto.toclient.ContAndLcnsDtoToClient;
 import com.b2en.sms.dto.toclient.ContChngHistDtoToClient;
 import com.b2en.sms.dto.toclient.ContDtoToClient;
 import com.b2en.sms.dto.toclient.LcnsDtoToClient;
-import com.b2en.sms.entity.AddOneDay;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.entity.CmmnDetailCd;
 import com.b2en.sms.entity.Cont;
@@ -144,7 +143,7 @@ public class ContController {
 		if(mtncContList.size()==0) {
 			mtncList = new ArrayList<ContDtoToClient>();
 		} else {
-			mtncContList = AddOneDay.addOneDayInCont(mtncContList);
+			//mtncContList = AddOneDay.addOneDayInCont(mtncContList);
 			mtncList = modelMapper.map(mtncContList, new TypeToken<List<ContDtoToClient>>() { }.getType());
 		}
 		List<ContDtoToClient> tempList = new ArrayList<ContDtoToClient>();
@@ -176,7 +175,7 @@ public class ContController {
 		}
 		
 		List<Cont> headContList = repositoryC.findByHeadContIdAndDelYnOrderByContIdDesc(0, "N");
-		headContList = AddOneDay.addOneDayInCont(headContList);
+		//headContList = AddOneDay.addOneDayInCont(headContList);
 		List<ContDtoToClient> headList = modelMapper.map(headContList, new TypeToken<List<ContDtoToClient>>() { }.getType());
 		
 		for(int i = 0; i < headContList.size(); i++) {
@@ -254,9 +253,9 @@ public class ContController {
 			ContAndLcnsDtoToClient nothing = null;
 			return new ResponseEntity<ContAndLcnsDtoToClient>(nothing, HttpStatus.OK);
 		}
-		List<Cont> contTemp = new ArrayList<Cont>();
-		contTemp.add(cont);
-		cont = AddOneDay.addOneDayInCont(contTemp).get(0);
+		//List<Cont> contTemp = new ArrayList<Cont>();
+		//contTemp.add(cont);
+		//cont = AddOneDay.addOneDayInCont(contTemp).get(0);
 		
 		ContAndLcnsDtoToClient contAndLcnsDtoToClient = modelMapper.map(cont, ContAndLcnsDtoToClient.class);
 		int custId = (cont.getCust()==null) ? 0 : cont.getCust().getCustId();
@@ -280,7 +279,7 @@ public class ContController {
 		}
 		
 		List<ContDetail> contDetail = repositoryCD.findByContIdWhereDelYnIsN(id);
-		contDetail = AddOneDay.addOneDayInLcnsInContDetail(contDetail);
+		//contDetail = AddOneDay.addOneDayInLcnsInContDetail(contDetail);
 		LcnsDtoToClient[] lcnsDtoToClient = new LcnsDtoToClient[contDetail.size()];
 		for(int i = 0; i < lcnsDtoToClient.length; i++) {
 			lcnsDtoToClient[i] = modelMapper.map(contDetail.get(i).getLcns(), LcnsDtoToClient.class);
@@ -694,7 +693,7 @@ public class ContController {
 			return new ResponseEntity<List<ContChngHistDtoToClient>>(new ArrayList<ContChngHistDtoToClient>(), HttpStatus.OK);
 		}
 		String contNm = contHist.getContNm();
-		contChngHistList = AddOneDay.addOneDayInContHist(contChngHistList);
+		//contChngHistList = AddOneDay.addOneDayInContHist(contChngHistList);
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		for(int i = 0; i < contChngHistList.size(); i++) {

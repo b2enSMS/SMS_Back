@@ -30,7 +30,6 @@ import com.b2en.sms.dto.toclient.MeetAndAttendDtoToClient;
 import com.b2en.sms.dto.toclient.MeetAttendCustDto;
 import com.b2en.sms.dto.toclient.MeetAttendEmpDto;
 import com.b2en.sms.dto.toclient.MeetDtoToClient;
-import com.b2en.sms.entity.AddOneDay;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.entity.CmmnDetailCd;
 import com.b2en.sms.entity.Cust;
@@ -73,7 +72,7 @@ public class MeetController {
 		if(entityList.size()==0) { // 결과가 없을 경우의 문제 예방
 			return new ResponseEntity<List<MeetDtoToClient>>(new ArrayList<MeetDtoToClient>(), HttpStatus.OK);
 		}
-		entityList = AddOneDay.addOneDayInMeet(entityList);
+		//entityList = AddOneDay.addOneDayInMeet(entityList);
 		
 		List<MeetDtoToClient> list;
 
@@ -152,9 +151,9 @@ public class MeetController {
 			MeetAndAttendDtoToClient nothing = null;
 			return new ResponseEntity<MeetAndAttendDtoToClient>(nothing, HttpStatus.OK);
 		}
-		List<Meet> meetTemp = new ArrayList<Meet>();
-		meetTemp.add(meet);
-		meet = AddOneDay.addOneDayInMeet(meetTemp).get(0);
+		//List<Meet> meetTemp = new ArrayList<Meet>();
+		//meetTemp.add(meet);
+		//meet = AddOneDay.addOneDayInMeet(meetTemp).get(0);
 		
 		MeetAndAttendDtoToClient meetAndAttendDtoToClient = modelMapper.map(meet, MeetAndAttendDtoToClient.class);
 		
