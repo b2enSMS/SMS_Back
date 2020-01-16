@@ -34,7 +34,6 @@ import com.b2en.sms.dto.toclient.LcnsDtoToClientTempVer;
 import com.b2en.sms.dto.toclient.TempVerAndLcnsDtoToClient;
 import com.b2en.sms.dto.toclient.TempVerDtoToClient;
 import com.b2en.sms.dto.toclient.TempVerHistDtoToClient;
-import com.b2en.sms.entity.AddOneDay;
 import com.b2en.sms.entity.Lcns;
 import com.b2en.sms.entity.LcnsChngHist;
 import com.b2en.sms.entity.Prdt;
@@ -83,7 +82,7 @@ public class TempVerController {
 		if(entityList.size()==0) { // 결과가 없을 경우의 문제 예방
 			return new ResponseEntity<List<TempVerDtoToClient>>(new ArrayList<TempVerDtoToClient>(), HttpStatus.OK);
 		}
-		entityList = AddOneDay.addOneDayInTempVer(entityList);
+		//entityList = AddOneDay.addOneDayInTempVer(entityList);
 		
 		for(int i = 0; i < entityList.size(); i++) {
 			TempVerDtoToClient tempVerDtoToClient = new TempVerDtoToClient();
@@ -116,9 +115,9 @@ public class TempVerController {
 			TempVerAndLcnsDtoToClient nothing = null;
 			return new ResponseEntity<TempVerAndLcnsDtoToClient>(nothing, HttpStatus.OK);
 		}
-		List<TempVer> tempTemp = new ArrayList<TempVer>();
-		tempTemp.add(tempVer);
-		tempVer = AddOneDay.addOneDayInTempVer(tempTemp).get(0);
+		//List<TempVer> tempTemp = new ArrayList<TempVer>();
+		//tempTemp.add(tempVer);
+		//tempVer = AddOneDay.addOneDayInTempVer(tempTemp).get(0);
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		
@@ -334,7 +333,7 @@ public class TempVerController {
 			return new ResponseEntity<List<TempVerHistDtoToClient>>(list, HttpStatus.OK);
 		}
 		
-		tempVerHistList = AddOneDay.addOneDayInTempVerHist(tempVerHistList);
+		//tempVerHistList = AddOneDay.addOneDayInTempVerHist(tempVerHistList);
 
 		for(int i = 0; i < tempVerHistList.size(); i++) {
 			TempVerHistDtoToClient tempVerHistDtoToClient = new TempVerHistDtoToClient();
