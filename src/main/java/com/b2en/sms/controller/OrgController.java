@@ -127,8 +127,9 @@ public class OrgController {
 				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 			}
 			if(repositoryCust.countByOrgId(idx[i])>0) {
+				String orgNm = repositoryOrg.findById(idx[i]).orElse(null).getOrgNm();
 				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
-				res.add(new ResponseInfo(idx[i]+"의 id를 가진 고객사를 참조하는 고객사담당자가 있습니다. 그 고객사담당자를 먼저 삭제해야 합니다."));
+				res.add(new ResponseInfo(orgNm+"을(를) 참조하는 고객사담당자가 있습니다. 그 고객사담당자를 먼저 삭제해야 합니다."));
 				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 			}
 		}
