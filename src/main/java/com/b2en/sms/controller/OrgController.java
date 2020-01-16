@@ -28,6 +28,7 @@ import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.OrgAC;
 import com.b2en.sms.dto.toclient.OrgDtoToClient;
 import com.b2en.sms.entity.Org;
+import com.b2en.sms.repo.ContRepository;
 import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.OrgRepository;
 
@@ -40,6 +41,9 @@ public class OrgController {
 	
 	@Autowired
 	private CustRepository repositoryCust;
+	
+	@Autowired
+	private ContRepository repositoryCont;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -130,6 +134,12 @@ public class OrgController {
 				String orgNm = repositoryOrg.findById(idx[i]).orElse(null).getOrgNm();
 				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
 				res.add(new ResponseInfo(orgNm+"을(를) 참조하는 고객사담당자가 있습니다. 그 고객사담당자를 먼저 삭제해야 합니다."));
+				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+			}
+			if(repositoryCont.countByOrgId(idx[i])>0) {
+				String orgNm = repositoryOrg.findById(idx[i]).orElse(null).getOrgNm();
+				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
+				res.add(new ResponseInfo(orgNm+"을(를) 참조하는 계약이 있어 삭제할 수 없습니다."));
 				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 			}
 		}
