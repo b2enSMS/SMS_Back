@@ -80,14 +80,16 @@ public class LcnsController {
 	}
 	
 	@PostMapping(value = "/generate")
-	public GeneratedLcnsNo generateLcnsNo(@Valid @RequestBody GeneratingLcnsNo generatingLcnsNo, BindingResult result) {
+	public ResponseEntity<GeneratedLcnsNo> generateLcnsNo(@Valid @RequestBody GeneratingLcnsNo generatingLcnsNo, BindingResult result) {
 		
 		GeneratedLcnsNo generatedLcnsNo = new GeneratedLcnsNo();
 		String prdtNm = generatingLcnsNo.getPrdtNm();
 		String installDt = generatingLcnsNo.getInstallDt();
+		System.out.println("prdtNm: " + prdtNm);
+		System.out.println("installDt: " + installDt);
 		if(result.hasErrors()) {
-			generatedLcnsNo.setLcnsNo("FAILED");
-			return generatedLcnsNo;
+			generatedLcnsNo.setLcnsNo("FAILED 1");
+			return new ResponseEntity<GeneratedLcnsNo>(generatedLcnsNo, HttpStatus.BAD_REQUEST);
 		}
 		StringBuilder sb = new StringBuilder();
 		String[] splitDate = installDt.split("-");
@@ -103,8 +105,8 @@ public class LcnsController {
 		int prdtId = repositoryP.findPrdtIdByPrdtNm(prdtNm);
 		String count = Integer.toString(repositoryL.countByPrdtId(prdtId)+1);
 		if(count.length() > 3) {
-			generatedLcnsNo.setLcnsNo("FAILED");
-			return generatedLcnsNo;
+			generatedLcnsNo.setLcnsNo("FAILED 2");
+			return new ResponseEntity<GeneratedLcnsNo>(generatedLcnsNo, HttpStatus.BAD_REQUEST);
 		}
 		for(int i = count.length()-1; i < 2; i++) {
 			count = "0" + count;
@@ -113,7 +115,7 @@ public class LcnsController {
 		sb.append("0");
 
 		generatedLcnsNo.setLcnsNo(sb.toString());
-		return generatedLcnsNo;
+		return new ResponseEntity<GeneratedLcnsNo>(generatedLcnsNo, HttpStatus.OK);
 	}
 	
 	/*
