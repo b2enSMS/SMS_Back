@@ -32,7 +32,6 @@ import com.b2en.sms.entity.CmmnDetailCd;
 import com.b2en.sms.entity.Cont;
 import com.b2en.sms.entity.Cust;
 import com.b2en.sms.entity.Org;
-import com.b2en.sms.entity.TempVer;
 import com.b2en.sms.repo.CmmnDetailCdRepository;
 import com.b2en.sms.repo.ContRepository;
 import com.b2en.sms.repo.CustRepository;
@@ -128,25 +127,15 @@ public class CustController {
 
 	}
 	
-	// 가망고객(temp에 cust_id가 있는 cust)
+	// 가망고객(temp에 cust_id가 있고 cont에 없는 cust)
 	@GetMapping(value = "/presale", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CustDtoToClient>> showPresale() {
 
-		List<TempVer> tempList = repositoryT.findAll();
-		if(tempList.size()==0) {
+		List<Cust> presaleList = repositoryCust.findPreorderCust();
+		if(presaleList.size()==0) {
 			return new ResponseEntity<List<CustDtoToClient>>(new ArrayList<CustDtoToClient>(), HttpStatus.OK);
 		}
-		List<Cust> entityList = new ArrayList<Cust>();
-		List<CustDtoToClient> list;
-		for (int i = 0; i < tempList.size(); i++) {
-			Cust tempCust = tempList.get(i).getCust();
-			if (tempCust == null || entityList.contains(tempCust)) {
-				continue;
-			}
-			entityList.add(tempCust); // 가망고객만 리스트에 추가
-		}
-
-		list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
+		List<CustDtoToClient> list = modelMapper.map(presaleList, new TypeToken<List<CustDtoToClient>>() {
 		}.getType());
 
 		HashMap<String, String> cmmnDetailCdMap = new HashMap<String, String>();
@@ -156,14 +145,13 @@ public class CustController {
 					cmmnDetailCdList.get(i).getCmmnDetailCdNm());
 		}
 
-		for (int i = 0; i < entityList.size(); i++) {
-			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
-			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
-			list.get(i).setCustTpCdNm(cmmnDetailCdMap.get(entityList.get(i).getCustTpCd()));
+		for (int i = 0; i < presaleList.size(); i++) {
+			list.get(i).setOrgId(presaleList.get(i).getOrg().getOrgId());
+			list.get(i).setOrgNm(presaleList.get(i).getOrg().getOrgNm());
+			list.get(i).setCustTpCdNm(cmmnDetailCdMap.get(presaleList.get(i).getCustTpCd()));
 		}
 
 		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
-
 	}
 	
 	

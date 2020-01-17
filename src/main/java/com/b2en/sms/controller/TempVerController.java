@@ -1,8 +1,10 @@
 package com.b2en.sms.controller;
 
 import java.sql.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -50,11 +52,8 @@ import com.b2en.sms.repo.PrdtRepository;
 import com.b2en.sms.repo.TempVerHistRepository;
 import com.b2en.sms.repo.TempVerRepository;
 
-import lombok.extern.slf4j.Slf4j;
-
 @RestController
 @RequestMapping("/api/temp")
-@Slf4j
 public class TempVerController {
 
 	@Autowired
@@ -103,11 +102,31 @@ public class TempVerController {
 			tempVerDtoToClient.setRequestDate(sdf.format(tempVer.getRequestDate()));
 			tempVerDtoToClient.setLcnsEndDate(sdf.format(tempVer.getLcns().getLcnsEndDt()));
 			tempVerDtoToClient.setIssueReason(tempVer.getIssueReason());
+			tempVerDtoToClient.setTight(calculateIsTight(tempVerDtoToClient.getLcnsEndDate()));
 			list.add(tempVerDtoToClient);
 		}
 
 		return new ResponseEntity<List<TempVerDtoToClient>>(list, HttpStatus.OK);
 
+	}
+	
+	private boolean calculateIsTight(String strEnd) {
+		long alertRange = 15; // 남은 날짜가 이것 이하면 경고
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c1 = Calendar.getInstance();
+        String strToday = sdf.format(c1.getTime());
+        
+        try {
+			java.util.Date endDate = sdf.parse(strEnd);
+			java.util.Date todayDate = sdf.parse(strToday);
+			
+			long calDate = endDate.getTime() - todayDate.getTime();
+			long calDateDay = calDate / (24*60*60*1000);
+			
+			return (calDateDay<=alertRange);
+		} catch (ParseException e) {
+			return false;
+		}
 	}
 	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -162,6 +181,12 @@ public class TempVerController {
 		// ========================== lcns 생성 =====================
 		LcnsDtoTempVer[] lcnsDto = tempVerDto.getLcns();
 		int lcnsNum = lcnsDto.length;
+		if(lcnsNum>1) {
+			res.add(new ResponseInfo("다음의 문제로 등록에 실패했습니다: "));
+			res.add(new ResponseInfo("하나의 임시계약에는 하나 이하의 라이센스만 등록할 수 있습니다."));
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+		}
+		
 		Lcns[] lcnsEntity = new Lcns[lcnsNum];
 		
 		HashMap<Integer, Prdt> prdtMap = new HashMap<Integer, Prdt>();
@@ -184,7 +209,11 @@ public class TempVerController {
 		tempEntity.setCust(repositoryCust.getOne(tempVerDto.getCustId()));
 		tempEntity.setUser(tempVerDto.getUser());
 		tempEntity.setB2en(repositoryB2en.getOne(tempVerDto.getEmpId()));
-		tempEntity.setLcns(lcnsEntity[0]);
+		if(lcnsNum==1) {
+			tempEntity.setLcns(lcnsEntity[0]);
+		} else {
+			tempEntity.setLcns(null);
+		}
 		tempEntity.setMacAddr(tempVerDto.getMacAddr());
 		tempEntity.setRequestDate(Date.valueOf(tempVerDto.getRequestDate()));
 		tempEntity.setIssueReason(tempVerDto.getIssueReason());
@@ -261,6 +290,11 @@ public class TempVerController {
 		
 		// ================== lcns 수정 =====================
 		LcnsDtoTempVerForUpdate[] lcnsDto = tempVerDto.getLcns();
+		if(lcnsDto.length>1) {
+			res.add(new ResponseInfo("다음의 문제로 등록에 실패했습니다: "));
+			res.add(new ResponseInfo("하나의 임시계약에는 하나 이하의 라이센스만 등록할 수 있습니다."));
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+		}
 		
 		HashMap<Integer, Prdt> prdtMap = new HashMap<Integer, Prdt>();
 		List<Prdt> prdtList = repositoryPrdt.findAll();
@@ -272,9 +306,12 @@ public class TempVerController {
 		Lcns[] lcns = new Lcns[lcnsDto.length];
 		for(int i = 0; i < lcnsDto.length; i++) {
 			lcnsCheck = repositoryLcns.findById(lcnsDto[i].getLcnsId()).orElse(null);
-			log.info("lcnsCheck: {}", lcnsCheck);
 			
 			if(lcnsCheck == null) { // 새로 생김
+				if(toUpdate.getLcns()!=null) {
+					toUpdate.getLcns().setDelYn("Y");
+					repositoryLcns.save(toUpdate.getLcns());
+				}
 				lcns[i] = modelMapper.map(lcnsDto[i], Lcns.class);
 				int prdtId = lcnsDto[i].getPrdtId();
 				lcns[i].setPrdt(prdtMap.get(prdtId));
@@ -310,7 +347,11 @@ public class TempVerController {
 		toUpdate.setCust(repositoryCust.getOne(tempVerDto.getCustId()));
 		toUpdate.setUser(tempVerDto.getUser());
 		toUpdate.setB2en(repositoryB2en.getOne(tempVerDto.getEmpId()));
-		toUpdate.setLcns(lcns[0]);
+		if(lcnsDto.length==1) {
+			toUpdate.setLcns(lcns[0]);
+		} else {
+			toUpdate.setLcns(null);
+		}
 		toUpdate.setMacAddr(tempVerDto.getMacAddr());
 		toUpdate.setRequestDate(Date.valueOf(tempVerDto.getRequestDate()));
 		toUpdate.setIssueReason(tempVerDto.getIssueReason());
