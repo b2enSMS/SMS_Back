@@ -19,7 +19,7 @@ public class TempVerAndLcnsDto {
 	//@NotBlank(message="사용자가 빈칸입니다.")
 	private String user;
 	
-	//@NotBlank(message="MAC주소가 빈칸입니다.")
+	@NotBlank(message="MAC주소가 빈칸입니다.")
 	private String macAddr;
 	
 	@NotBlank(message="요청일이 빈칸입니다.")

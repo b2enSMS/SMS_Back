@@ -23,4 +23,10 @@ public class TempVerDtoToClient {
 	
 	private String issueReason;
 	
+	private boolean tight;
+
+	public void setTight(boolean tight) {
+		this.tight = tight;
+	}
+	
 }

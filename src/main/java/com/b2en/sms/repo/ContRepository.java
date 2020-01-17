@@ -34,7 +34,7 @@ public interface ContRepository extends JpaRepository<Cont, Integer>{
 	@Query(value="SELECT * FROM cont ORDER BY binary(cont_nm)", nativeQuery = true)
 	List<Cont> findAllOrderByContNm();
 	
-	@Query(value="SELECT * FROM cont WHERE head_cont_id <> 0 ORDER BY head_cont_id, cont_dt", nativeQuery = true)
+	@Query(value="SELECT * FROM cont WHERE head_cont_id <> 0 AND del_yn = 'N' ORDER BY head_cont_id, cont_dt", nativeQuery = true)
 	List<Cont> findMtncCont();
 	
 	// cust가 null일 경우의 insert

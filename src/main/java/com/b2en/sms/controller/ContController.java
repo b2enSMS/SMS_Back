@@ -202,6 +202,55 @@ public class ContController {
 
 	}
 	
+	@GetMapping(value = "/mtnc", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ContDtoToClient>> getAllMtnc() {
+		List<ContDetail> contDetailList = repositoryCD.findByDelYn("N");
+		
+		if(contDetailList.size()==0) { // 결과가 없을 경우의 문제 예방
+			return new ResponseEntity<List<ContDtoToClient>>(new ArrayList<ContDtoToClient>(), HttpStatus.OK);
+		}
+		
+		List<Cont> mtncContList = repositoryC.findMtncCont();
+		
+		List<ContDtoToClient> mtncList;
+		List<ContDtoToClient> resultList = new ArrayList<ContDtoToClient>();
+		if(mtncContList.size()==0) {
+			mtncList = new ArrayList<ContDtoToClient>();
+		} else {
+			mtncList = modelMapper.map(mtncContList, new TypeToken<List<ContDtoToClient>>() { }.getType());
+		}
+		List<ContDtoToClient> tempList = new ArrayList<ContDtoToClient>();
+		int currentHeadContId = (mtncList.size()!=0) ? mtncList.get(0).getHeadContId() : 0;
+		for(int i = 0; i < mtncList.size(); i++) {
+			int custId = (mtncContList.get(i).getCust()==null) ? 0 : mtncContList.get(i).getCust().getCustId();
+			String custNm = (mtncContList.get(i).getCust()==null) ? "" : mtncContList.get(i).getCust().getCustNm();
+			mtncList.get(i).setCustId(custId);
+			mtncList.get(i).setCustNm(custNm);
+			mtncList.get(i).setOrgId(mtncContList.get(i).getOrg().getOrgId());
+			mtncList.get(i).setOrgNm(mtncContList.get(i).getOrg().getOrgNm());
+			mtncList.get(i).setEmpId(mtncContList.get(i).getB2en().getEmpId());
+			mtncList.get(i).setEmpNm(mtncContList.get(i).getB2en().getEmpNm());
+			mtncList.get(i).setTight(false);
+			mtncList.get(i).setPrdtNm(getAllPrdtNmInLcns(contDetailList, mtncList.get(i).getContId()));
+			mtncList.get(i).setChildren(null);
+			if(currentHeadContId != mtncList.get(i).getHeadContId()) {
+				tempList.get(tempList.size()-1).setTight(calculateIsTight(tempList.get(tempList.size()-1).getMtncEndDt()));
+				resultList.add(tempList.get(tempList.size()-1));
+				currentHeadContId = mtncList.get(i).getHeadContId();
+				tempList = new ArrayList<ContDtoToClient>();
+			}
+			
+			tempList.add(mtncList.get(i));
+			if(i == mtncList.size()-1) {
+				mtncList.get(i).setTight(calculateIsTight(mtncList.get(i).getMtncEndDt()));
+				resultList.add(tempList.get(tempList.size()-1));
+			}
+		}
+
+		return new ResponseEntity<List<ContDtoToClient>>(resultList, HttpStatus.OK);
+
+	}
+	
 	private boolean calculateIsTight(String strEnd) {
 		long alertRange = 90; // 남은 날짜가 이것 이하면 경고
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -561,13 +610,14 @@ public class ContController {
 
 		toUpdate.setContTotAmt(Long.toString(tot));
 
-		try {
-			Cust cust = repositoryCust.getOne(custId);
+
+		Cust cust = repositoryCust.findById(custId).orElse(null);
+		if(cust!=null) {
 			toUpdate.setCust(cust);
 			toUpdate = repositoryC.save(toUpdate);
-		} catch(Exception e) {
+		} else {
 			repositoryC.forceUpdate(toUpdate);
-			toUpdate = repositoryC.getOne(custId);
+			toUpdate = repositoryC.findById(custId).orElse(null);
 		}
 		
 		// ======================= contDetail, Lcns 탐색(생성/수정/삭제) ==========================

@@ -18,4 +18,7 @@ public interface CustRepository extends JpaRepository<Cust, Integer>{
 	
 	@Query(value="SELECT count(*) FROM cust WHERE org_id = :orgId", nativeQuery = true)
 	Integer countByOrgId(@Param("orgId") int orgId);
+	
+	@Query(value="SELECT DISTINCT cust.* FROM cust, temp_ver WHERE cust.cust_id = temp_ver.cust_id AND cust.cust_id NOT IN (SELECT cust.cust_id FROM cust, cont WHERE cust.cust_id = cont.cust_id)", nativeQuery = true)
+	List<Cust> findPreorderCust();
 }
