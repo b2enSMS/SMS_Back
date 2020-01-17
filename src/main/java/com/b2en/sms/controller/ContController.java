@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -103,30 +102,6 @@ public class ContController {
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	@GetMapping(value = "/showincludedel", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ContDtoToClient>> getAll() {
-		// delYn의 값에 상관없이 모두 불러옴
-		List<Cont> entityList = repositoryC.findAll();
-		List<ContDtoToClient> list;
-		
-		list = modelMapper.map(entityList, new TypeToken<List<ContDtoToClient>>() {
-		}.getType());
-		
-		for(int i = 0; i < entityList.size(); i++) {
-			int custId = (entityList.get(i).getCust()==null) ? 0 : entityList.get(i).getCust().getCustId();
-			String custNm = (entityList.get(i).getCust()==null) ? "" : entityList.get(i).getCust().getCustNm();
-			list.get(i).setCustId(custId);
-			list.get(i).setCustNm(custNm);
-			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
-			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
-			list.get(i).setEmpId(entityList.get(i).getB2en().getEmpId());
-			list.get(i).setEmpNm(entityList.get(i).getB2en().getEmpNm());
-		}
-
-		return new ResponseEntity<List<ContDtoToClient>>(list, HttpStatus.OK);
-
-	}
-	
 	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContDtoToClient>> getAllNotDeleted() {
 		// delYn의 값이 "N"인 경우(삭제된걸로 처리되지 않은 경우)만 불러옴
@@ -204,6 +179,7 @@ public class ContController {
 	
 	@GetMapping(value = "/mtnc", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ContDtoToClient>> getAllMtnc() {
+		// 각 모계약들의 유지보수계약 중 최신 것만
 		List<ContDetail> contDetailList = repositoryCD.findByDelYn("N");
 		
 		if(contDetailList.size()==0) { // 결과가 없을 경우의 문제 예방
@@ -555,7 +531,7 @@ public class ContController {
 		
 		if(result.hasErrors()) {
 			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
-			List<FieldError> errors = result.getFieldErrors();
+			List<ObjectError> errors = result.getAllErrors();
 			for(int i = 0; i < errors.size(); i++) {
 				res.add(new ResponseInfo(errors.get(i).getDefaultMessage()));
 			}
@@ -617,7 +593,7 @@ public class ContController {
 			toUpdate = repositoryC.save(toUpdate);
 		} else {
 			repositoryC.forceUpdate(toUpdate);
-			toUpdate = repositoryC.findById(custId).orElse(null);
+			toUpdate = repositoryC.findById(id).orElse(null);
 		}
 		
 		// ======================= contDetail, Lcns 탐색(생성/수정/삭제) ==========================
