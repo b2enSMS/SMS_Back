@@ -110,6 +110,88 @@ public class TempVerController {
 
 	}
 	
+	@GetMapping(value = "/expired", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<TempVerDtoToClient>> showExpired() {
+		// 만료된 임시계약들
+		List<TempVer> entityList = repositoryTemp.findAllByOrderByTempVerIdDesc();
+		List<TempVerDtoToClient> list = new ArrayList<TempVerDtoToClient>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		if(entityList.size()==0) { // 결과가 없을 경우의 문제 예방
+			return new ResponseEntity<List<TempVerDtoToClient>>(new ArrayList<TempVerDtoToClient>(), HttpStatus.OK);
+		}
+		//entityList = AddOneDay.addOneDayInTempVer(entityList);
+		
+		for(int i = 0; i < entityList.size(); i++) {
+			TempVerDtoToClient tempVerDtoToClient = new TempVerDtoToClient();
+			TempVer tempVer = entityList.get(i);
+			if(!calculateIsTight(sdf.format(tempVer.getLcns().getLcnsEndDt()))) {
+				continue;
+			}
+			if(!calculateIsExpired(sdf.format(tempVer.getLcns().getLcnsEndDt()))) {
+				continue;
+			}
+			tempVerDtoToClient.setTempVerId(tempVer.getTempVerId());
+			tempVerDtoToClient.setOrgNm(tempVer.getCust().getOrg().getOrgNm());
+			tempVerDtoToClient.setCustNm(tempVer.getCust().getCustNm());
+			String user = tempVer.getUser();
+			if(user==null) {
+				user = "";
+			}
+			tempVerDtoToClient.setUser(user);
+			tempVerDtoToClient.setEmpNm(tempVer.getB2en().getEmpNm());
+			tempVerDtoToClient.setMacAddr(tempVer.getMacAddr());
+			tempVerDtoToClient.setRequestDate(sdf.format(tempVer.getRequestDate()));
+			tempVerDtoToClient.setLcnsEndDate(sdf.format(tempVer.getLcns().getLcnsEndDt()));
+			tempVerDtoToClient.setIssueReason(tempVer.getIssueReason());
+			tempVerDtoToClient.setTight(calculateIsTight(tempVerDtoToClient.getLcnsEndDate()));
+			list.add(tempVerDtoToClient);
+		}
+
+		return new ResponseEntity<List<TempVerDtoToClient>>(list, HttpStatus.OK);
+
+	}
+	
+	@GetMapping(value = "/toexpire", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<TempVerDtoToClient>> showToExpire() {
+		// 만료에 임박한 임시 계약들
+		List<TempVer> entityList = repositoryTemp.findAllByOrderByTempVerIdDesc();
+		List<TempVerDtoToClient> list = new ArrayList<TempVerDtoToClient>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		if(entityList.size()==0) { // 결과가 없을 경우의 문제 예방
+			return new ResponseEntity<List<TempVerDtoToClient>>(new ArrayList<TempVerDtoToClient>(), HttpStatus.OK);
+		}
+		//entityList = AddOneDay.addOneDayInTempVer(entityList);
+		
+		for(int i = 0; i < entityList.size(); i++) {
+			TempVerDtoToClient tempVerDtoToClient = new TempVerDtoToClient();
+			TempVer tempVer = entityList.get(i);
+			if(!calculateIsTight(sdf.format(tempVer.getLcns().getLcnsEndDt()))) {
+				continue;
+			}
+			if(calculateIsExpired(sdf.format(tempVer.getLcns().getLcnsEndDt()))) {
+				continue;
+			}
+			tempVerDtoToClient.setTempVerId(tempVer.getTempVerId());
+			tempVerDtoToClient.setOrgNm(tempVer.getCust().getOrg().getOrgNm());
+			tempVerDtoToClient.setCustNm(tempVer.getCust().getCustNm());
+			String user = tempVer.getUser();
+			if(user==null) {
+				user = "";
+			}
+			tempVerDtoToClient.setUser(user);
+			tempVerDtoToClient.setEmpNm(tempVer.getB2en().getEmpNm());
+			tempVerDtoToClient.setMacAddr(tempVer.getMacAddr());
+			tempVerDtoToClient.setRequestDate(sdf.format(tempVer.getRequestDate()));
+			tempVerDtoToClient.setLcnsEndDate(sdf.format(tempVer.getLcns().getLcnsEndDt()));
+			tempVerDtoToClient.setIssueReason(tempVer.getIssueReason());
+			tempVerDtoToClient.setTight(calculateIsTight(tempVerDtoToClient.getLcnsEndDate()));
+			list.add(tempVerDtoToClient);
+		}
+
+		return new ResponseEntity<List<TempVerDtoToClient>>(list, HttpStatus.OK);
+
+	}
+	
 	private boolean calculateIsTight(String strEnd) {
 		long alertRange = 15; // 남은 날짜가 이것 이하면 경고
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -124,6 +206,24 @@ public class TempVerController {
 			long calDateDay = calDate / (24*60*60*1000);
 			
 			return (calDateDay<=alertRange);
+		} catch (ParseException e) {
+			return false;
+		}
+	}
+	
+	private boolean calculateIsExpired(String strEnd) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c1 = Calendar.getInstance();
+        String strToday = sdf.format(c1.getTime());
+        
+        try {
+			java.util.Date endDate = sdf.parse(strEnd);
+			java.util.Date todayDate = sdf.parse(strToday);
+			
+			long calDate = endDate.getTime() - todayDate.getTime();
+			long calDateDay = calDate / (24*60*60*1000);
+			
+			return calDateDay<0;
 		} catch (ParseException e) {
 			return false;
 		}
