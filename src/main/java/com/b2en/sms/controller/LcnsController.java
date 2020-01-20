@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.GeneratingLcnsNo;
-import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.LcnsAC;
 import com.b2en.sms.dto.toclient.LcnsDtoToClient;
+import com.b2en.sms.dto.toclient.ResponseInfo;
 import com.b2en.sms.entity.Lcns;
 import com.b2en.sms.repo.LcnsRepository;
 import com.b2en.sms.repo.PrdtRepository;

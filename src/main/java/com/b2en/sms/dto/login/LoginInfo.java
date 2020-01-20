@@ -1,4 +1,4 @@
-package com.b2en.sms.dto;
+package com.b2en.sms.dto.login;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
