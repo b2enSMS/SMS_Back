@@ -26,10 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.B2enDto;
 import com.b2en.sms.dto.DeleteDto;
-import com.b2en.sms.dto.LoginInfo;
-import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.B2enAC;
+import com.b2en.sms.dto.login.LoginInfo;
 import com.b2en.sms.dto.toclient.B2enDtoToClient;
+import com.b2en.sms.dto.toclient.ResponseInfo;
 import com.b2en.sms.entity.B2en;
 import com.b2en.sms.entity.login.Login;
 import com.b2en.sms.repo.B2enRepository;
@@ -124,7 +124,7 @@ public class B2enController {
 			}
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
-		
+
 		Login storedInfo = repositoryLogin.findById(info.getEmail()).orElse(null);
 		
 		if(storedInfo==null) {
@@ -173,6 +173,21 @@ public class B2enController {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
+		if (result.hasErrors()) {
+			res.add(new ResponseInfo("다음의 문제로 등록에 실패했습니다: "));
+			List<ObjectError> errors = result.getAllErrors();
+			for (int i = 0; i < errors.size(); i++) {
+				res.add(new ResponseInfo(errors.get(i).getDefaultMessage()));
+			}
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+		}
+		
+		if(repositoryLogin.existsById(info.getEmail())) {
+			res.add(new ResponseInfo("다음의 문제로 등록에 실패했습니다: "));
+			res.add(new ResponseInfo("해당 이메일은 이미 등록되었습니다."));
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.SERVICE_UNAVAILABLE);
+		}
+		
 		try {
 			info.setPassword(sha256(info.getPassword()));
 		} catch (NoSuchAlgorithmException e) {
@@ -180,6 +195,7 @@ public class B2enController {
 			res.add(new ResponseInfo("해싱에 사용되는 알고리즘에 문제가 있습니다."));
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.SERVICE_UNAVAILABLE);
 		}
+		
 		Login entity = new Login();
 		entity.setEmail(info.getEmail());
 		if(info.getUsername()==null || info.getUsername().equals("")) {

@@ -25,9 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.CustDto;
 import com.b2en.sms.dto.DeleteDto;
-import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.CustAC;
 import com.b2en.sms.dto.toclient.CustDtoToClient;
+import com.b2en.sms.dto.toclient.ResponseInfo;
 import com.b2en.sms.entity.CmmnDetailCd;
 import com.b2en.sms.entity.Cont;
 import com.b2en.sms.entity.Cust;
