@@ -16,8 +16,6 @@ public interface ContRepository extends JpaRepository<Cont, Integer>{
 	
 	List<Cont> findByDelYn(String yn);
 	
-	List<Cont> findByDelYnOrderByContIdDesc(String yn);
-	
 	List<Cont> findByHeadContIdAndDelYnOrderByContIdDesc(int headContId, String yn);
 	
 	List<ContACInterface> findAllBy();

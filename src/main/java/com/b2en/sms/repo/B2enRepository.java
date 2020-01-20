@@ -14,6 +14,5 @@ public interface B2enRepository extends JpaRepository<B2en, Integer>{
 	
 	@Query(value="SELECT * FROM b2en ORDER BY binary(emp_nm)", nativeQuery = true)
 	List<B2en> findAllOrderByName();
-	
-	//B2en findByEmailAndPassword(String email, String password);
+
 }

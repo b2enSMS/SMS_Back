@@ -436,7 +436,7 @@ public class TempVerController {
 				lcnsChngHist.setPrdt(lcns[i].getPrdt());
 				repositoryLCH.save(lcnsChngHist);
 				
-				// 3. Lcns 수정
+				// 2. Lcns 수정
 				int prdtId = lcnsDto[i].getPrdtId();
 				Prdt prdt = repositoryPrdt.getOne(prdtId);
 				lcns[i].setPrdt(prdt);
