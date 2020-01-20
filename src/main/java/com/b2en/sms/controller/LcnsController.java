@@ -86,24 +86,32 @@ public class LcnsController {
 		String prdtNm = generatingLcnsNo.getPrdtNm();
 		String installDt = generatingLcnsNo.getInstallDt();
 		if(result.hasErrors()) {
-			generatedLcnsNo.setLcnsNo("FAILED 1");
+			generatedLcnsNo.setLcnsNo("Validation Error");
 			return new ResponseEntity<GeneratedLcnsNo>(generatedLcnsNo, HttpStatus.BAD_REQUEST);
 		}
 		StringBuilder sb = new StringBuilder();
-		String[] splitDate = installDt.split("-");
 		if(prdtNm.contains("SDQ")) {
 			sb.append("Q");
 		} else if(prdtNm.contains("SMETA")) {
 			sb.append("M");
 		}
-		sb.append(splitDate[1]);
-		sb.append(splitDate[2]);
-		sb.append(splitDate[0].substring(2, 4));
+		
+		String[] splitDate = installDt.split("-");
+		if(splitDate[1].length()==1) {
+			splitDate[1] = "0" + splitDate[1];
+		}
+		sb.append(splitDate[1]); // 월
+		if(splitDate[2].length()==1) {
+			splitDate[2] = "0" + splitDate[2];
+		}
+		sb.append(splitDate[2]); // 일
+		sb.append(splitDate[0].substring(2, 4)); // 년
+		
 		sb.append("P");
 		int prdtId = repositoryP.findPrdtIdByPrdtNm(prdtNm);
 		String count = Integer.toString(repositoryL.countByPrdtId(prdtId)+1);
 		if(count.length() > 3) {
-			generatedLcnsNo.setLcnsNo("FAILED 2");
+			generatedLcnsNo.setLcnsNo("발행순서번호가 3자리를 초과하게 되었습니다.");
 			return new ResponseEntity<GeneratedLcnsNo>(generatedLcnsNo, HttpStatus.BAD_REQUEST);
 		}
 		for(int i = count.length()-1; i < 2; i++) {

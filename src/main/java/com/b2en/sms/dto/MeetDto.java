@@ -13,7 +13,7 @@ import lombok.Data;
 public class MeetDto {
 
 	@NotBlank(message="미팅일시가 빈칸입니다.")
-	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2]|[1-9])-(0[1-9]|[12]\\d|3[01]))$", message="미팅일시는 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
+	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2]|[1-9])-(0[1-9]|[12]\\d|3[01]|[1-9]))$", message="미팅일시는 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
 	private String meetDt;
 	
 	private String meetCnt;

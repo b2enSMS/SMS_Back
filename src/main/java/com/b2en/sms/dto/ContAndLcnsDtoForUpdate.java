@@ -30,7 +30,7 @@ public class ContAndLcnsDtoForUpdate {
 	private String contNm;
 
 	@NotBlank(message="계약일자가 빈칸입니다.")
-	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message="계약일자는 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
+	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]|[1-9]))$", message="계약일자는 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
 	private String contDt;
 
 	@NotBlank(message="수주보고서번호가 빈칸입니다.")
@@ -40,19 +40,19 @@ public class ContAndLcnsDtoForUpdate {
 	private String contTpCd;
 	
 	@NotBlank(message="설치일자가 빈칸입니다.")
-	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message="설치일자는 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
+	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]|[1-9]))$", message="설치일자는 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
 	private String installDt;
 	
 	@NotBlank(message="검수일자가 빈칸입니다.")
-	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message="검수일자는 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
+	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]|[1-9]))$", message="검수일자는 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
 	private String checkDt;
 	
 	@NotBlank(message="유지보수개시일이 빈칸입니다.")
-	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message="유지보수개시일은 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
+	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]|[1-9]))$", message="유지보수개시일은 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
 	private String mtncStartDt;
 	
 	@NotBlank(message="유지보수종료일이 빈칸입니다.")
-	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$", message="유지보수종료일은 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
+	@Pattern(regexp="^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]|[1-9]))$", message="유지보수종료일은 yyyy-MM-dd의 형식으로, 올바른 값이 입력되어야 합니다")
 	private String mtncEndDt;
 
 	// =============== Lcns =================
