@@ -12,6 +12,8 @@ public class LoginInfo {
 	@Email(message="올바른 이메일의 형식이 아닙니다.")
 	private String email;
 	
+	private String username;
+	
 	@NotBlank(message="비밀번호를 입력하지 않았습니다.")
 	private String password;
 	
