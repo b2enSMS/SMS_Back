@@ -80,20 +80,26 @@ public class LcnsController {
 	}
 	
 	@PostMapping(value = "/generate")
-	public ResponseEntity<GeneratedLcnsNo> generateLcnsNo(@Valid @RequestBody GeneratingLcnsNo generatingLcnsNo, BindingResult result) {
+	public ResponseEntity<List<GeneratedLcnsNo>> generateLcnsNo(@Valid @RequestBody GeneratingLcnsNo generatingLcnsNo, BindingResult result) {
 		
 		GeneratedLcnsNo generatedLcnsNo = new GeneratedLcnsNo();
+		List<GeneratedLcnsNo> generatedLcnsNoList = new ArrayList<GeneratedLcnsNo>();
 		String prdtNm = generatingLcnsNo.getPrdtNm();
 		String installDt = generatingLcnsNo.getInstallDt();
 		if(result.hasErrors()) {
 			generatedLcnsNo.setLcnsNo("Validation Error");
-			return new ResponseEntity<GeneratedLcnsNo>(generatedLcnsNo, HttpStatus.BAD_REQUEST);
+			generatedLcnsNoList.add(generatedLcnsNo);
+			return new ResponseEntity<List<GeneratedLcnsNo>>(generatedLcnsNoList, HttpStatus.BAD_REQUEST);
 		}
 		StringBuilder sb = new StringBuilder();
 		if(prdtNm.contains("SDQ")) {
 			sb.append("Q");
 		} else if(prdtNm.contains("SMETA")) {
 			sb.append("M");
+		} else {
+			generatedLcnsNo.setLcnsNo("해당하는 제품명을 가진 제품이 없습니다.");
+			generatedLcnsNoList.add(generatedLcnsNo);
+			return new ResponseEntity<List<GeneratedLcnsNo>>(generatedLcnsNoList, HttpStatus.BAD_REQUEST);
 		}
 		
 		String[] splitDate = installDt.split("-");
@@ -112,7 +118,8 @@ public class LcnsController {
 		String count = Integer.toString(repositoryL.countByPrdtId(prdtId)+1);
 		if(count.length() > 3) {
 			generatedLcnsNo.setLcnsNo("발행순서번호가 3자리를 초과하게 되었습니다.");
-			return new ResponseEntity<GeneratedLcnsNo>(generatedLcnsNo, HttpStatus.BAD_REQUEST);
+			generatedLcnsNoList.add(generatedLcnsNo);
+			return new ResponseEntity<List<GeneratedLcnsNo>>(generatedLcnsNoList, HttpStatus.BAD_REQUEST);
 		}
 		for(int i = count.length()-1; i < 2; i++) {
 			count = "0" + count;
@@ -121,7 +128,8 @@ public class LcnsController {
 		sb.append("0");
 
 		generatedLcnsNo.setLcnsNo(sb.toString());
-		return new ResponseEntity<GeneratedLcnsNo>(generatedLcnsNo, HttpStatus.OK);
+		generatedLcnsNoList.add(generatedLcnsNo);
+		return new ResponseEntity<List<GeneratedLcnsNo>>(generatedLcnsNoList, HttpStatus.BAD_REQUEST);
 	}
 	
 	/*
