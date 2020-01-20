@@ -133,11 +133,9 @@ public class B2enController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		String storedPassword = storedInfo.getPassword();
-		
 		try {
 			String inputHash = sha256(info.getPassword());
-			String storedHash = sha256(storedPassword);
+			String storedHash = storedInfo.getPassword();
 			
 			if(inputHash.equals(storedHash)) {
 				String welcome = "환영합니다, " + storedInfo.getUsername() + "님";
@@ -187,6 +185,24 @@ public class B2enController {
 		B2en b2enEntity = modelMapper.map(b2en, B2en.class);
 		
 		repository.save(b2enEntity);
+		
+		res.add(new ResponseInfo("등록에 성공했습니다."));
+		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
+	}
+	
+	@PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ResponseInfo>> register(@RequestBody Login info, BindingResult result) {
+		
+		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
+		
+		try {
+			info.setPassword(sha256(info.getPassword()));
+		} catch (NoSuchAlgorithmException e) {
+			res.add(new ResponseInfo("다음의 문제로 로그인에 실패했습니다: "));
+			res.add(new ResponseInfo("해싱에 사용되는 알고리즘에 문제가 있습니다."));
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.SERVICE_UNAVAILABLE);
+		}
+		repositoryLogin.save(info);
 		
 		res.add(new ResponseInfo("등록에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
