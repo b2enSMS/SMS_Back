@@ -94,15 +94,19 @@ public class LcnsController {
 			}
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
+		
+		Integer prdtId = repositoryP.findPrdtIdByPrdtNm(prdtNm);
+		if(prdtId==null) {
+			res.add(new ResponseInfo("다음의 문제로 라이센스번호 생성에 실패했습니다: "));
+			res.add(new ResponseInfo("해당하는 제품명을 가진 제품이 없습니다."));
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+		}
+		
 		StringBuilder sb = new StringBuilder();
 		if(prdtNm.contains("SDQ")) {
 			sb.append("Q");
 		} else if(prdtNm.contains("SMETA")) {
 			sb.append("M");
-		} else {
-			res.add(new ResponseInfo("다음의 문제로 라이센스번호 생성에 실패했습니다: "));
-			res.add(new ResponseInfo("해당하는 제품명을 가진 제품이 없습니다."));
-			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
 		String[] splitDate = installDt.split("-");
@@ -117,7 +121,7 @@ public class LcnsController {
 		sb.append(splitDate[0].substring(2, 4)); // 년
 		
 		sb.append("P");
-		int prdtId = repositoryP.findPrdtIdByPrdtNm(prdtNm);
+		//int prdtId = repositoryP.findPrdtIdByPrdtNm(prdtNm);
 		String count = Integer.toString(repositoryL.countByPrdtId(prdtId)+1);
 		if(count.length() > 3) {
 			res.add(new ResponseInfo("다음의 문제로 라이센스번호 생성에 실패했습니다: "));

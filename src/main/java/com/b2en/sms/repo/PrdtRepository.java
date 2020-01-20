@@ -14,5 +14,5 @@ public interface PrdtRepository extends JpaRepository<Prdt, Integer>{
 	List<PrdtACInterface> findAllBy();
 	
 	@Query(value="SELECT prdt_id FROM prdt WHERE prdt_nm = :prdtNm", nativeQuery = true)
-	int findPrdtIdByPrdtNm(@Param("prdtNm") String prdtNm);
+	Integer findPrdtIdByPrdtNm(@Param("prdtNm") String prdtNm);
 }

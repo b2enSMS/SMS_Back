@@ -185,7 +185,7 @@ public class B2enController {
 		if(repositoryLogin.existsById(info.getEmail())) {
 			res.add(new ResponseInfo("다음의 문제로 등록에 실패했습니다: "));
 			res.add(new ResponseInfo("해당 이메일은 이미 등록되었습니다."));
-			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.SERVICE_UNAVAILABLE);
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
 		try {

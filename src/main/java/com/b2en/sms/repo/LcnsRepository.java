@@ -13,4 +13,5 @@ public interface LcnsRepository extends JpaRepository<Lcns, Integer>{
 	
 	@Query(value="SELECT count(*) FROM lcns WHERE prdt_id = :prdtId", nativeQuery = true)
 	Integer countByPrdtId(@Param("prdtId") int prdtId);
+	
 }
