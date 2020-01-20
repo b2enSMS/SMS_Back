@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.GeneratingLcnsNo;
+import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.LcnsAC;
-import com.b2en.sms.dto.toclient.GeneratedLcnsNo;
 import com.b2en.sms.dto.toclient.LcnsDtoToClient;
 import com.b2en.sms.entity.Lcns;
 import com.b2en.sms.repo.LcnsRepository;
@@ -80,16 +81,18 @@ public class LcnsController {
 	}
 	
 	@PostMapping(value = "/generate")
-	public ResponseEntity<List<GeneratedLcnsNo>> generateLcnsNo(@Valid @RequestBody GeneratingLcnsNo generatingLcnsNo, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> generateLcnsNo(@Valid @RequestBody GeneratingLcnsNo generatingLcnsNo, BindingResult result) {
 		
-		GeneratedLcnsNo generatedLcnsNo = new GeneratedLcnsNo();
-		List<GeneratedLcnsNo> generatedLcnsNoList = new ArrayList<GeneratedLcnsNo>();
+		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		String prdtNm = generatingLcnsNo.getPrdtNm();
 		String installDt = generatingLcnsNo.getInstallDt();
-		if(result.hasErrors()) {
-			generatedLcnsNo.setLcnsNo("Validation Error");
-			generatedLcnsNoList.add(generatedLcnsNo);
-			return new ResponseEntity<List<GeneratedLcnsNo>>(generatedLcnsNoList, HttpStatus.BAD_REQUEST);
+		if (result.hasErrors()) {
+			res.add(new ResponseInfo("다음의 문제로 라이센스번호 생성에 실패했습니다: "));
+			List<ObjectError> errors = result.getAllErrors();
+			for (int i = 0; i < errors.size(); i++) {
+				res.add(new ResponseInfo(errors.get(i).getDefaultMessage()));
+			}
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		StringBuilder sb = new StringBuilder();
 		if(prdtNm.contains("SDQ")) {
@@ -97,9 +100,9 @@ public class LcnsController {
 		} else if(prdtNm.contains("SMETA")) {
 			sb.append("M");
 		} else {
-			generatedLcnsNo.setLcnsNo("해당하는 제품명을 가진 제품이 없습니다.");
-			generatedLcnsNoList.add(generatedLcnsNo);
-			return new ResponseEntity<List<GeneratedLcnsNo>>(generatedLcnsNoList, HttpStatus.BAD_REQUEST);
+			res.add(new ResponseInfo("다음의 문제로 라이센스번호 생성에 실패했습니다: "));
+			res.add(new ResponseInfo("해당하는 제품명을 가진 제품이 없습니다."));
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
 		String[] splitDate = installDt.split("-");
@@ -117,9 +120,9 @@ public class LcnsController {
 		int prdtId = repositoryP.findPrdtIdByPrdtNm(prdtNm);
 		String count = Integer.toString(repositoryL.countByPrdtId(prdtId)+1);
 		if(count.length() > 3) {
-			generatedLcnsNo.setLcnsNo("발행순서번호가 3자리를 초과하게 되었습니다.");
-			generatedLcnsNoList.add(generatedLcnsNo);
-			return new ResponseEntity<List<GeneratedLcnsNo>>(generatedLcnsNoList, HttpStatus.BAD_REQUEST);
+			res.add(new ResponseInfo("다음의 문제로 라이센스번호 생성에 실패했습니다: "));
+			res.add(new ResponseInfo("발행순서번호가 3자리를 초과하게 되었습니다."));
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		for(int i = count.length()-1; i < 2; i++) {
 			count = "0" + count;
@@ -127,9 +130,8 @@ public class LcnsController {
 		sb.append(count);
 		sb.append("0");
 
-		generatedLcnsNo.setLcnsNo(sb.toString());
-		generatedLcnsNoList.add(generatedLcnsNo);
-		return new ResponseEntity<List<GeneratedLcnsNo>>(generatedLcnsNoList, HttpStatus.BAD_REQUEST);
+		res.add(new ResponseInfo(sb.toString()));
+		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
 	/*
