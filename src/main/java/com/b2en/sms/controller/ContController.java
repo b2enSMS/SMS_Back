@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
@@ -384,6 +385,7 @@ public class ContController {
 		return new ResponseEntity<List<ContAC>>(list, HttpStatus.OK);
 	}
 
+	@Transactional
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody ContAndLcnsDto contAndLcnsDto, BindingResult result) {
 		
@@ -524,6 +526,7 @@ public class ContController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
+	@Transactional
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody ContAndLcnsDtoForUpdate contAndLcnsDto, BindingResult result) {
 		

@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
@@ -264,6 +265,7 @@ public class TempVerController {
 		return new ResponseEntity<TempVerAndLcnsDtoToClient>(tempVerAndLcnsDtoToClient, HttpStatus.OK);
 	}
 	
+	@Transactional
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody TempVerAndLcnsDto tempVerDto, BindingResult result) {
 		
@@ -318,6 +320,8 @@ public class TempVerController {
 		tempEntity.setRequestDate(Date.valueOf(tempVerDto.getRequestDate()));
 		tempEntity.setIssueReason(tempVerDto.getIssueReason());
 		
+		System.out.println(lcnsEntity[999].getLcnsId());
+		
 		repositoryTemp.save(tempEntity);
 		
 		res.add(new ResponseInfo("등록에 성공했습니다."));
@@ -347,6 +351,7 @@ public class TempVerController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
+	@Transactional
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody TempVerAndLcnsDtoForUpdate tempVerDto, BindingResult result) {
 		

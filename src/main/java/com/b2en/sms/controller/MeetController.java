@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
@@ -189,6 +190,7 @@ public class MeetController {
 		return new ResponseEntity<MeetAndAttendDtoToClient>(meetAndAttendDtoToClient, HttpStatus.OK);
 	}
 	
+	@Transactional
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody MeetDto meetDto, BindingResult result) {
 		
@@ -265,6 +267,7 @@ public class MeetController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 
+	@Transactional
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody MeetDto meetDto, BindingResult result) {
 		
@@ -331,28 +334,4 @@ public class MeetController {
 		res.add(new ResponseInfo("수정에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
-	
-	/*
-	 * @GetMapping(value = "/attend/cust/{id}", produces =
-	 * MediaType.APPLICATION_JSON_VALUE) public ResponseEntity<List<MeetAttendCust>>
-	 * showAttendCust(@PathVariable int id) {
-	 * 
-	 * List<MeetAttendCust> entityList =
-	 * repositoryMAC.findByMeetAttendCustPKMeetId(id);
-	 * 
-	 * return new ResponseEntity<List<MeetAttendCust>>(entityList, HttpStatus.OK);
-	 * 
-	 * }
-	 * 
-	 * @GetMapping(value = "/attend/b2en/{id}", produces =
-	 * MediaType.APPLICATION_JSON_VALUE) public ResponseEntity<List<MeetAttendEmp>>
-	 * showAttendEmp(@PathVariable int id) {
-	 * 
-	 * List<MeetAttendEmp> entityList =
-	 * repositoryMAE.findByMeetAttendEmpPKMeetId(id);
-	 * 
-	 * return new ResponseEntity<List<MeetAttendEmp>>(entityList, HttpStatus.OK);
-	 * 
-	 * }
-	 */
 }
