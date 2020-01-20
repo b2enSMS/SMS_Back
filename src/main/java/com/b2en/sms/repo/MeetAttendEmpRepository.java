@@ -21,9 +21,6 @@ public interface MeetAttendEmpRepository extends JpaRepository<MeetAttendEmp, Me
 	List<Integer> findEmpIdByMeetId(@Param("meetId") int meetId);
 	
 	@Transactional
-	void deleteByMeetAttendEmpPKEmpSeq(int empSeq);
-	
-	@Transactional
 	void deleteByMeetAttendEmpPKMeetId(int meetId);
 	
 	@Query(value="SELECT max(emp_seq) FROM meet_attend_emp", nativeQuery = true)
