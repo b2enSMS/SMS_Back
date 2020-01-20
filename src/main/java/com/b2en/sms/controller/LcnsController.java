@@ -80,31 +80,46 @@ public class LcnsController {
 	}
 	
 	@PostMapping(value = "/generate")
-	public ResponseEntity<GeneratedLcnsNo> generateLcnsNo(@Valid @RequestBody GeneratingLcnsNo generatingLcnsNo, BindingResult result) {
+	public ResponseEntity<List<GeneratedLcnsNo>> generateLcnsNo(@Valid @RequestBody GeneratingLcnsNo generatingLcnsNo, BindingResult result) {
 		
 		GeneratedLcnsNo generatedLcnsNo = new GeneratedLcnsNo();
+		List<GeneratedLcnsNo> generatedLcnsNoList = new ArrayList<GeneratedLcnsNo>();
 		String prdtNm = generatingLcnsNo.getPrdtNm();
 		String installDt = generatingLcnsNo.getInstallDt();
 		if(result.hasErrors()) {
-			generatedLcnsNo.setLcnsNo("FAILED 1");
-			return new ResponseEntity<GeneratedLcnsNo>(generatedLcnsNo, HttpStatus.BAD_REQUEST);
+			generatedLcnsNo.setLcnsNo("Validation Error");
+			generatedLcnsNoList.add(generatedLcnsNo);
+			return new ResponseEntity<List<GeneratedLcnsNo>>(generatedLcnsNoList, HttpStatus.BAD_REQUEST);
 		}
 		StringBuilder sb = new StringBuilder();
-		String[] splitDate = installDt.split("-");
 		if(prdtNm.contains("SDQ")) {
 			sb.append("Q");
 		} else if(prdtNm.contains("SMETA")) {
 			sb.append("M");
+		} else {
+			generatedLcnsNo.setLcnsNo("해당하는 제품명을 가진 제품이 없습니다.");
+			generatedLcnsNoList.add(generatedLcnsNo);
+			return new ResponseEntity<List<GeneratedLcnsNo>>(generatedLcnsNoList, HttpStatus.BAD_REQUEST);
 		}
-		sb.append(splitDate[1]);
-		sb.append(splitDate[2]);
-		sb.append(splitDate[0].substring(2, 4));
+		
+		String[] splitDate = installDt.split("-");
+		if(splitDate[1].length()==1) {
+			splitDate[1] = "0" + splitDate[1];
+		}
+		sb.append(splitDate[1]); // 월
+		if(splitDate[2].length()==1) {
+			splitDate[2] = "0" + splitDate[2];
+		}
+		sb.append(splitDate[2]); // 일
+		sb.append(splitDate[0].substring(2, 4)); // 년
+		
 		sb.append("P");
 		int prdtId = repositoryP.findPrdtIdByPrdtNm(prdtNm);
 		String count = Integer.toString(repositoryL.countByPrdtId(prdtId)+1);
 		if(count.length() > 3) {
-			generatedLcnsNo.setLcnsNo("FAILED 2");
-			return new ResponseEntity<GeneratedLcnsNo>(generatedLcnsNo, HttpStatus.BAD_REQUEST);
+			generatedLcnsNo.setLcnsNo("발행순서번호가 3자리를 초과하게 되었습니다.");
+			generatedLcnsNoList.add(generatedLcnsNo);
+			return new ResponseEntity<List<GeneratedLcnsNo>>(generatedLcnsNoList, HttpStatus.BAD_REQUEST);
 		}
 		for(int i = count.length()-1; i < 2; i++) {
 			count = "0" + count;
@@ -113,7 +128,8 @@ public class LcnsController {
 		sb.append("0");
 
 		generatedLcnsNo.setLcnsNo(sb.toString());
-		return new ResponseEntity<GeneratedLcnsNo>(generatedLcnsNo, HttpStatus.OK);
+		generatedLcnsNoList.add(generatedLcnsNo);
+		return new ResponseEntity<List<GeneratedLcnsNo>>(generatedLcnsNoList, HttpStatus.BAD_REQUEST);
 	}
 	
 	/*
