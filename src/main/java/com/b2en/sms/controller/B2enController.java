@@ -1,5 +1,7 @@
 package com.b2en.sms.controller;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,15 +26,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.B2enDto;
 import com.b2en.sms.dto.DeleteDto;
+import com.b2en.sms.dto.LoginInfo;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.B2enAC;
 import com.b2en.sms.dto.toclient.B2enDtoToClient;
 import com.b2en.sms.entity.B2en;
+import com.b2en.sms.entity.login.Login;
 import com.b2en.sms.repo.B2enRepository;
 import com.b2en.sms.repo.CmmnDetailCdRepository;
 import com.b2en.sms.repo.ContRepository;
 import com.b2en.sms.repo.MeetAttendEmpRepository;
 import com.b2en.sms.repo.TempVerRepository;
+import com.b2en.sms.repo.login.LoginRepository;
 
 @RestController
 @RequestMapping("/api/b2en")
@@ -48,6 +53,9 @@ public class B2enController {
 	private MeetAttendEmpRepository repositoryMAE;
 	@Autowired
 	private CmmnDetailCdRepository repositoryCDC;
+	
+	@Autowired
+	private LoginRepository repositoryLogin;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -101,6 +109,65 @@ public class B2enController {
 		b2enDtoToClient.setEmpTpCdNm(empTpCdNm);
 		
 		return new ResponseEntity<B2enDtoToClient>(b2enDtoToClient, HttpStatus.OK);
+	}
+	
+	@PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ResponseInfo>> login(@Valid @RequestBody LoginInfo info, BindingResult result) {
+		
+		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
+		
+		if (result.hasErrors()) {
+			res.add(new ResponseInfo("다음의 문제로 로그인에 실패했습니다: "));
+			List<ObjectError> errors = result.getAllErrors();
+			for (int i = 0; i < errors.size(); i++) {
+				res.add(new ResponseInfo(errors.get(i).getDefaultMessage()));
+			}
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+		}
+		
+		Login storedInfo = repositoryLogin.findById(info.getEmail()).orElse(null);
+		
+		if(storedInfo==null) {
+			res.add(new ResponseInfo("다음의 문제로 로그인에 실패했습니다: "));
+			res.add(new ResponseInfo("등록되지 않은 이메일입니다."));
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+		}
+		
+		String storedPassword = storedInfo.getPassword();
+		
+		try {
+			String inputHash = sha256(info.getPassword());
+			String storedHash = sha256(storedPassword);
+			
+			if(inputHash.equals(storedHash)) {
+				String welcome = "환영합니다, " + storedInfo.getUsername() + "님";
+				res.add(new ResponseInfo(welcome));
+				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
+			} else {
+				res.add(new ResponseInfo("다음의 문제로 로그인에 실패했습니다: "));
+				res.add(new ResponseInfo("비밀번호가 틀렸습니다."));
+				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
+			}
+		} catch (NoSuchAlgorithmException e) {
+			res.add(new ResponseInfo("다음의 문제로 로그인에 실패했습니다: "));
+			res.add(new ResponseInfo("해싱에 사용되는 알고리즘에 문제가 있습니다."));
+			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.SERVICE_UNAVAILABLE);
+		}
+	}
+	
+	private String sha256(String input) throws NoSuchAlgorithmException {
+		MessageDigest md = MessageDigest.getInstance("SHA-256");
+		md.update(input.getBytes());
+		
+		byte[] bytes = md.digest();
+		
+		StringBuilder sb = new StringBuilder();
+	    for (byte b: bytes) {
+	      sb.append(String.format("%02x", b));
+	    }
+		
+		System.out.println(sb.toString());
+		return sb.toString();
 	}
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
