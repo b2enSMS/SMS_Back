@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
+import org.hibernate.annotations.BatchSize;
+
 import com.b2en.sms.entity.pk.TempVerHistPK;
 
 import lombok.Getter;
@@ -23,6 +25,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
+@BatchSize(size=10)
 public class TempVerHist extends TimeEntity implements Serializable  {
 
 	private static final long serialVersionUID = 8974431318427591632L;

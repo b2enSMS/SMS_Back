@@ -23,7 +23,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-@BatchSize(size=10)
+@BatchSize(size=20)
 public class Cust extends TimeEntity implements Serializable {
 	
 	// 고객사 담당자

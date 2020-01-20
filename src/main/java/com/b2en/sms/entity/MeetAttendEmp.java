@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -24,6 +25,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
+@BatchSize(size=10)
 public class MeetAttendEmp extends TimeEntity implements Serializable {
 
 	// 미팅참석자-비투엔

@@ -24,7 +24,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-@BatchSize(size=10)
+@BatchSize(size=20)
 public class Cont extends TimeEntity implements Serializable {
 
 	// 계약

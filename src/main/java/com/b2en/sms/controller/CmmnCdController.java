@@ -27,6 +27,10 @@ public class CmmnCdController {
 	public ResponseEntity<List<CmmnDetailCdDtoToClient>> findByCmmdCd(@PathVariable("cmmncd") String cmmnCd) {
 		
 		List<CmmnDetailCd> list = repositoryCDC.findByCmmnDetailCdPKCmmnCd(cmmnCd);
+		if(list == null) {
+			List<CmmnDetailCdDtoToClient> nothing = new ArrayList<CmmnDetailCdDtoToClient>();
+			return new ResponseEntity<List<CmmnDetailCdDtoToClient>>(nothing, HttpStatus.OK);
+		}
 		List<CmmnDetailCdDtoToClient> dtoList = new ArrayList<CmmnDetailCdDtoToClient>();
 		for(int i = 0; i < list.size(); i++) {
 			CmmnDetailCdDtoToClient dto = new CmmnDetailCdDtoToClient();
