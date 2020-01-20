@@ -85,8 +85,6 @@ public class LcnsController {
 		GeneratedLcnsNo generatedLcnsNo = new GeneratedLcnsNo();
 		String prdtNm = generatingLcnsNo.getPrdtNm();
 		String installDt = generatingLcnsNo.getInstallDt();
-		System.out.println("prdtNm: " + prdtNm);
-		System.out.println("installDt: " + installDt);
 		if(result.hasErrors()) {
 			generatedLcnsNo.setLcnsNo("FAILED 1");
 			return new ResponseEntity<GeneratedLcnsNo>(generatedLcnsNo, HttpStatus.BAD_REQUEST);

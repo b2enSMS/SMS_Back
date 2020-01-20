@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.hibernate.annotations.BatchSize;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +20,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
+@BatchSize(size=10)
 public class Prdt extends TimeEntity implements Serializable {
 
 	// 제품

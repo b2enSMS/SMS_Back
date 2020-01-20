@@ -24,7 +24,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-@BatchSize(size=10)
+@BatchSize(size=20)
 public class TempVer extends TimeEntity implements Serializable {
 
 	// 임시배포항목

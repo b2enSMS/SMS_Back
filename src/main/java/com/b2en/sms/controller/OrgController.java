@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -104,7 +104,7 @@ public class OrgController {
 		
 		if (result.hasErrors()) {
 			res.add(new ResponseInfo("다음의 문제로 등록에 실패했습니다: "));
-			List<FieldError> errors = result.getFieldErrors();
+			List<ObjectError> errors = result.getAllErrors();
 			for (int i = 0; i < errors.size(); i++) {
 				res.add(new ResponseInfo(errors.get(i).getDefaultMessage()));
 			}
@@ -157,8 +157,8 @@ public class OrgController {
 		
 		
 		if (result.hasErrors()) {
-			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
-			List<FieldError> errors = result.getFieldErrors();
+			res.add(new ResponseInfo("다음의 문제로 등록에 실패했습니다: "));
+			List<ObjectError> errors = result.getAllErrors();
 			for (int i = 0; i < errors.size(); i++) {
 				res.add(new ResponseInfo(errors.get(i).getDefaultMessage()));
 			}

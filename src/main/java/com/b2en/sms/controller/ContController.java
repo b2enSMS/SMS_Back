@@ -748,23 +748,4 @@ public class ContController {
 		return new ResponseEntity<List<ContChngHistDtoToClient>>(contChngHistDtoToClientList, HttpStatus.OK);
 	}
 	
-	/*
-	 * @GetMapping(value = "/detail/showall", produces =
-	 * MediaType.APPLICATION_JSON_VALUE) public ResponseEntity<List<ContDetail>>
-	 * getAllDetail() {
-	 * 
-	 * List<ContDetail> entityList = repositoryCD.findAll();
-	 * 
-	 * return new ResponseEntity<List<ContDetail>>(entityList, HttpStatus.OK);
-	 * 
-	 * }
-	 * 
-	 * @DeleteMapping(value = "/detail/{id}") public ResponseEntity<Void>
-	 * deleteDetail(@PathVariable("id") int id) { // ContDetail은 delete시 실제로 DB에서
-	 * 삭제하지 않고 delYn이 "N"에서 "Y"로 변경되게 함 ContDetail contDetail =
-	 * repositoryCD.findByContDetailPKContSeq(id); contDetail.setDelYn("Y");
-	 * repositoryCD.save(contDetail); return new
-	 * ResponseEntity<Void>(HttpStatus.NO_CONTENT); }
-	 */
-	
 }

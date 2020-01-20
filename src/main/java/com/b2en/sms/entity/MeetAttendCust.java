@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
+import org.hibernate.annotations.BatchSize;
+
 import com.b2en.sms.entity.pk.MeetAttendCustPK;
 
 import lombok.Getter;
@@ -21,6 +23,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
+@BatchSize(size=10)
 public class MeetAttendCust extends TimeEntity implements Serializable {
 
 	// 미팅참석자-고객사
