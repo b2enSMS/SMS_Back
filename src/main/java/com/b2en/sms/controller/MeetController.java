@@ -274,7 +274,7 @@ public class MeetController {
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
 		if (result.hasErrors()) {
-			res.add(new ResponseInfo("다음의 문제로 등록에 실패했습니다: "));
+			res.add(new ResponseInfo("다음의 문제로 수정에 실패했습니다: "));
 			List<ObjectError> errors = result.getAllErrors();
 			for (int i = 0; i < errors.size(); i++) {
 				res.add(new ResponseInfo(errors.get(i).getDefaultMessage()));

@@ -130,33 +130,37 @@ public class ScanController {
     
     @DeleteMapping(value = "")
 	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody FileListToClient[] dto) {
-    	boolean deleteFlag = true;
+    	List<ResponseInfo> res = new ArrayList<ResponseInfo>();
+
 		String[] idx = new String[dto.length];
+		String[] scanIdArr = new String[dto.length];
 		for(int i = 0; i < idx.length; i++) {
 			idx[i] = dto[i].getUrl();
-			if(idx[i]==null) {
-				deleteFlag = false;
-				continue;
+			if(idx[i]==null || idx[i].equals("")) {
+				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
+				res.add(new ResponseInfo("URL 정보가 없습니다."));
+				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 			}
 			String[] splitted1 = idx[i].split("/");
 			String fn = splitted1[splitted1.length-1];
 			String[] splitted2 = fn.split("\\.");
 			String scanId = splitted2[0];
 			if(!repository.existsById(scanId)) {
-				deleteFlag = false;
-				continue;
+				res.add(new ResponseInfo("다움의 이유로 삭제에 실패했습니다: "));
+				res.add(new ResponseInfo(scanId+"의 id를 가지는 row가 없습니다."));
+				return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 			}
-			String type = repository.getOne(scanId).getFileType();
-			scanStorageService.deleteFile(scanId, type);
+			scanIdArr[i] = scanId;
+		}
+		
+		for(int i = 0; i < scanIdArr.length; i++) {
+			String type = repository.getOne(scanIdArr[i]).getFileType();
+			scanStorageService.deleteFile(scanIdArr[i], type);
 				
-			repository.deleteById(scanId);
+			repository.deleteById(scanIdArr[i]);
 		}
-		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
-		if(deleteFlag) {
-			res.add(new ResponseInfo("삭제에 성공했습니다."));
-		} else {
-			res.add(new ResponseInfo("삭제 도중 문제가 발생했습니다."));
-		}
+
+		res.add(new ResponseInfo("삭제에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
     
