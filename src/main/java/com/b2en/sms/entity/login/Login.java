@@ -17,11 +17,11 @@ import lombok.ToString;
 public class Login {
 
 	@Id
-	@Column(name="email")
-	private String email;
-	
 	@Column(name="username")
 	private String username;
+	
+	@Column(name="name")
+	private String name;
 	
 	@Column(name="password")
 	private String password;
