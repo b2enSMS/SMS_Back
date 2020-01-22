@@ -1,5 +1,7 @@
 package com.b2en.sms.entity.login;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -14,7 +16,9 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-public class Login {
+public class Login implements Serializable {
+
+	private static final long serialVersionUID = -6192744241408148005L;
 
 	@Id
 	@Column(name="username")
