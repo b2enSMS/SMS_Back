@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.login.AuthResponse;
 import com.b2en.sms.dto.login.LoginInfo;
 import com.b2en.sms.dto.login.LoginResponse;
-import com.b2en.sms.dto.toclient.ResponseInfo;
 import com.b2en.sms.entity.login.Login;
 import com.b2en.sms.repo.login.LoginRepository;
 import com.b2en.sms.security.JwtTokenProvider;
@@ -40,17 +39,13 @@ public class LoginController {
 	public ResponseEntity<List<LoginResponse>> login(@Valid @RequestBody LoginInfo info, BindingResult result) {
 		
 		List<LoginResponse> lres = new ArrayList<LoginResponse>();
-		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
-		List<AuthResponse> auth = new ArrayList<AuthResponse>();
+		//ResponseInfo res = new ResponseInfo();
+		AuthResponse auth = new AuthResponse();
 		LoginResponse loginResponse = new LoginResponse();
 		
 		if (result.hasErrors()) {
-			res.add(new ResponseInfo("다음의 문제로 로그인에 실패했습니다: "));
 			List<ObjectError> errors = result.getAllErrors();
-			for (int i = 0; i < errors.size(); i++) {
-				res.add(new ResponseInfo(errors.get(i).getDefaultMessage()));
-			}
-			loginResponse.setInfo(res);
+			loginResponse.setInfo(errors.get(0).getDefaultMessage());
 			lres.add(loginResponse);
 			return new ResponseEntity<List<LoginResponse>>(lres, HttpStatus.UNAUTHORIZED);
 		}
@@ -58,9 +53,7 @@ public class LoginController {
 		Login storedInfo = repositoryLogin.findById(info.getUsername()).orElse(null);
 		
 		if(storedInfo==null) {
-			res.add(new ResponseInfo("다음의 문제로 로그인에 실패했습니다: "));
-			res.add(new ResponseInfo("등록되지 않은 이메일입니다."));
-			loginResponse.setInfo(res);
+			loginResponse.setInfo("등록되지 않은 이메일입니다.");
 			lres.add(loginResponse);
 			return new ResponseEntity<List<LoginResponse>>(lres, HttpStatus.UNAUTHORIZED);
 		}
@@ -72,23 +65,18 @@ public class LoginController {
 			if(inputHash.equals(storedHash)) {
 				String name = storedInfo.getName();
 				String welcome = "환영합니다, " + name + " 님";
-				res.add(new ResponseInfo(welcome));
-				loginResponse.setInfo(res);
-				auth.add(new AuthResponse(info.getUsername(), tokenProvider.generateToken(storedInfo)));
+				loginResponse.setInfo(welcome);
+				auth = (new AuthResponse(info.getUsername(), tokenProvider.generateToken(storedInfo)));
 				loginResponse.setAuth(auth);
 				lres.add(loginResponse);
 				return new ResponseEntity<List<LoginResponse>>(lres, HttpStatus.OK);
 			} else {
-				res.add(new ResponseInfo("다음의 문제로 로그인에 실패했습니다: "));
-				res.add(new ResponseInfo("비밀번호가 틀렸습니다."));
-				loginResponse.setInfo(res);
+				loginResponse.setInfo("비밀번호가 틀렸습니다.");
 				lres.add(loginResponse);
 				return new ResponseEntity<List<LoginResponse>>(lres, HttpStatus.UNAUTHORIZED);
 			}
 		} catch (NoSuchAlgorithmException e) {
-			res.add(new ResponseInfo("다음의 문제로 로그인에 실패했습니다: "));
-			res.add(new ResponseInfo("해싱에 사용되는 알고리즘에 문제가 있습니다. 관리자에게 문의하세요."));
-			loginResponse.setInfo(res);
+			loginResponse.setInfo("해싱에 사용되는 알고리즘에 문제가 있습니다. 관리자에게 문의하세요.");
 			lres.add(loginResponse);
 			return new ResponseEntity<List<LoginResponse>>(lres, HttpStatus.SERVICE_UNAVAILABLE);
 		}

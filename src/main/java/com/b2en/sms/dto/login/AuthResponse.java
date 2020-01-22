@@ -2,8 +2,10 @@ package com.b2en.sms.dto.login;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class AuthResponse {
 	
