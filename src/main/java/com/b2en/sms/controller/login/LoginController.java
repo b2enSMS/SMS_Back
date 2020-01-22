@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.b2en.sms.dto.login.AuthResponse;
 import com.b2en.sms.dto.login.LoginInfo;
 import com.b2en.sms.dto.login.LoginResponse;
 import com.b2en.sms.dto.toclient.ResponseInfo;
 import com.b2en.sms.entity.login.Login;
 import com.b2en.sms.repo.login.LoginRepository;
+import com.b2en.sms.security.JwtTokenProvider;
 
 @RestController
 @RequestMapping("/api/login")
@@ -31,11 +33,15 @@ public class LoginController {
 	@Autowired
 	private LoginRepository repositoryLogin;
 	
+	@Autowired
+	private JwtTokenProvider tokenProvider;
+	
 	@PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<LoginResponse>> login(@Valid @RequestBody LoginInfo info, BindingResult result) {
 		
 		List<LoginResponse> lres = new ArrayList<LoginResponse>();
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
+		List<AuthResponse> auth = new ArrayList<AuthResponse>();
 		LoginResponse loginResponse = new LoginResponse();
 		
 		if (result.hasErrors()) {
@@ -68,8 +74,8 @@ public class LoginController {
 				String welcome = "환영합니다, " + name + " 님";
 				res.add(new ResponseInfo(welcome));
 				loginResponse.setInfo(res);
-				loginResponse.setUsername(info.getUsername());
-				loginResponse.set_id("ASDF");
+				auth.add(new AuthResponse(info.getUsername(), tokenProvider.generateToken(storedInfo)));
+				loginResponse.setAuth(auth);
 				lres.add(loginResponse);
 				return new ResponseEntity<List<LoginResponse>>(lres, HttpStatus.OK);
 			} else {
