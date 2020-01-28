@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +34,7 @@ public class AuthController {
     }
 	
 	@PostMapping("/login")
-    public ResponseEntity<AuthDto.Response> login(AuthDto.Request dto) {
+    public ResponseEntity<AuthDto.Response> login(@RequestBody AuthDto.Request dto) {
     	log.debug("login:{}", dto);
     	AuthDto.Response authResult = authService.login(dto);
     	return ResponseEntity.ok().body(authResult);
