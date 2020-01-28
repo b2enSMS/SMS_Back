@@ -3,7 +3,7 @@ package com.b2en.sms.dto.map;
 import org.modelmapper.PropertyMap;
 
 import com.b2en.sms.dto.toclient.LcnsDtoToClient;
-import com.b2en.sms.entity.Lcns;
+import com.b2en.sms.model.Lcns;
 
 public class LcnsToClientMap extends PropertyMap<Lcns, LcnsDtoToClient> {
 	// 매핑오류를 막기 위해 명시적 매핑

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.b2en.sms.dto.autocompleteinfo.CustACInterface;
-import com.b2en.sms.entity.Cust;
+import com.b2en.sms.model.Cust;
 
 public interface CustRepository extends JpaRepository<Cust, Integer>{
 	

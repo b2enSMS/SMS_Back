@@ -3,7 +3,7 @@ package com.b2en.sms.dto.map;
 import org.modelmapper.PropertyMap;
 
 import com.b2en.sms.dto.ContAndLcnsDto;
-import com.b2en.sms.entity.Cont;
+import com.b2en.sms.model.Cont;
 
 public class ContMap extends PropertyMap<ContAndLcnsDto, Cont>{
 	

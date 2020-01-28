@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.b2en.sms.entity.ContDetail;
-import com.b2en.sms.entity.pk.ContDetailPK;
+import com.b2en.sms.model.ContDetail;
+import com.b2en.sms.model.pk.ContDetailPK;
 
 public interface ContDetailRepository extends JpaRepository<ContDetail, ContDetailPK>{
 	

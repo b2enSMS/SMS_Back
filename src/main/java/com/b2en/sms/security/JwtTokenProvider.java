@@ -1,44 +1,80 @@
 package com.b2en.sms.security;
 
-import java.util.Date;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import com.b2en.sms.entity.login.Login;
-
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Base64;
+import java.util.Date;
+import java.util.List;
+
+@Slf4j
+@RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
 
-	private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
+    private String secretKey = "b2ensms!";
 
-	public String generateToken(Login login) {
+    private long tokenValidMilisecond = 1000L * 60 * 60 * 8;
+    private final String TOKEN_HEADER = "Authorization";
 
-		Date now = new Date();
-		Date expiryDate = new Date(now.getTime() + 604800000);
+    private final UserDetailsService userDetailsService;
 
-		return Jwts.builder().setSubject(login.getUsername()).setIssuedAt(new Date())
-				.setExpiration(expiryDate).signWith(SignatureAlgorithm.HS512, "JWTSuperSecretKey").compact();
-	}
+    @PostConstruct
+    protected void init() {
+        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+    }
 
-	public Long getUserIdFromJWT(String token) {
-		Claims claims = Jwts.parser().setSigningKey("JWTSuperSecretKey").parseClaimsJws(token).getBody();
+    // Jwt 토큰 생성
+    public String createToken(String email, List<GrantedAuthority> roles) {
+        log.debug("createToken:email:{}", email);
+        Claims claims = Jwts.claims().setSubject(email);
+        claims.put("roles", roles);
+        Date now = new Date();
+        String token = Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + tokenValidMilisecond))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+        log.debug("createToken:token:{}", token);
+        return token;
+    }
 
-		return Long.parseLong(claims.getSubject());
-	}
+    // Jwt 토큰으로 인증 정보를 조회
+    public Authentication getAuthentication(String token) {
+        log.debug("getAuthentication:token:{}", token);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getEmail(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
 
-	public boolean validateToken(String authToken) {
-		try {
-			Jwts.parser().setSigningKey("JWTSuperSecretKey").parseClaimsJws(authToken);
-			return true;
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
-		return false;
-	}
+    private String getEmail(String token) {
+        log.debug("getEmail:token:{}", token);
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public String resolveToken(HttpServletRequest req) {
+        return req.getHeader(TOKEN_HEADER);
+    }
+
+    public boolean validateToken(String jwtToken) {
+        log.debug("validateToken:jwtToken:{}", jwtToken);
+        try {
+            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+            return !claims.getBody().getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

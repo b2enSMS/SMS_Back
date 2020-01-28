@@ -27,7 +27,7 @@ import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.autocompleteinfo.B2enAC;
 import com.b2en.sms.dto.toclient.B2enDtoToClient;
 import com.b2en.sms.dto.toclient.ResponseInfo;
-import com.b2en.sms.entity.B2en;
+import com.b2en.sms.model.B2en;
 import com.b2en.sms.repo.B2enRepository;
 import com.b2en.sms.repo.CmmnDetailCdRepository;
 import com.b2en.sms.repo.ContRepository;

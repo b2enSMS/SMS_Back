@@ -3,7 +3,7 @@ package com.b2en.sms.dto.map;
 import org.modelmapper.PropertyMap;
 
 import com.b2en.sms.dto.MeetDto;
-import com.b2en.sms.entity.Meet;
+import com.b2en.sms.model.Meet;
 
 public class MeetMap extends PropertyMap<MeetDto, Meet> {
 

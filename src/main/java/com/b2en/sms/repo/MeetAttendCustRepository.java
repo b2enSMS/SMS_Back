@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.b2en.sms.entity.MeetAttendCust;
-import com.b2en.sms.entity.pk.MeetAttendCustPK;
+import com.b2en.sms.model.MeetAttendCust;
+import com.b2en.sms.model.pk.MeetAttendCustPK;
 
 public interface MeetAttendCustRepository extends JpaRepository<MeetAttendCust, MeetAttendCustPK>{
 	

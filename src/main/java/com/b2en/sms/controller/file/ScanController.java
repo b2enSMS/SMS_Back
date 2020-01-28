@@ -26,7 +26,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.b2en.sms.dto.file.FileListToClient;
 import com.b2en.sms.dto.file.Response;
 import com.b2en.sms.dto.toclient.ResponseInfo;
-import com.b2en.sms.entity.file.Scan;
+import com.b2en.sms.model.file.Scan;
 import com.b2en.sms.repo.file.ScanRepository;
 import com.b2en.sms.service.file.ScanStorageService;
 

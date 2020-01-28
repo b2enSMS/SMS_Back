@@ -27,7 +27,7 @@ import com.b2en.sms.dto.OrgDto;
 import com.b2en.sms.dto.autocompleteinfo.OrgAC;
 import com.b2en.sms.dto.toclient.OrgDtoToClient;
 import com.b2en.sms.dto.toclient.ResponseInfo;
-import com.b2en.sms.entity.Org;
+import com.b2en.sms.model.Org;
 import com.b2en.sms.repo.ContRepository;
 import com.b2en.sms.repo.CustRepository;
 import com.b2en.sms.repo.OrgRepository;

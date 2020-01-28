@@ -23,7 +23,7 @@ import com.b2en.sms.dto.GeneratingLcnsNo;
 import com.b2en.sms.dto.autocompleteinfo.LcnsAC;
 import com.b2en.sms.dto.toclient.LcnsDtoToClient;
 import com.b2en.sms.dto.toclient.ResponseInfo;
-import com.b2en.sms.entity.Lcns;
+import com.b2en.sms.model.Lcns;
 import com.b2en.sms.repo.LcnsRepository;
 import com.b2en.sms.repo.PrdtRepository;
 
