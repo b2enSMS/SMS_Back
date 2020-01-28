@@ -31,8 +31,11 @@ public class JwtAuthenticationFilter extends GenericFilter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
+        if(token == null) {
+        	token = "";
+        }
         
-        if (token != null) {
+        if (token.length()>0) {
             String jwtToken = token.replace(TOKEN_PREFIX, "");
             log.debug("JwtAuthenticationFilter:jwtToken:{}", jwtToken);
             if(jwtTokenProvider.validateToken(jwtToken)){
@@ -42,6 +45,17 @@ public class JwtAuthenticationFilter extends GenericFilter {
             	((HttpServletResponse) response).sendError(HttpStatus.UNAUTHORIZED.value(), "Authorization shall be provided");
             }
         }
+        
+		/*
+		 * if (token != null) { String jwtToken =
+		 * token.replace(TOKEN_PREFIX, "");
+		 * log.debug("JwtAuthenticationFilter:jwtToken:{}", jwtToken);
+		 * if(jwtTokenProvider.validateToken(jwtToken)){ Authentication auth =
+		 * jwtTokenProvider.getAuthentication(jwtToken);
+		 * SecurityContextHolder.getContext().setAuthentication(auth); } else {
+		 * ((HttpServletResponse) response).sendError(HttpStatus.UNAUTHORIZED.value(),
+		 * "Authorization shall be provided"); } }
+		 */
         
         chain.doFilter(request, response);
     }
