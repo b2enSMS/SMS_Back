@@ -48,9 +48,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
             .authorizeRequests()
             .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-            .antMatchers("/api/**").permitAll()
-            .anyRequest().hasRole("USER")
-            .and()
+            .antMatchers("/api/auth/login").permitAll()
+            .antMatchers("/api/**").hasRole("USER")
+            //.anyRequest().hasRole("USER")
+        .and()
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
             .cors();
     }
