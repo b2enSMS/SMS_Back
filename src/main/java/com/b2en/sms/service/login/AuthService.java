@@ -64,6 +64,7 @@ public class AuthService {
     	User user = userRepository.findByEmail(email).get();
     	AuthDto.Response response = modelMapper.map(user, AuthDto.Response.class);
     	response.setToken(token);
+    	log.debug("response:{} ", response);
     	return response;
     }
 }
