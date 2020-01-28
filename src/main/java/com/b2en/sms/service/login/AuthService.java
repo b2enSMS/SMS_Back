@@ -58,7 +58,7 @@ public class AuthService {
 	}
 	
 	public AuthDto.Response checkResponse(HttpServletRequest req) {
-    	String token = tokenProvider.resolveToken(req);
+    	String token = tokenProvider.resolveToken(req).replace("Bearer ", "");
     	String email = tokenProvider.getEmail(token);
     	
     	User user = userRepository.findByEmail(email).get();
