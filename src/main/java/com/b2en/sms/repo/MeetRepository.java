@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.b2en.sms.entity.Meet;
+import com.b2en.sms.model.Meet;
 
 public interface MeetRepository extends JpaRepository<Meet, Integer>{
 

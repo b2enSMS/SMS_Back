@@ -2,8 +2,8 @@ package com.b2en.sms.dto.map;
 
 import org.modelmapper.PropertyMap;
 
-import com.b2en.sms.entity.Cont;
-import com.b2en.sms.entity.ContChngHist;
+import com.b2en.sms.model.Cont;
+import com.b2en.sms.model.ContChngHist;
 
 public class ContChngHistMap extends PropertyMap<Cont, ContChngHist> {
 

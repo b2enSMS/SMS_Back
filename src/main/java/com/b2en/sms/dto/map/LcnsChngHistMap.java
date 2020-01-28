@@ -2,8 +2,8 @@ package com.b2en.sms.dto.map;
 
 import org.modelmapper.PropertyMap;
 
-import com.b2en.sms.entity.Lcns;
-import com.b2en.sms.entity.LcnsChngHist;
+import com.b2en.sms.model.Lcns;
+import com.b2en.sms.model.LcnsChngHist;
 
 public class LcnsChngHistMap extends PropertyMap<Lcns, LcnsChngHist> {
 

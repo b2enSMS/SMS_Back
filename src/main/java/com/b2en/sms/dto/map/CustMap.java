@@ -3,7 +3,7 @@ package com.b2en.sms.dto.map;
 import org.modelmapper.PropertyMap;
 
 import com.b2en.sms.dto.CustDto;
-import com.b2en.sms.entity.Cust;
+import com.b2en.sms.model.Cust;
 
 public class CustMap extends PropertyMap<CustDto, Cust>{
 

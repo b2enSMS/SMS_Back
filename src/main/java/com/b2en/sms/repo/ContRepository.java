@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.b2en.sms.dto.autocompleteinfo.ContACInterface;
-import com.b2en.sms.entity.Cont;
+import com.b2en.sms.model.Cont;
 
 public interface ContRepository extends JpaRepository<Cont, Integer>{
 	

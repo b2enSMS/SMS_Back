@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.b2en.sms.dto.autocompleteinfo.PrdtACInterface;
-import com.b2en.sms.entity.Prdt;
+import com.b2en.sms.model.Prdt;
 
 public interface PrdtRepository extends JpaRepository<Prdt, Integer>{
 	
