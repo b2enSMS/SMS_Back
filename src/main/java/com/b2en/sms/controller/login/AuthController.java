@@ -3,6 +3,8 @@ package com.b2en.sms.controller.login;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +32,10 @@ public class AuthController {
 	private AuthService authService;
 	
 	@GetMapping("/check")
-	public ResponseEntity<Boolean> check() {
+	public ResponseEntity<AuthDto.Response> check(HttpServletRequest req) {
 		log.debug("{}", "LOGIN CHECK!");
-    	return ResponseEntity.ok().body(Boolean.TRUE);
+		AuthDto.Response res = authService.checkResponse(req);
+    	return ResponseEntity.ok().body(res);
     }
 	
 	@PostMapping("/login")
