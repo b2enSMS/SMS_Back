@@ -1,5 +1,7 @@
 package com.b2en.sms.controller.login;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +30,10 @@ public class AuthController {
 	private AuthService authService;
 	
 	@GetMapping("/check")
-	public ResponseEntity<Boolean> check() {
-    	log.debug("{}", "LOGIN CHECK!");
-    	return ResponseEntity.ok().body(Boolean.TRUE);
+	public ResponseEntity<AuthDto.Response> check(HttpServletRequest req) {
+		log.debug("{}", "LOGIN CHECK!");
+		AuthDto.Response response = authService.checkResponse(req);
+    	return ResponseEntity.ok().body(response);
     }
 	
 	@PostMapping("/login")

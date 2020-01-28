@@ -3,6 +3,8 @@ package com.b2en.sms.service.login;
 import java.util.Arrays;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -55,4 +57,13 @@ public class AuthService {
 		return authResult;
 	}
 	
+	public AuthDto.Response checkResponse(HttpServletRequest req) {
+    	String token = tokenProvider.resolveToken(req);
+    	String email = tokenProvider.getEmail(token);
+    	
+    	User user = userRepository.findByEmail(email).get();
+    	AuthDto.Response response = modelMapper.map(user, AuthDto.Response.class);
+    	response.setToken(token);
+    	return response;
+    }
 }
