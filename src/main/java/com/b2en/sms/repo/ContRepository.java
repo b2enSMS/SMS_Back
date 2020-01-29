@@ -8,10 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.b2en.sms.dto.autocompleteinfo.ContACInterface;
 import com.b2en.sms.model.Cont;
 
+@Repository
 public interface ContRepository extends JpaRepository<Cont, Integer>{
 	
 	List<Cont> findByDelYn(String yn);

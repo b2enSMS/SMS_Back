@@ -4,10 +4,12 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.b2en.sms.model.LcnsChngHist;
 import com.b2en.sms.model.pk.LcnsChngHistPK;
 
+@Repository
 public interface LcnsChngHistRepository extends JpaRepository<LcnsChngHist, LcnsChngHistPK> {
 	
 	public List<LcnsChngHist> findByLcnsChngHistPKLcnsId(int lcnsId);
