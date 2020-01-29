@@ -3,13 +3,39 @@ package com.b2en.sms.dto;
 import javax.validation.constraints.NotBlank;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
 public class OrgDto {
 	
-	@NotBlank(message="고객사명이 빈칸입니다.")
-	private String orgNm;
+	@Data
+	@NoArgsConstructor
+	public static class Request {
+		
+		@NotBlank(message="고객사명이 빈칸입니다.")
+		private String orgNm;
+		
+		private String orgAddr;
+		
+		public Request(String orgNm, String orgAddr) {
+			this.orgNm = orgNm;
+			this.orgAddr = orgAddr;
+		}
+	}
 	
-	//@NotBlank(message="고객사주소가 빈칸입니다.")
-	private String orgAddr;
+	@Data
+	@NoArgsConstructor
+	public static class Response {
+		
+		private int orgId;
+		
+		private String orgNm;
+		
+		private String orgAddr;
+		
+		public Response(int orgId, String orgNm, String orgAddr) {
+			this.orgId = orgId;
+			this.orgNm = orgNm;
+			this.orgAddr = orgAddr;
+		}
+	}
 }

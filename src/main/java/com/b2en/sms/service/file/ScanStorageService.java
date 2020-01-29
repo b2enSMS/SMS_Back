@@ -7,18 +7,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.b2en.sms.exception.FileStorageException;
 import com.b2en.sms.property.FileStorageProperties;
 
 @Service
 public class ScanStorageService {
 	private final Path fileStorageLocation;
 	
-    //@Autowired
+    @Autowired
     public ScanStorageService(FileStorageProperties fileStorageProperties) {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
                 .toAbsolutePath().normalize();

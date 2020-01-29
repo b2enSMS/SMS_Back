@@ -3,25 +3,58 @@ package com.b2en.sms.dto;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
 public class PrdtDto {
 	
-	@NotBlank(message="제품명이 빈칸입니다.")
-	private String prdtNm;
+	@Data
+	@NoArgsConstructor
+	public static class Request {
+		
+		@NotBlank(message="제품명이 빈칸입니다.")
+		private String prdtNm;
+		
+		private String prdtDesc;
+		
+		@Min(value = 0, message="{value} 이상의 값이 입력되어야 합니다.")
+		private String prdtAmt;
+		
+		@NotBlank(message="제품구분코드가 빈칸입니다.")
+		private String prdtTpCd;
+		
+		@Builder
+		public Request(String prdtNm, String prdtDesc, String prdtAmt, String prdtTpCd) {
+			this.prdtNm = prdtNm;
+			this.prdtDesc = prdtDesc;
+			this.prdtAmt = prdtAmt;
+			this.prdtTpCd = prdtTpCd;
+		}
+	}
 	
-	//@NotBlank(message="제품버전이 빈칸입니다.")
-	private String prdtVer;
-	
-	//@NotBlank(message="제품설명이 빈칸입니다.")
-	private String prdtDesc;
-	
-	//@NotBlank(message="제품단가가 빈칸입니다.")
-	//@Pattern(regexp="[0-9]+$", message="제품단가는 숫자만 입력되어야 합니다.")
-	@Min(value = 0, message="{value} 이상의 값이 입력되어야 합니다.")
-	private String prdtAmt;
-	
-	@NotBlank(message="제품구분코드가 빈칸입니다.")
-	private String prdtTpCd;
+	@Data
+	@NoArgsConstructor
+	public static class Response {
+		
+		private int prdtId;
+
+		private String prdtNm;
+		
+		private String prdtDesc;
+		
+		private String prdtAmt;
+		
+		private String prdtTpCd;
+		
+		private String prdtTpCdNm;
+		
+		@Builder
+		public Response(String prdtNm, String prdtDesc, String prdtAmt, String prdtTpCd) {
+			this.prdtNm = prdtNm;
+			this.prdtDesc = prdtDesc;
+			this.prdtAmt = prdtAmt;
+			this.prdtTpCd = prdtTpCd;
+		}
+	}
 }

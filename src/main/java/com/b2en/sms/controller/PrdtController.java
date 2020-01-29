@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.PrdtDto;
 import com.b2en.sms.dto.autocompleteinfo.PrdtACInterface;
-import com.b2en.sms.dto.toclient.PrdtDtoToClient;
 import com.b2en.sms.dto.toclient.ResponseInfo;
 import com.b2en.sms.model.Prdt;
 import com.b2en.sms.repo.CmmnDetailCdRepository;
@@ -49,18 +48,18 @@ public class PrdtController {
 	private ModelMapper modelMapper;
 	
 	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<PrdtDtoToClient>> showAll() {
+	public ResponseEntity<List<PrdtDto.Response>> showAll() {
 
 		List<Prdt> entityList = repository.findAll();
 		if(entityList.size()==0) {
-			return new ResponseEntity<List<PrdtDtoToClient>>(new ArrayList<PrdtDtoToClient>(), HttpStatus.OK);
+			return new ResponseEntity<List<PrdtDto.Response>>(new ArrayList<PrdtDto.Response>(), HttpStatus.OK);
 		}
-		List<PrdtDtoToClient> list;
+		List<PrdtDto.Response> list;
 		
-		list = modelMapper.map(entityList, new TypeToken<List<PrdtDtoToClient>>() {
+		list = modelMapper.map(entityList, new TypeToken<List<PrdtDto.Response>>() {
 		}.getType());
 
-		return new ResponseEntity<List<PrdtDtoToClient>>(list, HttpStatus.OK);
+		return new ResponseEntity<List<PrdtDto.Response>>(list, HttpStatus.OK);
 
 	}
 	
@@ -76,22 +75,22 @@ public class PrdtController {
 	}
 	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<PrdtDtoToClient> findById(@PathVariable("id") int id) {
+	public ResponseEntity<PrdtDto.Response> findById(@PathVariable("id") int id) {
 		
 		Prdt prdt = repository.findById(id).orElse(null);
 		if(prdt==null) {
-			PrdtDtoToClient nothing = null;
-			return new ResponseEntity<PrdtDtoToClient>(nothing, HttpStatus.OK);
+			PrdtDto.Response nothing = null;
+			return new ResponseEntity<PrdtDto.Response>(nothing, HttpStatus.OK);
 		}
 		
-		PrdtDtoToClient prdtDtoToClient = modelMapper.map(prdt, PrdtDtoToClient.class);
+		PrdtDto.Response prdtDtoToClient = modelMapper.map(prdt, PrdtDto.Response.class);
 		prdtDtoToClient.setPrdtTpCdNm(repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(prdtDtoToClient.getPrdtTpCd()).getCmmnDetailCdNm());
 		
-		return new ResponseEntity<PrdtDtoToClient>(prdtDtoToClient, HttpStatus.OK);
+		return new ResponseEntity<PrdtDto.Response>(prdtDtoToClient, HttpStatus.OK);
 	}
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody PrdtDto prdt, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody PrdtDto.Request prdt, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -138,7 +137,7 @@ public class PrdtController {
 	}
 	
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody PrdtDto prdtDto, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody PrdtDto.Request prdtDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		

@@ -1,4 +1,4 @@
-package com.b2en.sms.service.file;
+package com.b2en.sms.exception;
 
 public class FileStorageException extends RuntimeException {
 
