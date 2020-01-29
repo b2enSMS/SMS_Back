@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.B2enDto;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.autocompleteinfo.B2enAC;
-import com.b2en.sms.dto.toclient.B2enDtoToClient;
 import com.b2en.sms.dto.toclient.ResponseInfo;
 import com.b2en.sms.model.B2en;
 import com.b2en.sms.repo.B2enRepository;
@@ -53,18 +52,18 @@ public class B2enController {
 	private ModelMapper modelMapper;
 
 	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<B2enDtoToClient>> showAll() {
+	public ResponseEntity<List<B2enDto.Response>> showAll() {
 
 		List<B2en> entityList = repository.findAllOrderByName();
 		if(entityList.size()==0) {
-			return new ResponseEntity<List<B2enDtoToClient>>(new ArrayList<B2enDtoToClient>(), HttpStatus.OK);
+			return new ResponseEntity<List<B2enDto.Response>>(new ArrayList<B2enDto.Response>(), HttpStatus.OK);
 		}
-		List<B2enDtoToClient> list;
+		List<B2enDto.Response> list;
 
-		list = modelMapper.map(entityList, new TypeToken<List<B2enDtoToClient>>() {
+		list = modelMapper.map(entityList, new TypeToken<List<B2enDto.Response>>() {
 		}.getType());
 
-		return new ResponseEntity<List<B2enDtoToClient>>(list, HttpStatus.OK);
+		return new ResponseEntity<List<B2enDto.Response>>(list, HttpStatus.OK);
 
 	}
 	
@@ -88,23 +87,23 @@ public class B2enController {
 	}
 	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<B2enDtoToClient> findById(@PathVariable("id") int id) {
+	public ResponseEntity<B2enDto.Response> findById(@PathVariable("id") int id) {
 		
 		B2en b2en = repository.findById(id).orElse(null);
 		if(b2en==null) {
-			B2enDtoToClient nothing = null;
-			return new ResponseEntity<B2enDtoToClient>(nothing, HttpStatus.OK);
+			B2enDto.Response nothing = null;
+			return new ResponseEntity<B2enDto.Response>(nothing, HttpStatus.OK);
 		}
 		
-		B2enDtoToClient b2enDtoToClient = modelMapper.map(b2en, B2enDtoToClient.class);
+		B2enDto.Response b2enDtoToClient = modelMapper.map(b2en, B2enDto.Response.class);
 		String empTpCdNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(b2enDtoToClient.getEmpTpCd()).getCmmnDetailCdNm();
 		b2enDtoToClient.setEmpTpCdNm(empTpCdNm);
 		
-		return new ResponseEntity<B2enDtoToClient>(b2enDtoToClient, HttpStatus.OK);
+		return new ResponseEntity<B2enDto.Response>(b2enDtoToClient, HttpStatus.OK);
 	}
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody B2enDto b2en, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody B2enDto.Request b2en, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -165,7 +164,7 @@ public class B2enController {
 	}
 
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody B2enDto b2en, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody B2enDto.Request b2en, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		

@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.OrgDto;
 import com.b2en.sms.dto.autocompleteinfo.OrgAC;
-import com.b2en.sms.dto.toclient.OrgDtoToClient;
 import com.b2en.sms.dto.toclient.ResponseInfo;
 import com.b2en.sms.model.Org;
 import com.b2en.sms.repo.ContRepository;
@@ -49,18 +48,15 @@ public class OrgController {
 	private ModelMapper modelMapper;
 	
 	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<OrgDtoToClient>> showAll() {
+	public ResponseEntity<List<OrgDto.Response>> showAll() {
 
 		List<Org> entityList = repositoryOrg.findAllOrderByName();
 		if(entityList.size()==0) {
-			return new ResponseEntity<List<OrgDtoToClient>>(new ArrayList<OrgDtoToClient>(), HttpStatus.OK);
+			return new ResponseEntity<List<OrgDto.Response>>(new ArrayList<OrgDto.Response>(), HttpStatus.OK);
 		}
-		List<OrgDtoToClient> list;
-		
-		list = modelMapper.map(entityList, new TypeToken<List<OrgDtoToClient>>() {
-		}.getType());
+		List<OrgDto.Response> list = modelMapper.map(entityList, new TypeToken<List<OrgDto.Response>>() {}.getType());
 
-		return new ResponseEntity<List<OrgDtoToClient>>(list, HttpStatus.OK);
+		return new ResponseEntity<List<OrgDto.Response>>(list, HttpStatus.OK);
 
 	}
 	
@@ -84,21 +80,21 @@ public class OrgController {
 	}
 	
 	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<OrgDtoToClient> findById(@PathVariable("id") int id) {
+	public ResponseEntity<OrgDto.Response> findById(@PathVariable("id") int id) {
 		
 		Org org = repositoryOrg.findById(id).orElse(null);
 		if(org==null) {
-			OrgDtoToClient nothing = null;
-			return new ResponseEntity<OrgDtoToClient>(nothing, HttpStatus.OK);
+			OrgDto.Response nothing = null;
+			return new ResponseEntity<OrgDto.Response>(nothing, HttpStatus.OK);
 		}
 		
-		OrgDtoToClient orgDtoToClient = modelMapper.map(org, OrgDtoToClient.class);
+		OrgDto.Response orgDtoToClient = modelMapper.map(org, OrgDto.Response.class);
 		
-		return new ResponseEntity<OrgDtoToClient>(orgDtoToClient, HttpStatus.OK);
+		return new ResponseEntity<OrgDto.Response>(orgDtoToClient, HttpStatus.OK);
 	}
 	
 	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody OrgDto org, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody OrgDto.Request org, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -151,7 +147,7 @@ public class OrgController {
 	}
 	
 	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody OrgDto org, BindingResult result) {
+	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody OrgDto.Request org, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
