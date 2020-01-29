@@ -4,10 +4,12 @@ import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.b2en.sms.model.ContDetailHist;
 import com.b2en.sms.model.pk.ContDetailHistPK;
 
+@Repository
 public interface ContDetailHistRepository extends JpaRepository<ContDetailHist, ContDetailHistPK>{
 
 	ContDetailHist findByContDetailHistPKDetailSeq(int detailSeq);
