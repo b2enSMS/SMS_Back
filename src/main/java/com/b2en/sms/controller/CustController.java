@@ -1,5 +1,6 @@
 package com.b2en.sms.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +11,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -25,9 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.CustDto;
 import com.b2en.sms.dto.DeleteDto;
+import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.CustAC;
-import com.b2en.sms.dto.toclient.CustDtoToClient;
-import com.b2en.sms.dto.toclient.ResponseInfo;
 import com.b2en.sms.model.CmmnDetailCd;
 import com.b2en.sms.model.Cont;
 import com.b2en.sms.model.Cust;
@@ -59,24 +58,23 @@ public class CustController {
 	@Autowired
 	private ModelMapper modelMapper;
 
-	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<CustDtoToClient>> showAll() {
+	@GetMapping
+	public ResponseEntity<List<CustDto.Response>> showAll() {
 
 		List<Cust> entityList = repositoryCust.findAllOrderByName();
 		if(entityList.size()==0) {
-			return new ResponseEntity<List<CustDtoToClient>>(new ArrayList<CustDtoToClient>(), HttpStatus.OK);
+			return new ResponseEntity<List<CustDto.Response>>(new ArrayList<CustDto.Response>(), HttpStatus.OK);
 		}
-		List<CustDtoToClient> list;
-		int orgId;
-		String orgNm;
+		
 		HashMap<String, String> cmmnDetailCdMap = new HashMap<String, String>();
 		List<CmmnDetailCd> cmmnDetailCdList = repositoryCDC.findByCmmnDetailCdPKCmmnCd("cust_tp_cd");
 		for(int i = 0; i < cmmnDetailCdList.size(); i++) {
 			cmmnDetailCdMap.put(cmmnDetailCdList.get(i).getCmmnDetailCdPK().getCmmnDetailCd(), cmmnDetailCdList.get(i).getCmmnDetailCdNm());
 		}
 
-		list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
-		}.getType());
+		int orgId;
+		String orgNm;
+		List<CustDto.Response> list = modelMapper.map(entityList, new TypeToken<List<CustDto.Response>>() {}.getType());
 		
 		for(int i = 0; i < entityList.size(); i++) {
 			orgId = entityList.get(i).getOrg().getOrgId();
@@ -86,30 +84,29 @@ public class CustController {
 			list.get(i).setCustTpCdNm(cmmnDetailCdMap.get(entityList.get(i).getCustTpCd()));
 		}
 
-		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
+		return new ResponseEntity<List<CustDto.Response>>(list, HttpStatus.OK);
 
 	}
 	
 	// 계약고객(cont에 cust_id가 있는 cust)
-	@GetMapping(value = "/cont", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<CustDtoToClient>> showCont() {
+	@GetMapping(value = "/cont")
+	public ResponseEntity<List<CustDto.Response>> showCont() {
 
-		List<Cont> contList = repositoryCont.findByDelYn("N");
-		if(contList.size()==0) {
-			return new ResponseEntity<List<CustDtoToClient>>(new ArrayList<CustDtoToClient>(), HttpStatus.OK);
+		List<Cont> entityList = repositoryCont.findByDelYn("N");
+		if(entityList.size()==0) {
+			return new ResponseEntity<List<CustDto.Response>>(new ArrayList<CustDto.Response>(), HttpStatus.OK);
 		}
-		List<Cust> entityList = new ArrayList<Cust>();
-		List<CustDtoToClient> list;
-		for(int i = 0; i < contList.size(); i++) {
-			Cust contCust = contList.get(i).getCust();
-			if(contCust == null || entityList.contains(contCust)) {
+		List<Cust> contList = new ArrayList<Cust>();
+		
+		for(int i = 0; i < entityList.size(); i++) {
+			Cust contCust = entityList.get(i).getCust();
+			if(contCust == null || contList.contains(contCust)) {
 				continue;
 			}
-			entityList.add(contCust); // 계약고객만 리스트에 추가
+			contList.add(contCust); // 계약고객만 리스트에 추가
 		}
 
-		list = modelMapper.map(entityList, new TypeToken<List<CustDtoToClient>>() {
-		}.getType());
+		List<CustDto.Response> list = modelMapper.map(contList, new TypeToken<List<CustDto.Response>>() {}.getType());
 		
 		HashMap<String, String> cmmnDetailCdMap = new HashMap<String, String>();
 		List<CmmnDetailCd> cmmnDetailCdList = repositoryCDC.findByCmmnDetailCdPKCmmnCd("cust_tp_cd");
@@ -117,26 +114,25 @@ public class CustController {
 			cmmnDetailCdMap.put(cmmnDetailCdList.get(i).getCmmnDetailCdPK().getCmmnDetailCd(), cmmnDetailCdList.get(i).getCmmnDetailCdNm());
 		}
 
-		for(int i = 0; i < entityList.size(); i++) {
-			list.get(i).setOrgId(entityList.get(i).getOrg().getOrgId());
-			list.get(i).setOrgNm(entityList.get(i).getOrg().getOrgNm());
-			list.get(i).setCustTpCdNm(cmmnDetailCdMap.get(entityList.get(i).getCustTpCd()));
+		for(int i = 0; i < contList.size(); i++) {
+			list.get(i).setOrgId(contList.get(i).getOrg().getOrgId());
+			list.get(i).setOrgNm(contList.get(i).getOrg().getOrgNm());
+			list.get(i).setCustTpCdNm(cmmnDetailCdMap.get(contList.get(i).getCustTpCd()));
 		}
 		
-		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
+		return new ResponseEntity<List<CustDto.Response>>(list, HttpStatus.OK);
 
 	}
 	
 	// 가망고객(temp에 cust_id가 있고 cont에 없는 cust)
-	@GetMapping(value = "/presale", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<CustDtoToClient>> showPresale() {
+	@GetMapping(value = "/presale")
+	public ResponseEntity<List<CustDto.Response>> showPresale() {
 
 		List<Cust> presaleList = repositoryCust.findPreorderCust();
 		if(presaleList.size()==0) {
-			return new ResponseEntity<List<CustDtoToClient>>(new ArrayList<CustDtoToClient>(), HttpStatus.OK);
+			return new ResponseEntity<List<CustDto.Response>>(new ArrayList<CustDto.Response>(), HttpStatus.OK);
 		}
-		List<CustDtoToClient> list = modelMapper.map(presaleList, new TypeToken<List<CustDtoToClient>>() {
-		}.getType());
+		List<CustDto.Response> list = modelMapper.map(presaleList, new TypeToken<List<CustDto.Response>>() {}.getType());
 
 		HashMap<String, String> cmmnDetailCdMap = new HashMap<String, String>();
 		List<CmmnDetailCd> cmmnDetailCdList = repositoryCDC.findByCmmnDetailCdPKCmmnCd("cust_tp_cd");
@@ -151,11 +147,11 @@ public class CustController {
 			list.get(i).setCustTpCdNm(cmmnDetailCdMap.get(presaleList.get(i).getCustTpCd()));
 		}
 
-		return new ResponseEntity<List<CustDtoToClient>>(list, HttpStatus.OK);
+		return new ResponseEntity<List<CustDto.Response>>(list, HttpStatus.OK);
 	}
 	
 	
-	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/aclist")
 	public ResponseEntity<List<CustAC>> acList() {
 
 		List<Cust> list = repositoryCust.findAllOrderByName();
@@ -176,26 +172,26 @@ public class CustController {
 	}
 	 
 	
-	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CustDtoToClient> findById(@PathVariable("id") int id) {
+	@GetMapping(value="/{id}")
+	public ResponseEntity<CustDto.Response> findById(@PathVariable("id") int id) {
 		
 		Cust cust = repositoryCust.findById(id).orElse(null);
 		if(cust==null) {
-			CustDtoToClient nothing = null;
-			return new ResponseEntity<CustDtoToClient>(nothing, HttpStatus.OK);
+			CustDto.Response nothing = null;
+			return new ResponseEntity<CustDto.Response>(nothing, HttpStatus.OK);
 		}
 		
-		CustDtoToClient custDtoToClient = modelMapper.map(cust, CustDtoToClient.class);
+		CustDto.Response custDtoToClient = modelMapper.map(cust, CustDto.Response.class);
 		custDtoToClient.setOrgId(cust.getOrg().getOrgId());
 		custDtoToClient.setOrgNm(cust.getOrg().getOrgNm());
 		String custTpCdNm = repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(cust.getCustTpCd()).getCmmnDetailCdNm();
 		custDtoToClient.setCustTpCdNm(custTpCdNm);
 		
-		return new ResponseEntity<CustDtoToClient>(custDtoToClient, HttpStatus.OK);
+		return new ResponseEntity<CustDto.Response>(custDtoToClient, HttpStatus.OK);
 	}
 	
-	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody CustDto cust, BindingResult result) {
+	@PostMapping(value = "/create")
+	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody CustDto.Request custDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -208,9 +204,9 @@ public class CustController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		Cust custEntity = modelMapper.map(cust, Cust.class);
+		Cust custEntity = modelMapper.map(custDto, Cust.class);
 		
-		int orgId = cust.getOrgId();
+		int orgId = custDto.getOrgId();
 		Org org = repositoryO.getOne(orgId);
 		
 		custEntity.setOrg(org);
@@ -221,7 +217,7 @@ public class CustController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	@DeleteMapping(value = "")
+	@DeleteMapping
 	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody DeleteDto id) {
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 
@@ -260,8 +256,8 @@ public class CustController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 
-	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody CustDto cust, BindingResult result) {
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody CustDto.Request custDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -282,14 +278,12 @@ public class CustController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 
-		Org org = repositoryO.getOne(cust.getOrgId());
-		
+		Org org = repositoryO.getOne(custDto.getOrgId());
+		LocalDateTime createdDate = toUpdate.getCreatedDate();
+		toUpdate = modelMapper.map(custDto, Cust.class);
+		toUpdate.setCustId(id);
 		toUpdate.setOrg(org);
-		toUpdate.setCustNm(cust.getCustNm());
-		toUpdate.setCustRankNm(cust.getCustRankNm());
-		toUpdate.setEmail(cust.getEmail());
-		toUpdate.setTelNo(cust.getTelNo());
-		toUpdate.setCustTpCd(cust.getCustTpCd());
+		toUpdate.setCreatedDate(createdDate);
 
 		repositoryCust.save(toUpdate);
 		

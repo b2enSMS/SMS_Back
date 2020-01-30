@@ -1,5 +1,6 @@
 package com.b2en.sms.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.PrdtDto;
+import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.PrdtACInterface;
-import com.b2en.sms.dto.toclient.ResponseInfo;
 import com.b2en.sms.model.Prdt;
 import com.b2en.sms.repo.CmmnDetailCdRepository;
 import com.b2en.sms.repo.LcnsRepository;
@@ -47,7 +47,7 @@ public class PrdtController {
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping
 	public ResponseEntity<List<PrdtDto.Response>> showAll() {
 
 		List<Prdt> entityList = repository.findAll();
@@ -63,7 +63,7 @@ public class PrdtController {
 
 	}
 	
-	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/aclist")
 	public ResponseEntity<List<PrdtACInterface>> acList() {
 
 		List<PrdtACInterface> list = repository.findAllBy();
@@ -74,7 +74,7 @@ public class PrdtController {
 		return new ResponseEntity<List<PrdtACInterface>>(list, HttpStatus.OK);
 	}
 	
-	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value="/{id}")
 	public ResponseEntity<PrdtDto.Response> findById(@PathVariable("id") int id) {
 		
 		Prdt prdt = repository.findById(id).orElse(null);
@@ -89,7 +89,7 @@ public class PrdtController {
 		return new ResponseEntity<PrdtDto.Response>(prdtDtoToClient, HttpStatus.OK);
 	}
 	
-	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/create")
 	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody PrdtDto.Request prdt, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
@@ -111,7 +111,7 @@ public class PrdtController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	@DeleteMapping(value = "")
+	@DeleteMapping
 	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody DeleteDto id) {
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		int[] idx = id.getIdx();
@@ -136,7 +136,7 @@ public class PrdtController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PutMapping(value = "/{id}")
 	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody PrdtDto.Request prdtDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
@@ -158,10 +158,10 @@ public class PrdtController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		toUpdate.setPrdtNm(prdtDto.getPrdtNm());
-		toUpdate.setPrdtDesc(prdtDto.getPrdtDesc());
-		toUpdate.setPrdtAmt(prdtDto.getPrdtAmt());
-		toUpdate.setPrdtTpCd(prdtDto.getPrdtTpCd());
+		LocalDateTime createdDate = toUpdate.getCreatedDate();
+		toUpdate = modelMapper.map(prdtDto, Prdt.class);
+		toUpdate.setPrdtId(id);
+		toUpdate.setCreatedDate(createdDate);
 		
 		repository.save(toUpdate);
 		

@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.login.AuthDto;
-import com.b2en.sms.dto.toclient.ResponseInfo;
 import com.b2en.sms.exception.IncorrectPasswordException;
 import com.b2en.sms.exception.UserNotFoundException;
 import com.b2en.sms.service.login.AuthService;
@@ -52,14 +52,7 @@ public class AuthController {
     }
     
     @ExceptionHandler(UserNotFoundException.class)
-    //@ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<List<ResponseInfo>> handleUserNotFoundException(UserNotFoundException e) {
-		/*
-		 * ExceptionResult exceptionResult = new ExceptionResult();
-		 * exceptionResult.setMessage("[" + e.getUserName() + "]에 해당하는 계정이 없습니다.");
-		 * exceptionResult.setErrCode("user.not.found.exception"); log.debug("{}",
-		 * exceptionResult); return exceptionResult;
-		 */
     	List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		res.add(new ResponseInfo("다움의 이유로 로그인에 실패했습니다: "));
 		res.add(new ResponseInfo("[" + e.getUserName() + "]에 해당하는 계정이 없습니다."));
@@ -67,14 +60,7 @@ public class AuthController {
     }
 
 	@ExceptionHandler(IncorrectPasswordException.class)
-	//@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ResponseEntity<List<ResponseInfo>> handleIncorrectPasswordException(IncorrectPasswordException e) {
-		/*
-		 * ExceptionResult exceptionResult = new ExceptionResult();
-		 * exceptionResult.setMessage("잘못된 비밀번호입니다.");
-		 * exceptionResult.setErrCode("user.incorrect.password.exception");
-		 * log.debug("{}", exceptionResult); return exceptionResult;
-		 */
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		res.add(new ResponseInfo("다움의 이유로 로그인에 실패했습니다: "));
 		res.add(new ResponseInfo("잘못된 비밀번호입니다."));

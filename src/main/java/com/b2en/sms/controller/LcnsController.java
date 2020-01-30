@@ -9,7 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -20,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.GeneratingLcnsNo;
+import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.LcnsAC;
 import com.b2en.sms.dto.toclient.LcnsDtoToClient;
-import com.b2en.sms.dto.toclient.ResponseInfo;
 import com.b2en.sms.model.Lcns;
 import com.b2en.sms.repo.LcnsRepository;
 import com.b2en.sms.repo.PrdtRepository;
@@ -40,7 +39,7 @@ public class LcnsController {
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping
 	public ResponseEntity<List<LcnsDtoToClient>> showAll() {
 
 		List<Lcns> entityList = repositoryL.findAll();
@@ -51,8 +50,7 @@ public class LcnsController {
 		int prdtId;
 		String prdtNm;
 
-		list = modelMapper.map(entityList, new TypeToken<List<LcnsDtoToClient>>() {
-		}.getType());
+		list = modelMapper.map(entityList, new TypeToken<List<LcnsDtoToClient>>() {}.getType());
 
 		for(int i = 0; i < entityList.size(); i++) {
 			prdtId = entityList.get(i).getPrdt().getPrdtId();
@@ -65,7 +63,7 @@ public class LcnsController {
 
 	}
 	
-	@GetMapping(value = "/newest", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/newest")
 	public ResponseEntity<LcnsAC> getNewest() {
 		Lcns lcns = repositoryL.findNewest();
 		if(lcns==null) {
@@ -121,7 +119,7 @@ public class LcnsController {
 		sb.append(splitDate[0].substring(2, 4)); // 년
 		
 		sb.append("P");
-		//int prdtId = repositoryP.findPrdtIdByPrdtNm(prdtNm);
+
 		String count = Integer.toString(repositoryL.countByPrdtId(prdtId)+1);
 		if(count.length() > 3) {
 			res.add(new ResponseInfo("다음의 문제로 라이센스번호 생성에 실패했습니다: "));

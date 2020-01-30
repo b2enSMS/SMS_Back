@@ -1,5 +1,6 @@
 package com.b2en.sms.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.B2enDto;
 import com.b2en.sms.dto.DeleteDto;
+import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.B2enAC;
-import com.b2en.sms.dto.toclient.ResponseInfo;
 import com.b2en.sms.model.B2en;
 import com.b2en.sms.repo.B2enRepository;
 import com.b2en.sms.repo.CmmnDetailCdRepository;
@@ -51,23 +51,20 @@ public class B2enController {
 	@Autowired
 	private ModelMapper modelMapper;
 
-	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping
 	public ResponseEntity<List<B2enDto.Response>> showAll() {
 
 		List<B2en> entityList = repository.findAllOrderByName();
 		if(entityList.size()==0) {
 			return new ResponseEntity<List<B2enDto.Response>>(new ArrayList<B2enDto.Response>(), HttpStatus.OK);
 		}
-		List<B2enDto.Response> list;
-
-		list = modelMapper.map(entityList, new TypeToken<List<B2enDto.Response>>() {
-		}.getType());
+		List<B2enDto.Response> list = modelMapper.map(entityList, new TypeToken<List<B2enDto.Response>>() {}.getType());
 
 		return new ResponseEntity<List<B2enDto.Response>>(list, HttpStatus.OK);
 
 	}
 	
-	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/aclist")
 	public ResponseEntity<List<B2enAC>> acList() {
 
 		List<B2en> list = repository.findAllOrderByName();
@@ -86,7 +83,7 @@ public class B2enController {
 		return new ResponseEntity<List<B2enAC>>(acList, HttpStatus.OK);
 	}
 	
-	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value="/{id}")
 	public ResponseEntity<B2enDto.Response> findById(@PathVariable("id") int id) {
 		
 		B2en b2en = repository.findById(id).orElse(null);
@@ -102,8 +99,8 @@ public class B2enController {
 		return new ResponseEntity<B2enDto.Response>(b2enDtoToClient, HttpStatus.OK);
 	}
 	
-	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody B2enDto.Request b2en, BindingResult result) {
+	@PostMapping(value = "/create")
+	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody B2enDto.Request b2enDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -116,7 +113,7 @@ public class B2enController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		B2en b2enEntity = modelMapper.map(b2en, B2en.class);
+		B2en b2enEntity = modelMapper.map(b2enDto, B2en.class);
 		
 		repository.save(b2enEntity);
 		
@@ -124,7 +121,7 @@ public class B2enController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 
-	@DeleteMapping(value = "")
+	@DeleteMapping
 	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody DeleteDto id) {
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 
@@ -163,8 +160,8 @@ public class B2enController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 
-	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody B2enDto.Request b2en, BindingResult result) {
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody B2enDto.Request b2enDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -185,15 +182,10 @@ public class B2enController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		String empNm = b2en.getEmpNm();
-		String empNo = b2en.getEmpNo();
-		String email = b2en.getEmail();
-		String telNo = b2en.getTelNo();
-
-		toUpdate.setEmpNm(empNm);
-		toUpdate.setEmpNo(empNo);
-		toUpdate.setEmail(email);
-		toUpdate.setTelNo(telNo);
+		LocalDateTime createdDate = toUpdate.getCreatedDate();
+		toUpdate = modelMapper.map(b2enDto, B2en.class);
+		toUpdate.setEmpId(id);
+		toUpdate.setCreatedDate(createdDate);
 
 		repository.save(toUpdate);
 		
