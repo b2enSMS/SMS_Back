@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
@@ -39,6 +40,7 @@ import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.ContAC;
 import com.b2en.sms.dto.file.FileList;
 import com.b2en.sms.dto.file.FileListToClient;
+import com.b2en.sms.dto.file.Headers;
 import com.b2en.sms.dto.toclient.ContAndLcnsDtoToClient;
 import com.b2en.sms.dto.toclient.ContChngHistDtoToClient;
 import com.b2en.sms.dto.toclient.ContDtoToClient;
@@ -271,8 +273,8 @@ public class ContController {
 		return prdtNm;
 	}
 	
-	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ContAndLcnsDtoToClient> findContAndLcnsByContId(@PathVariable("id") int id) {
+	@GetMapping(value="/{id}")
+	public ResponseEntity<ContAndLcnsDtoToClient> findContAndLcnsByContId(@PathVariable("id") int id, HttpServletRequest req) {
 		
 		Cont cont = repositoryC.findById(id).orElse(null);
 		if(cont == null) {
@@ -314,7 +316,7 @@ public class ContController {
 			lcnsDtoToClient[i].setPrdtNm(contDetail.get(i).getLcns().getPrdt().getPrdtNm());
 			lcnsDtoToClient[i].setContAmt(contDetail.get(i).getContAmt());
 			lcnsDtoToClient[i].setLcnsTpNm(cmmnDetailCdMap.get(contDetail.get(i).getLcns().getLcnsTpCd()));
-			lcnsDtoToClient[i].setFileList(getFileListToClient(contDetail.get(i).getLcns().getScan()));
+			lcnsDtoToClient[i].setFileList(getFileListToClient(contDetail.get(i).getLcns().getScan(), req));
 			lcnsDtoToClient[i].setContNote(contDetail.get(i).getContNote());
 		}
 		contAndLcnsDtoToClient.setLcns(lcnsDtoToClient);
@@ -322,7 +324,7 @@ public class ContController {
 		return new ResponseEntity<ContAndLcnsDtoToClient>(contAndLcnsDtoToClient, HttpStatus.OK);
 	}
 	
-	private FileListToClient[] getFileListToClient(String id) {
+	private FileListToClient[] getFileListToClient(String id, HttpServletRequest req) {
 		
 		if(id.equals("")) {
 			FileListToClient[] fileList = new FileListToClient[0];
@@ -338,12 +340,15 @@ public class ContController {
 		String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/scan/download/").path(id)
 				.toUriString();
 		
+		Headers headers = new Headers();
+		headers.setAuthorization(req.getHeader("Authorization"));
 		FileListToClient fileList = new FileListToClient();
 		fileList.setUid("-1");
 		fileList.setStatus("done");
 		fileList.setName(scan.getFileName());
 		fileList.setUrl(url);
-		fileList.setThumbUrl(url);	
+		fileList.setThumbUrl(url);
+		fileList.setHeaders(headers);
 		
 		FileListToClient[] result = {fileList};
 		
