@@ -14,4 +14,6 @@ public class FileListToClient {
 	private String url;
 	
 	private String thumbUrl;
+	
+	private Headers headers;
 }
