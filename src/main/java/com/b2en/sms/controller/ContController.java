@@ -40,7 +40,6 @@ import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.ContAC;
 import com.b2en.sms.dto.file.FileList;
 import com.b2en.sms.dto.file.FileListToClient;
-import com.b2en.sms.dto.file.Headers;
 import com.b2en.sms.dto.toclient.ContAndLcnsDtoToClient;
 import com.b2en.sms.dto.toclient.ContChngHistDtoToClient;
 import com.b2en.sms.dto.toclient.ContDtoToClient;
@@ -73,7 +72,6 @@ import com.b2en.sms.repo.LcnsRepository;
 import com.b2en.sms.repo.OrgRepository;
 import com.b2en.sms.repo.PrdtRepository;
 import com.b2en.sms.repo.file.ScanRepository;
-import com.b2en.sms.security.JwtTokenProvider;
 
 @RestController
 @RequestMapping("/api/cont")
@@ -105,8 +103,6 @@ public class ContController {
 	private ScanRepository repositoryS;
 	@Autowired
 	private ModelMapper modelMapper;
-	@Autowired
-	private JwtTokenProvider tokenProvider;
 	
 	@GetMapping
 	public ResponseEntity<List<ContDtoToClient>> getAllNotDeleted() {
@@ -343,15 +339,12 @@ public class ContController {
 		String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/scan/download/").path(id)
 				.toUriString();
 		
-		Headers headers = new Headers();
-		headers.setAuthorization(tokenProvider.resolveToken(req));
 		FileListToClient fileList = new FileListToClient();
 		fileList.setUid("-1");
 		fileList.setStatus("done");
 		fileList.setName(scan.getFileName());
 		fileList.setUrl(url);
 		fileList.setThumbUrl(url);
-		fileList.setHeaders(headers);
 		
 		FileListToClient[] result = {fileList};
 		

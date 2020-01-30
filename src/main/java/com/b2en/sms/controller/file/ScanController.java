@@ -25,11 +25,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.file.FileListToClient;
-import com.b2en.sms.dto.file.Headers;
 import com.b2en.sms.dto.file.Response;
 import com.b2en.sms.model.file.Scan;
 import com.b2en.sms.repo.file.ScanRepository;
-import com.b2en.sms.security.JwtTokenProvider;
 import com.b2en.sms.service.file.ScanStorageService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -44,9 +42,6 @@ public class ScanController {
 	
 	@Autowired
     private ScanRepository repository;
-	
-	@Autowired
-	private JwtTokenProvider tokenProvider;
     
     @PostMapping("/upload")
     public Response uploadFile(@RequestParam("file") MultipartFile file, HttpServletRequest req) {
@@ -64,15 +59,12 @@ public class ScanController {
 		
 		String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/scan/download/").path(scanId)
 				.toUriString();
-		Headers headers = new Headers();
-		headers.setAuthorization(tokenProvider.resolveToken(req));
 		
 		Response response = new Response();
 		response.setName(fileName);
 		response.setStatus("done");
 		response.setUrl(url);
 		response.setThumbUrl(url);
-		response.setHeaders(headers);
 		
         return response;
     }
