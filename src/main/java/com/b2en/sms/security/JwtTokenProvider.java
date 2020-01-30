@@ -30,7 +30,6 @@ public class JwtTokenProvider {
 
     private long tokenValidMilisecond = 1000L * 60 * 60 * 8;
     private final String TOKEN_HEADER = "Authorization";
-    private final String TOKEN_HEADER2 = "authorization";
 
     private final UserDetailsService userDetailsService;
 
@@ -69,9 +68,7 @@ public class JwtTokenProvider {
 
     public String resolveToken(HttpServletRequest req) {
     	String token = req.getHeader(TOKEN_HEADER);
-    	if(token == null || token.equals("")) {
-    		token = req.getHeader(TOKEN_HEADER2);
-    	}
+
         return token;
     }
 
