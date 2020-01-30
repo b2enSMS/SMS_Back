@@ -73,6 +73,7 @@ import com.b2en.sms.repo.LcnsRepository;
 import com.b2en.sms.repo.OrgRepository;
 import com.b2en.sms.repo.PrdtRepository;
 import com.b2en.sms.repo.file.ScanRepository;
+import com.b2en.sms.security.JwtTokenProvider;
 
 @RestController
 @RequestMapping("/api/cont")
@@ -104,6 +105,8 @@ public class ContController {
 	private ScanRepository repositoryS;
 	@Autowired
 	private ModelMapper modelMapper;
+	@Autowired
+	private JwtTokenProvider tokenProvider;
 	
 	@GetMapping
 	public ResponseEntity<List<ContDtoToClient>> getAllNotDeleted() {
@@ -341,7 +344,7 @@ public class ContController {
 				.toUriString();
 		
 		Headers headers = new Headers();
-		headers.setAuthorization(req.getHeader("Authorization"));
+		headers.setAuthorization(tokenProvider.resolveToken(req));
 		FileListToClient fileList = new FileListToClient();
 		fileList.setUid("-1");
 		fileList.setStatus("done");
