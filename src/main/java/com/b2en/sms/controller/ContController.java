@@ -35,6 +35,7 @@ import com.b2en.sms.dto.ContAndLcnsDtoForUpdate;
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.LcnsDto;
 import com.b2en.sms.dto.LcnsDtoForUpdate;
+import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.ContAC;
 import com.b2en.sms.dto.file.FileList;
 import com.b2en.sms.dto.file.FileListToClient;
@@ -42,7 +43,6 @@ import com.b2en.sms.dto.toclient.ContAndLcnsDtoToClient;
 import com.b2en.sms.dto.toclient.ContChngHistDtoToClient;
 import com.b2en.sms.dto.toclient.ContDtoToClient;
 import com.b2en.sms.dto.toclient.LcnsDtoToClient;
-import com.b2en.sms.dto.toclient.ResponseInfo;
 import com.b2en.sms.model.B2en;
 import com.b2en.sms.model.CmmnDetailCd;
 import com.b2en.sms.model.Cont;
@@ -103,7 +103,7 @@ public class ContController {
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping
 	public ResponseEntity<List<ContDtoToClient>> getAllNotDeleted() {
 		// delYn의 값이 "N"인 경우(삭제된걸로 처리되지 않은 경우)만 불러옴
 		List<ContDetail> contDetailList = repositoryCD.findByDelYn("N");

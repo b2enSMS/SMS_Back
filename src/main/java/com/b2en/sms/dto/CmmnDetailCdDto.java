@@ -1,9 +1,9 @@
-package com.b2en.sms.dto.toclient;
+package com.b2en.sms.dto;
 
 import lombok.Data;
 
 @Data
-public class CmmnDetailCdDtoToClient {
+public class CmmnDetailCdDto {
 	
 	// 공통상세코드
 	private String cmmnDetailCd;

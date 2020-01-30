@@ -1,5 +1,6 @@
 package com.b2en.sms.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.OrgDto;
+import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.OrgAC;
-import com.b2en.sms.dto.toclient.ResponseInfo;
 import com.b2en.sms.model.Org;
 import com.b2en.sms.repo.ContRepository;
 import com.b2en.sms.repo.CustRepository;
@@ -47,7 +47,7 @@ public class OrgController {
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping
 	public ResponseEntity<List<OrgDto.Response>> showAll() {
 
 		List<Org> entityList = repositoryOrg.findAllOrderByName();
@@ -60,7 +60,7 @@ public class OrgController {
 
 	}
 	
-	@GetMapping(value = "/aclist", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/aclist")
 	public ResponseEntity<List<OrgAC>> acList() {
 
 		List<Org> list = repositoryOrg.findAllOrderByName();
@@ -79,7 +79,7 @@ public class OrgController {
 		return new ResponseEntity<List<OrgAC>>(acList, HttpStatus.OK);
 	}
 	
-	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value="/{id}")
 	public ResponseEntity<OrgDto.Response> findById(@PathVariable("id") int id) {
 		
 		Org org = repositoryOrg.findById(id).orElse(null);
@@ -93,8 +93,8 @@ public class OrgController {
 		return new ResponseEntity<OrgDto.Response>(orgDtoToClient, HttpStatus.OK);
 	}
 	
-	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody OrgDto.Request org, BindingResult result) {
+	@PostMapping(value = "/create")
+	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody OrgDto.Request orgDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -107,7 +107,7 @@ public class OrgController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		Org orgEntity = modelMapper.map(org, Org.class);
+		Org orgEntity = modelMapper.map(orgDto, Org.class);
 		
 		repositoryOrg.save(orgEntity);
 		
@@ -115,7 +115,7 @@ public class OrgController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	@DeleteMapping(value = "")
+	@DeleteMapping
 	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody DeleteDto id) {
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 
@@ -146,8 +146,8 @@ public class OrgController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody OrgDto.Request org, BindingResult result) {
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody OrgDto.Request orgDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -168,11 +168,10 @@ public class OrgController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		String orgNm = org.getOrgNm();
-		String orgAddr = org.getOrgAddr();
-
-		toUpdate.setOrgNm(orgNm);
-		toUpdate.setOrgAddr(orgAddr);
+		LocalDateTime createdDate = toUpdate.getCreatedDate();
+		toUpdate = modelMapper.map(orgDto, Org.class);
+		toUpdate.setOrgId(id);
+		toUpdate.setCreatedDate(createdDate);
 
 		repositoryOrg.save(toUpdate);
 		

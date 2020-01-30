@@ -1,5 +1,6 @@
 package com.b2en.sms.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +12,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -25,12 +25,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.DeleteDto;
+import com.b2en.sms.dto.MeetAttendCustDto;
+import com.b2en.sms.dto.MeetAttendEmpDto;
 import com.b2en.sms.dto.MeetDto;
-import com.b2en.sms.dto.toclient.MeetAndAttendDtoToClient;
-import com.b2en.sms.dto.toclient.MeetAttendCustDto;
-import com.b2en.sms.dto.toclient.MeetAttendEmpDto;
-import com.b2en.sms.dto.toclient.MeetDtoToClient;
-import com.b2en.sms.dto.toclient.ResponseInfo;
+import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.model.B2en;
 import com.b2en.sms.model.CmmnDetailCd;
 import com.b2en.sms.model.Cust;
@@ -65,20 +63,17 @@ public class MeetController {
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<MeetDtoToClient>> showAll() {
+	@GetMapping
+	public ResponseEntity<List<MeetDto.ResponseList>> showAll() {
 
 		List<Meet> entityList = repositoryM.findAllByOrderByMeetIdDesc();
 		
 		if(entityList.size()==0) { // 결과가 없을 경우의 문제 예방
-			return new ResponseEntity<List<MeetDtoToClient>>(new ArrayList<MeetDtoToClient>(), HttpStatus.OK);
+			return new ResponseEntity<List<MeetDto.ResponseList>>(new ArrayList<MeetDto.ResponseList>(), HttpStatus.OK);
 		}
 		//entityList = AddOneDay.addOneDayInMeet(entityList);
 		
-		List<MeetDtoToClient> list;
-
-		list = modelMapper.map(entityList, new TypeToken<List<MeetDtoToClient>>() {
-		}.getType());
+		List<MeetDto.ResponseList> list = modelMapper.map(entityList, new TypeToken<List<MeetDto.ResponseList>>() {}.getType());
 		
 		for(int i = 0; i < list.size(); i++) {
 			list.get(i).setMeetStartTime(getTimeString(list.get(i).getMeetStartTime()));
@@ -109,7 +104,7 @@ public class MeetController {
 			list.get(i).setMeetTpCdNm(cmmnDetailCdMap.get(entityList.get(i).getMeetTpCd()));
 		}
 		
-		return new ResponseEntity<List<MeetDtoToClient>>(list, HttpStatus.OK);
+		return new ResponseEntity<List<MeetDto.ResponseList>>(list, HttpStatus.OK);
 
 	}
 	
@@ -144,19 +139,19 @@ public class MeetController {
 		return ampm + " " + hour + "시 " + minute + "분";
 	}
 	
-	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<MeetAndAttendDtoToClient> findById(@PathVariable("id") int id) {
+	@GetMapping(value="/{id}")
+	public ResponseEntity<MeetDto.ResponseOne> findById(@PathVariable("id") int id) {
 		
 		Meet meet = repositoryM.findById(id).orElse(null);
 		if(meet==null) {
-			MeetAndAttendDtoToClient nothing = null;
-			return new ResponseEntity<MeetAndAttendDtoToClient>(nothing, HttpStatus.OK);
+			MeetDto.ResponseOne nothing = null;
+			return new ResponseEntity<MeetDto.ResponseOne>(nothing, HttpStatus.OK);
 		}
 		//List<Meet> meetTemp = new ArrayList<Meet>();
 		//meetTemp.add(meet);
 		//meet = AddOneDay.addOneDayInMeet(meetTemp).get(0);
 		
-		MeetAndAttendDtoToClient meetAndAttendDtoToClient = modelMapper.map(meet, MeetAndAttendDtoToClient.class);
+		MeetDto.ResponseOne meetAndAttendDtoToClient = modelMapper.map(meet, MeetDto.ResponseOne.class);
 		
 		meetAndAttendDtoToClient.setMeetStartTime(meetAndAttendDtoToClient.getMeetStartTime().substring(0, 5));
 		
@@ -187,12 +182,12 @@ public class MeetController {
 		meetAndAttendDtoToClient.setCusts(meetAttendCustDtoToClientList);
 		meetAndAttendDtoToClient.setEmps(meetAttendEmpDtoToClientList);
 		
-		return new ResponseEntity<MeetAndAttendDtoToClient>(meetAndAttendDtoToClient, HttpStatus.OK);
+		return new ResponseEntity<MeetDto.ResponseOne>(meetAndAttendDtoToClient, HttpStatus.OK);
 	}
 	
 	@Transactional
-	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody MeetDto meetDto, BindingResult result) {
+	@PostMapping(value = "/create")
+	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody MeetDto.Request meetDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -204,7 +199,7 @@ public class MeetController {
 			}
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
-		 
+		
 		meetDto.setMeetStartTime(meetDto.getMeetStartTime()+":00");
 		Meet meetEntity = modelMapper.map(meetDto, Meet.class);
 		
@@ -244,7 +239,7 @@ public class MeetController {
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	@DeleteMapping(value = "")
+	@DeleteMapping
 	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody DeleteDto id) {
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		int[] idx = id.getIdx();
@@ -268,8 +263,8 @@ public class MeetController {
 	}
 
 	@Transactional
-	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody MeetDto meetDto, BindingResult result) {
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody MeetDto.Request meetDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -290,11 +285,11 @@ public class MeetController {
 			return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.BAD_REQUEST);
 		}
 		
-		toUpdate.setMeetDt(java.sql.Date.valueOf(meetDto.getMeetDt()));
-		toUpdate.setMeetCnt(meetDto.getMeetCnt());
-		toUpdate.setMeetStartTime(java.sql.Time.valueOf(meetDto.getMeetStartTime()+":00"));
-		toUpdate.setMeetTotTime(meetDto.getMeetTotTime());
-		toUpdate.setMeetTpCd(meetDto.getMeetTpCd());
+		meetDto.setMeetStartTime(meetDto.getMeetStartTime()+":00");
+		LocalDateTime createdDate = toUpdate.getCreatedDate();
+		toUpdate = modelMapper.map(meetDto, Meet.class);
+		toUpdate.setMeetId(id);
+		toUpdate.setCreatedDate(createdDate);
 
 		toUpdate = repositoryM.save(toUpdate);
 		

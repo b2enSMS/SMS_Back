@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,14 +29,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.DeleteDto;
-import com.b2en.sms.dto.LcnsDtoTempVer;
-import com.b2en.sms.dto.LcnsDtoTempVerForUpdate;
-import com.b2en.sms.dto.TempVerAndLcnsDto;
-import com.b2en.sms.dto.TempVerAndLcnsDtoForUpdate;
+import com.b2en.sms.dto.LcnsDtoNew;
+import com.b2en.sms.dto.ResponseInfo;
+import com.b2en.sms.dto.TempVerDto;
 import com.b2en.sms.dto.toclient.LcnsDtoToClientTempVer;
-import com.b2en.sms.dto.toclient.ResponseInfo;
-import com.b2en.sms.dto.toclient.TempVerAndLcnsDtoToClient;
-import com.b2en.sms.dto.toclient.TempVerDtoToClient;
 import com.b2en.sms.dto.toclient.TempVerHistDtoToClient;
 import com.b2en.sms.model.Lcns;
 import com.b2en.sms.model.LcnsChngHist;
@@ -76,54 +73,45 @@ public class TempVerController {
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	@GetMapping(value = "/showall", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<TempVerDtoToClient>> showAll() {
+	@GetMapping
+	public ResponseEntity<List<TempVerDto.ResponseList>> showAll() {
 
 		List<TempVer> entityList = repositoryTemp.findAllByOrderByTempVerIdDesc();
-		List<TempVerDtoToClient> list = new ArrayList<TempVerDtoToClient>();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
 		if(entityList.size()==0) { // 결과가 없을 경우의 문제 예방
-			return new ResponseEntity<List<TempVerDtoToClient>>(new ArrayList<TempVerDtoToClient>(), HttpStatus.OK);
+			return new ResponseEntity<List<TempVerDto.ResponseList>>(new ArrayList<TempVerDto.ResponseList>(), HttpStatus.OK);
 		}
 		//entityList = AddOneDay.addOneDayInTempVer(entityList);
 		
-		for(int i = 0; i < entityList.size(); i++) {
-			TempVerDtoToClient tempVerDtoToClient = new TempVerDtoToClient();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		List<TempVerDto.ResponseList> list = modelMapper.map(entityList, new TypeToken<List<TempVerDto.ResponseList>>() {}.getType());
+		
+		for(int i = 0; i < list.size(); i++) {
 			TempVer tempVer = entityList.get(i);
-			tempVerDtoToClient.setTempVerId(tempVer.getTempVerId());
-			tempVerDtoToClient.setOrgNm(tempVer.getCust().getOrg().getOrgNm());
-			tempVerDtoToClient.setCustNm(tempVer.getCust().getCustNm());
-			String user = tempVer.getUser();
-			if(user==null) {
-				user = "";
-			}
-			tempVerDtoToClient.setUser(user);
-			tempVerDtoToClient.setEmpNm(tempVer.getB2en().getEmpNm());
-			tempVerDtoToClient.setMacAddr(tempVer.getMacAddr());
-			tempVerDtoToClient.setRequestDate(sdf.format(tempVer.getRequestDate()));
-			tempVerDtoToClient.setLcnsEndDate(sdf.format(tempVer.getLcns().getLcnsEndDt()));
-			tempVerDtoToClient.setIssueReason(tempVer.getIssueReason());
-			tempVerDtoToClient.setTight(calculateIsTight(tempVerDtoToClient.getLcnsEndDate()));
-			list.add(tempVerDtoToClient);
+			list.get(i).setOrgNm(tempVer.getCust().getOrg().getOrgNm());
+			list.get(i).setCustNm(tempVer.getCust().getCustNm());
+			list.get(i).setEmpNm(tempVer.getB2en().getEmpNm());
+			list.get(i).setLcnsEndDate(sdf.format(tempVer.getLcns().getLcnsEndDt()));
+			list.get(i).setTight(calculateIsTight(list.get(i).getLcnsEndDate()));
 		}
 
-		return new ResponseEntity<List<TempVerDtoToClient>>(list, HttpStatus.OK);
+		return new ResponseEntity<List<TempVerDto.ResponseList>>(list, HttpStatus.OK);
 
 	}
 	
-	@GetMapping(value = "/expired", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<TempVerDtoToClient>> showExpired() {
+	@GetMapping(value = "/expired")
+	public ResponseEntity<List<TempVerDto.ResponseList>> showExpired() {
 		// 만료된 임시계약들
 		List<TempVer> entityList = repositoryTemp.findAllByOrderByTempVerIdDesc();
-		List<TempVerDtoToClient> list = new ArrayList<TempVerDtoToClient>();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		if(entityList.size()==0) { // 결과가 없을 경우의 문제 예방
-			return new ResponseEntity<List<TempVerDtoToClient>>(new ArrayList<TempVerDtoToClient>(), HttpStatus.OK);
+			return new ResponseEntity<List<TempVerDto.ResponseList>>(new ArrayList<TempVerDto.ResponseList>(), HttpStatus.OK);
 		}
 		//entityList = AddOneDay.addOneDayInTempVer(entityList);
+		List<TempVer> expiredList = new ArrayList<TempVer>();
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		
 		for(int i = 0; i < entityList.size(); i++) {
-			TempVerDtoToClient tempVerDtoToClient = new TempVerDtoToClient();
 			TempVer tempVer = entityList.get(i);
 			if(!calculateIsTight(sdf.format(tempVer.getLcns().getLcnsEndDt()))) {
 				continue;
@@ -131,40 +119,39 @@ public class TempVerController {
 			if(!calculateIsExpired(sdf.format(tempVer.getLcns().getLcnsEndDt()))) {
 				continue;
 			}
-			tempVerDtoToClient.setTempVerId(tempVer.getTempVerId());
-			tempVerDtoToClient.setOrgNm(tempVer.getCust().getOrg().getOrgNm());
-			tempVerDtoToClient.setCustNm(tempVer.getCust().getCustNm());
-			String user = tempVer.getUser();
-			if(user==null) {
-				user = "";
-			}
-			tempVerDtoToClient.setUser(user);
-			tempVerDtoToClient.setEmpNm(tempVer.getB2en().getEmpNm());
-			tempVerDtoToClient.setMacAddr(tempVer.getMacAddr());
-			tempVerDtoToClient.setRequestDate(sdf.format(tempVer.getRequestDate()));
-			tempVerDtoToClient.setLcnsEndDate(sdf.format(tempVer.getLcns().getLcnsEndDt()));
-			tempVerDtoToClient.setIssueReason(tempVer.getIssueReason());
-			tempVerDtoToClient.setTight(calculateIsTight(tempVerDtoToClient.getLcnsEndDate()));
-			list.add(tempVerDtoToClient);
+			expiredList.add(tempVer);
+		}
+		
+		List<TempVerDto.ResponseList> list = modelMapper.map(expiredList, new TypeToken<List<TempVerDto.ResponseList>>() {}.getType());
+		
+		for(int i = 0; i < expiredList.size(); i++) {
+			TempVer tempVer = expiredList.get(i);
+			list.get(i).setOrgNm(tempVer.getCust().getOrg().getOrgNm());
+			list.get(i).setCustNm(tempVer.getCust().getCustNm());
+			list.get(i).setEmpNm(tempVer.getB2en().getEmpNm());
+			list.get(i).setLcnsEndDate(sdf.format(tempVer.getLcns().getLcnsEndDt()));
+			list.get(i).setTight(calculateIsTight(list.get(i).getLcnsEndDate()));
 		}
 
-		return new ResponseEntity<List<TempVerDtoToClient>>(list, HttpStatus.OK);
+		return new ResponseEntity<List<TempVerDto.ResponseList>>(list, HttpStatus.OK);
 
 	}
 	
-	@GetMapping(value = "/toexpire", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<TempVerDtoToClient>> showToExpire() {
+	@GetMapping(value = "/toexpire")
+	public ResponseEntity<List<TempVerDto.ResponseList>> showToExpire() {
 		// 만료에 임박한 임시 계약들
 		List<TempVer> entityList = repositoryTemp.findAllByOrderByTempVerIdDesc();
-		List<TempVerDtoToClient> list = new ArrayList<TempVerDtoToClient>();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
 		if(entityList.size()==0) { // 결과가 없을 경우의 문제 예방
-			return new ResponseEntity<List<TempVerDtoToClient>>(new ArrayList<TempVerDtoToClient>(), HttpStatus.OK);
+			return new ResponseEntity<List<TempVerDto.ResponseList>>(new ArrayList<TempVerDto.ResponseList>(), HttpStatus.OK);
 		}
 		//entityList = AddOneDay.addOneDayInTempVer(entityList);
 		
+		List<TempVer> toExpireList = new ArrayList<TempVer>();
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
 		for(int i = 0; i < entityList.size(); i++) {
-			TempVerDtoToClient tempVerDtoToClient = new TempVerDtoToClient();
 			TempVer tempVer = entityList.get(i);
 			if(!calculateIsTight(sdf.format(tempVer.getLcns().getLcnsEndDt()))) {
 				continue;
@@ -172,24 +159,21 @@ public class TempVerController {
 			if(calculateIsExpired(sdf.format(tempVer.getLcns().getLcnsEndDt()))) {
 				continue;
 			}
-			tempVerDtoToClient.setTempVerId(tempVer.getTempVerId());
-			tempVerDtoToClient.setOrgNm(tempVer.getCust().getOrg().getOrgNm());
-			tempVerDtoToClient.setCustNm(tempVer.getCust().getCustNm());
-			String user = tempVer.getUser();
-			if(user==null) {
-				user = "";
-			}
-			tempVerDtoToClient.setUser(user);
-			tempVerDtoToClient.setEmpNm(tempVer.getB2en().getEmpNm());
-			tempVerDtoToClient.setMacAddr(tempVer.getMacAddr());
-			tempVerDtoToClient.setRequestDate(sdf.format(tempVer.getRequestDate()));
-			tempVerDtoToClient.setLcnsEndDate(sdf.format(tempVer.getLcns().getLcnsEndDt()));
-			tempVerDtoToClient.setIssueReason(tempVer.getIssueReason());
-			tempVerDtoToClient.setTight(calculateIsTight(tempVerDtoToClient.getLcnsEndDate()));
-			list.add(tempVerDtoToClient);
+			toExpireList.add(tempVer);
+		}
+		
+		List<TempVerDto.ResponseList> list = modelMapper.map(toExpireList, new TypeToken<List<TempVerDto.ResponseList>>() {}.getType());
+		
+		for(int i = 0; i < toExpireList.size(); i++) {
+			TempVer tempVer = toExpireList.get(i);
+			list.get(i).setOrgNm(tempVer.getCust().getOrg().getOrgNm());
+			list.get(i).setCustNm(tempVer.getCust().getCustNm());
+			list.get(i).setEmpNm(tempVer.getB2en().getEmpNm());
+			list.get(i).setLcnsEndDate(sdf.format(tempVer.getLcns().getLcnsEndDt()));
+			list.get(i).setTight(calculateIsTight(list.get(i).getLcnsEndDate()));
 		}
 
-		return new ResponseEntity<List<TempVerDtoToClient>>(list, HttpStatus.OK);
+		return new ResponseEntity<List<TempVerDto.ResponseList>>(list, HttpStatus.OK);
 
 	}
 	
@@ -230,44 +214,33 @@ public class TempVerController {
 		}
 	}
 	
-	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<TempVerAndLcnsDtoToClient> findById(@PathVariable("id") int id) {
+	@GetMapping(value="/{id}")
+	public ResponseEntity<TempVerDto.ResponseOne> findById(@PathVariable("id") int id) {
 		
 		TempVer tempVer = repositoryTemp.findById(id).orElse(null);
 		if(tempVer==null) {
-			TempVerAndLcnsDtoToClient nothing = null;
-			return new ResponseEntity<TempVerAndLcnsDtoToClient>(nothing, HttpStatus.OK);
+			TempVerDto.ResponseOne nothing = null;
+			return new ResponseEntity<TempVerDto.ResponseOne>(nothing, HttpStatus.OK);
 		}
 		//List<TempVer> tempTemp = new ArrayList<TempVer>();
 		//tempTemp.add(tempVer);
 		//tempVer = AddOneDay.addOneDayInTempVer(tempTemp).get(0);
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		
-		TempVerAndLcnsDtoToClient tempVerAndLcnsDtoToClient = new TempVerAndLcnsDtoToClient();
-		tempVerAndLcnsDtoToClient.setTempVerId(tempVer.getTempVerId());
+		TempVerDto.ResponseOne tempVerAndLcnsDtoToClient = modelMapper.map(tempVer, TempVerDto.ResponseOne.class);
 		tempVerAndLcnsDtoToClient.setCustId(tempVer.getCust().getCustId());
 		tempVerAndLcnsDtoToClient.setCustNm(tempVer.getCust().getCustNm());
-		String user = tempVer.getUser();
-		if(user==null) {
-			user = "";
-		}
-		tempVerAndLcnsDtoToClient.setUser(user);
 		tempVerAndLcnsDtoToClient.setEmpId(tempVer.getB2en().getEmpId());
 		tempVerAndLcnsDtoToClient.setEmpNm(tempVer.getB2en().getEmpNm());
 		LcnsDtoToClientTempVer[] lcns = {modelMapper.map(tempVer.getLcns(), LcnsDtoToClientTempVer.class)};
 		lcns[0].setLcnsTpNm(repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(lcns[0].getLcnsTpCd()).getCmmnDetailCdNm());
 		tempVerAndLcnsDtoToClient.setLcns(lcns);
-		tempVerAndLcnsDtoToClient.setMacAddr(tempVer.getMacAddr());
-		tempVerAndLcnsDtoToClient.setRequestDate(sdf.format(tempVer.getRequestDate()));
-		tempVerAndLcnsDtoToClient.setIssueReason(tempVer.getIssueReason());
 		
-		return new ResponseEntity<TempVerAndLcnsDtoToClient>(tempVerAndLcnsDtoToClient, HttpStatus.OK);
+		return new ResponseEntity<TempVerDto.ResponseOne>(tempVerAndLcnsDtoToClient, HttpStatus.OK);
 	}
 	
 	@Transactional
-	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody TempVerAndLcnsDto tempVerDto, BindingResult result) {
+	@PostMapping(value = "/create")
+	public ResponseEntity<List<ResponseInfo>> create(@Valid @RequestBody TempVerDto.Request tempVerDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -281,7 +254,7 @@ public class TempVerController {
 		}
 		
 		// ========================== lcns 생성 =====================
-		LcnsDtoTempVer[] lcnsDto = tempVerDto.getLcns();
+		LcnsDtoNew.RequestTemp[] lcnsDto = tempVerDto.getLcns();
 		int lcnsNum = lcnsDto.length;
 		if(lcnsNum>1) {
 			res.add(new ResponseInfo("다음의 문제로 등록에 실패했습니다: "));
@@ -320,15 +293,13 @@ public class TempVerController {
 		tempEntity.setRequestDate(Date.valueOf(tempVerDto.getRequestDate()));
 		tempEntity.setIssueReason(tempVerDto.getIssueReason());
 		
-		System.out.println(lcnsEntity[999].getLcnsId());
-		
 		repositoryTemp.save(tempEntity);
 		
 		res.add(new ResponseInfo("등록에 성공했습니다."));
 		return new ResponseEntity<List<ResponseInfo>>(res, HttpStatus.OK);
 	}
 	
-	@DeleteMapping(value = "")
+	@DeleteMapping
 	public ResponseEntity<List<ResponseInfo>> delete(@RequestBody DeleteDto id) {
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		int[] idx = id.getIdx();
@@ -352,8 +323,8 @@ public class TempVerController {
 	}
 	
 	@Transactional
-	@PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody TempVerAndLcnsDtoForUpdate tempVerDto, BindingResult result) {
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<List<ResponseInfo>> update(@PathVariable("id") int id, @Valid @RequestBody TempVerDto.Request tempVerDto, BindingResult result) {
 		
 		List<ResponseInfo> res = new ArrayList<ResponseInfo>();
 		
@@ -394,7 +365,7 @@ public class TempVerController {
 		repositoryTempHist.save(tempVerHist);
 		
 		// ================== lcns 수정 =====================
-		LcnsDtoTempVerForUpdate[] lcnsDto = tempVerDto.getLcns();
+		LcnsDtoNew.RequestTemp[] lcnsDto = tempVerDto.getLcns();
 		if(lcnsDto.length>1) {
 			res.add(new ResponseInfo("다음의 문제로 등록에 실패했습니다: "));
 			res.add(new ResponseInfo("하나의 임시계약에는 하나 이하의 라이센스만 등록할 수 있습니다."));
