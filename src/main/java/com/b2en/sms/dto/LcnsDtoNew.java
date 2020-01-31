@@ -159,6 +159,8 @@ public class LcnsDtoNew {
 		private int lcnsId;
 
 		private int prdtId;
+		
+		private String prdtNm;
 
 		private String lcnsIssuDt;
 		
