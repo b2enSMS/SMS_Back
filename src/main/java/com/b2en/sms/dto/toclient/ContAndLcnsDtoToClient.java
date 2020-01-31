@@ -1,5 +1,7 @@
 package com.b2en.sms.dto.toclient;
 
+import com.b2en.sms.dto.LcnsDtoNew;
+
 import lombok.Data;
 
 @Data
@@ -41,5 +43,5 @@ public class ContAndLcnsDtoToClient {
 	
 	private String mtncEndDt;
 	
-	private LcnsDtoToClient[] lcns;
+	private LcnsDtoNew.Response[] lcns;
 }

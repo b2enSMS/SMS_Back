@@ -32,8 +32,7 @@ import com.b2en.sms.dto.DeleteDto;
 import com.b2en.sms.dto.LcnsDtoNew;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.TempVerDto;
-import com.b2en.sms.dto.toclient.LcnsDtoToClientTempVer;
-import com.b2en.sms.dto.toclient.TempVerHistDtoToClient;
+import com.b2en.sms.dto.TempVerHistDto;
 import com.b2en.sms.model.Lcns;
 import com.b2en.sms.model.LcnsChngHist;
 import com.b2en.sms.model.Prdt;
@@ -231,7 +230,7 @@ public class TempVerController {
 		tempVerAndLcnsDtoToClient.setCustNm(tempVer.getCust().getCustNm());
 		tempVerAndLcnsDtoToClient.setEmpId(tempVer.getB2en().getEmpId());
 		tempVerAndLcnsDtoToClient.setEmpNm(tempVer.getB2en().getEmpNm());
-		LcnsDtoToClientTempVer[] lcns = {modelMapper.map(tempVer.getLcns(), LcnsDtoToClientTempVer.class)};
+		LcnsDtoNew.ResponseTemp[] lcns = {modelMapper.map(tempVer.getLcns(), LcnsDtoNew.ResponseTemp.class)};
 		lcns[0].setLcnsTpNm(repositoryCDC.findByCmmnDetailCdPKCmmnDetailCd(lcns[0].getLcnsTpCd()).getCmmnDetailCdNm());
 		tempVerAndLcnsDtoToClient.setLcns(lcns);
 		
@@ -439,21 +438,21 @@ public class TempVerController {
 	}
 	
 	@GetMapping(value="/hist/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<TempVerHistDtoToClient>> findHistByTempVerId(@PathVariable("id") int id) {
+	public ResponseEntity<List<TempVerHistDto>> findHistByTempVerId(@PathVariable("id") int id) {
 		
 		List<TempVerHist> tempVerHistList = repositoryTempHist.findByTempVerHistPKTempVerId(id);
-		List<TempVerHistDtoToClient> list = new ArrayList<TempVerHistDtoToClient>();
+		List<TempVerHistDto> list = new ArrayList<TempVerHistDto>();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		
 		if(tempVerHistList.size()==0) {
 			list = null;
-			return new ResponseEntity<List<TempVerHistDtoToClient>>(list, HttpStatus.OK);
+			return new ResponseEntity<List<TempVerHistDto>>(list, HttpStatus.OK);
 		}
 		
 		//tempVerHistList = AddOneDay.addOneDayInTempVerHist(tempVerHistList);
 
 		for(int i = 0; i < tempVerHistList.size(); i++) {
-			TempVerHistDtoToClient tempVerHistDtoToClient = new TempVerHistDtoToClient();
+			TempVerHistDto tempVerHistDtoToClient = new TempVerHistDto();
 			TempVerHist tempVerHist = tempVerHistList.get(i);
 			tempVerHistDtoToClient.setTempVerHistSeq(tempVerHist.getTempVerHistPK().getTempVerHistSeq());
 			tempVerHistDtoToClient.setOrgNm(tempVerHist.getCust().getOrg().getOrgNm());
@@ -466,6 +465,6 @@ public class TempVerController {
 			list.add(tempVerHistDtoToClient);
 		}
 		
-		return new ResponseEntity<List<TempVerHistDtoToClient>>(list, HttpStatus.OK);
+		return new ResponseEntity<List<TempVerHistDto>>(list, HttpStatus.OK);
 	}
 }

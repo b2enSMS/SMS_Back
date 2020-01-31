@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.b2en.sms.dto.GeneratingLcnsNo;
+import com.b2en.sms.dto.LcnsDtoNew;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.LcnsAC;
-import com.b2en.sms.dto.toclient.LcnsDtoToClient;
 import com.b2en.sms.model.Lcns;
 import com.b2en.sms.repo.LcnsRepository;
 import com.b2en.sms.repo.PrdtRepository;
@@ -40,17 +40,17 @@ public class LcnsController {
 	private ModelMapper modelMapper;
 	
 	@GetMapping
-	public ResponseEntity<List<LcnsDtoToClient>> showAll() {
+	public ResponseEntity<List<LcnsDtoNew.Response>> showAll() {
 
 		List<Lcns> entityList = repositoryL.findAll();
 		if(entityList.size()==0) {
-			return new ResponseEntity<List<LcnsDtoToClient>>(new ArrayList<LcnsDtoToClient>(), HttpStatus.OK);
+			return new ResponseEntity<List<LcnsDtoNew.Response>>(new ArrayList<LcnsDtoNew.Response>(), HttpStatus.OK);
 		}
-		List<LcnsDtoToClient> list;
+		List<LcnsDtoNew.Response> list;
 		int prdtId;
 		String prdtNm;
 
-		list = modelMapper.map(entityList, new TypeToken<List<LcnsDtoToClient>>() {}.getType());
+		list = modelMapper.map(entityList, new TypeToken<List<LcnsDtoNew.Response>>() {}.getType());
 
 		for(int i = 0; i < entityList.size(); i++) {
 			prdtId = entityList.get(i).getPrdt().getPrdtId();
@@ -59,7 +59,7 @@ public class LcnsController {
 			list.get(i).setPrdtNm(prdtNm);
 		}
 		
-		return new ResponseEntity<List<LcnsDtoToClient>>(list, HttpStatus.OK);
+		return new ResponseEntity<List<LcnsDtoNew.Response>>(list, HttpStatus.OK);
 
 	}
 	

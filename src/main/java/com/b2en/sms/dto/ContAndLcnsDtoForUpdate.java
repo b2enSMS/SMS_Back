@@ -57,6 +57,6 @@ public class ContAndLcnsDtoForUpdate {
 
 	// =============== Lcns =================
 	@Valid
-	private LcnsDtoForUpdate[] lcns;
+	private LcnsDtoNew.Request[] lcns;
 	
 }

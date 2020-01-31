@@ -57,5 +57,5 @@ public class ContAndLcnsDto {
 	
 	// =============== Lcns =================
 	@Valid
-	private LcnsDto[] lcns;
+	private LcnsDtoNew.Request[] lcns;
 }
