@@ -6,6 +6,7 @@ import javax.validation.constraints.Pattern;
 
 import com.b2en.sms.customvalidator.StartEndValid;
 import com.b2en.sms.dto.file.FileList;
+import com.b2en.sms.dto.file.FileListToClient;
 
 import lombok.Builder;
 import lombok.Data;
@@ -97,6 +98,80 @@ public class LcnsDtoNew {
 		
 		@Builder
 		public RequestTemp(int prdtId, String lcnsIssuDt, String lcnsTpCd, String lcnsStartDt, String lcnsEndDt) {
+			this.prdtId = prdtId;
+			this.lcnsIssuDt = lcnsIssuDt;
+			this.lcnsTpCd = lcnsTpCd;
+			this.lcnsStartDt = lcnsStartDt;
+			this.lcnsEndDt = lcnsEndDt;
+		}
+		
+	}
+	
+	@Data
+	@NoArgsConstructor
+	public static class Response {
+		
+		private int lcnsId;
+	
+		private int contSeq;
+	
+		private int prdtId;
+		
+		private String prdtNm;
+	
+		private String lcnsNo;
+	
+		private String lcnsIssuDt;
+		
+		private String lcnsTpCd;
+		
+		private String lcnsTpNm;
+	
+		private String certNo;
+		
+		private String lcnsStartDt;
+	
+		private String lcnsEndDt;
+		
+		private FileListToClient[] fileList;
+		
+		private String contAmt;
+		
+		private String contNote;
+		
+		@Builder
+		public Response(int prdtId, String lcnsNo, String certNo, String lcnsIssuDt, String lcnsTpCd, String lcnsStartDt, String lcnsEndDt) {
+			this.prdtId = prdtId;
+			this.lcnsNo = lcnsNo;
+			this.certNo = certNo;
+			this.lcnsIssuDt = lcnsIssuDt;
+			this.lcnsTpCd = lcnsTpCd;
+			this.lcnsStartDt = lcnsStartDt;
+			this.lcnsEndDt = lcnsEndDt;
+		}
+		
+	}
+	
+	@Data
+	@NoArgsConstructor
+	public static class ResponseTemp {
+		
+		private int lcnsId;
+
+		private int prdtId;
+
+		private String lcnsIssuDt;
+		
+		private String lcnsTpCd;
+		
+		private String lcnsTpNm;
+		
+		private String lcnsStartDt;
+
+		private String lcnsEndDt;
+		
+		@Builder
+		public ResponseTemp(int prdtId, String lcnsIssuDt, String lcnsTpCd, String lcnsStartDt, String lcnsEndDt) {
 			this.prdtId = prdtId;
 			this.lcnsIssuDt = lcnsIssuDt;
 			this.lcnsTpCd = lcnsTpCd;

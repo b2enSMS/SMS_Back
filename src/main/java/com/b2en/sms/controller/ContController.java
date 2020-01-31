@@ -34,8 +34,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.b2en.sms.dto.ContAndLcnsDto;
 import com.b2en.sms.dto.ContAndLcnsDtoForUpdate;
 import com.b2en.sms.dto.DeleteDto;
-import com.b2en.sms.dto.LcnsDto;
-import com.b2en.sms.dto.LcnsDtoForUpdate;
+import com.b2en.sms.dto.LcnsDtoNew;
 import com.b2en.sms.dto.ResponseInfo;
 import com.b2en.sms.dto.autocompleteinfo.ContAC;
 import com.b2en.sms.dto.file.FileList;
@@ -43,7 +42,6 @@ import com.b2en.sms.dto.file.FileListToClient;
 import com.b2en.sms.dto.toclient.ContAndLcnsDtoToClient;
 import com.b2en.sms.dto.toclient.ContChngHistDtoToClient;
 import com.b2en.sms.dto.toclient.ContDtoToClient;
-import com.b2en.sms.dto.toclient.LcnsDtoToClient;
 import com.b2en.sms.model.B2en;
 import com.b2en.sms.model.CmmnDetailCd;
 import com.b2en.sms.model.Cont;
@@ -307,9 +305,9 @@ public class ContController {
 		
 		List<ContDetail> contDetail = repositoryCD.findByContIdWhereDelYnIsN(id);
 		//contDetail = AddOneDay.addOneDayInLcnsInContDetail(contDetail);
-		LcnsDtoToClient[] lcnsDtoToClient = new LcnsDtoToClient[contDetail.size()];
+		LcnsDtoNew.Response[] lcnsDtoToClient = new LcnsDtoNew.Response[contDetail.size()];
 		for(int i = 0; i < lcnsDtoToClient.length; i++) {
-			lcnsDtoToClient[i] = modelMapper.map(contDetail.get(i).getLcns(), LcnsDtoToClient.class);
+			lcnsDtoToClient[i] = modelMapper.map(contDetail.get(i).getLcns(), LcnsDtoNew.Response.class);
 			lcnsDtoToClient[i].setContSeq(contDetail.get(i).getContDetailPK().getContSeq());
 			lcnsDtoToClient[i].setPrdtId(contDetail.get(i).getLcns().getPrdt().getPrdtId());
 			lcnsDtoToClient[i].setPrdtNm(contDetail.get(i).getLcns().getPrdt().getPrdtNm());
@@ -402,7 +400,7 @@ public class ContController {
 		}
 		
 		// ======================= Lcns 생성 ==========================
-		LcnsDto[] lcnsDto = contAndLcnsDto.getLcns();
+		LcnsDtoNew.Request[] lcnsDto = contAndLcnsDto.getLcns();
 		int lcnsNum = lcnsDto.length;
 		Lcns[] lcnsEntity = new Lcns[lcnsNum];
 		
@@ -566,7 +564,7 @@ public class ContController {
 		Org org = repositoryO.getOne(orgId);
 		int empId = contAndLcnsDto.getEmpId();
 		B2en b2en = repositoryB.getOne(empId);
-		LcnsDtoForUpdate[] lcnsDto = contAndLcnsDto.getLcns();
+		LcnsDtoNew.Request[] lcnsDto = contAndLcnsDto.getLcns();
 
 		toUpdate.setOrg(org);
 		toUpdate.setB2en(b2en);

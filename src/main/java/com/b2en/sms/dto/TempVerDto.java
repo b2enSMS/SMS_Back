@@ -5,8 +5,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
-import com.b2en.sms.dto.toclient.LcnsDtoToClientTempVer;
-
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -107,7 +105,7 @@ public class TempVerDto {
 		
 		private String issueReason;
 		
-		private LcnsDtoToClientTempVer[] lcns;
+		private LcnsDtoNew.ResponseTemp[] lcns;
 		
 		@Builder
 		public ResponseOne(String user, String macAddr, String requestDate, String issueReason) {
